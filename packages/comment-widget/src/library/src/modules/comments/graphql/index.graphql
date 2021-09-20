@@ -1,0 +1,63 @@
+input FindOrCreateOneThreadInput {
+    application_id: String!
+    title: String!
+    website_url: String!
+}
+
+query FindOneOrCreateOneThread(
+    $findOrCreateOneThreadInput: FindOrCreateOneThreadInput!
+) {
+    find_one_thread_or_create_one(
+        findOrCreateOneThreadInput: $findOrCreateOneThreadInput
+    ) {
+        id
+        application_id
+        title
+        website_url
+    }
+}
+
+input FetchCommentByThreadIdInput {
+    limit: Int!
+    skip: Int!
+    thread_id: String!
+}
+
+query FetchCommentByThreadId(
+    $fetchCommentByThreadIdInput: FetchCommentByThreadIdInput!
+) {
+    fetch_comments_by_thread_id(
+        fetchCommentByThreadIdInput: $fetchCommentByThreadIdInput
+    ) {
+        application_id
+        author {
+            username
+            email
+            id
+        }
+        body
+        id
+        thread_id
+        created_at
+    }
+}
+
+input CreateCommentInput {
+    body: String!
+    application_id: String!
+    thread_id: String!
+}
+
+mutation CreateThreadComent($createCommentInput: CreateCommentInput!) {
+    create_comment(CreateCommentInput: $createCommentInput) {
+        application_id
+        author {
+            username
+            email
+            id
+        }
+        body
+        id
+        thread_id
+    }
+}

@@ -1,26 +1,29 @@
 {
-  "name": "the-last-hurrah-components",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "private": true,
-  "scripts": {
-    "remove:node_modules": "rimraf node_modules",
-    "publish": "npx lerna run publish",
-    "build:server:bash": "npx lerna run build:bash",
-    "build:server": "npx lerna run build",
-    "test:server": "learn run test",
-    "new-version": "lerna version --conventional-commits --yes",
-    "diff": "lerna diff"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
-  "dependencies": {
-    "glob": "^7.1.7",
-    "lerna": "^4.0.0",
-    "rimraf": "^3.0.2"
-  }
+    "name": "the-last-hurrah-components",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "remove:node_modules": "rimraf node_modules",
+        "publish": "npx lerna run publish",
+        "build:server:bash": "npx lerna run build:bash",
+        "build:server": "npx lerna run build",
+        "test:server": "learn run test",
+        "new-version": "lerna version --conventional-commits --yes",
+        "diff": "lerna diff"
+    },
+    "workspaces": {
+        "packages": [
+            "packages/*"
+        ],
+        "nohoist": [
+            "@graphql-codegen/**"
+        ]
+    },
+    "dependencies": {
+        "glob": "^7.1.7",
+        "lerna": "^4.0.0",
+        "rimraf": "^3.0.2"
+    }
 }
