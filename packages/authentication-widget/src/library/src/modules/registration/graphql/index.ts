@@ -1,20 +1,22 @@
 import { gql } from 'graphql-request'
 
 export const REGISTRATION_MUTATION = gql`
-	mutation RegistrationMutation(
-		$username: String!
+	mutation RegisterMutation(
 		$email: String!
+		$username: String!
 		$password: String!
+		$application_id: String
 		$redirect_url: String
 	) {
 		register_user(
-			username: $username
 			email: $email
+			username: $username
 			password: $password
+			application_id: $application_id
 			redirect_url: $redirect_url
 		) {
-			success
 			message
+			success
 		}
 	}
 `

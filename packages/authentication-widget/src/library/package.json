@@ -1,0 +1,41 @@
+{
+	"name": "@thelasthurrah/binary-stash-authenticator",
+	"version": "0.0.1",
+	"description": "An Authenticator Component for React",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"scripts": {
+		"prebuild": "npm run build:remove",
+		"publish": "npm run build && npm publish --access=public",
+		"build:remove": "rimraf dist",
+		"build": "tsc -p tsconfig-library.json"
+	},
+	"keywords": [],
+	"author": "Scott",
+	"license": "MIT",
+	"dependencies": {
+		"cross-env": "^7.0.3",
+		"rimraf": "^3.0.2",
+		"@material-ui/core": "^4.12.3",
+		"@material-ui/lab": "^4.0.0-alpha.60",
+		"@testing-library/jest-dom": "^5.11.4",
+		"@testing-library/react": "^11.1.0",
+		"@testing-library/user-event": "^12.1.10",
+		"formik": "^2.2.9",
+		"graphql": "^15.5.3",
+		"graphql-request": "^3.5.0",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"web-vitals": "^1.0.1",
+		"yup": "^0.32.9"
+	},
+	"devDependencies": {
+		"@types/jest": "^26.0.15",
+		"@types/node": "^12.0.0",
+		"@types/react": "^17.0.0",
+		"@types/react-dom": "^17.0.0",
+		"react-scripts": "4.0.3",
+		"typescript": "^4.1.2"
+	}
+}

@@ -9,9 +9,12 @@ import { Registration } from './modules/registration/Registration'
 interface IBinaryStashAuthenticatorProps {
 	application_id: string
 	application_name: string
+	redirect_url?: string
 }
 
-export const BinaryStashAuthenticator: React.FC = () => {
+export const BinaryStashAuthenticator: React.FC<IBinaryStashAuthenticatorProps> = ({
+	application_id,
+}) => {
 	const [showDisplay, changeDisplay] = useState(CHANGE_FORM_DISPLAY.LOGIN)
 
 	const Display = () => {
@@ -19,7 +22,9 @@ export const BinaryStashAuthenticator: React.FC = () => {
 			case CHANGE_FORM_DISPLAY.LOGIN:
 				return <Login changeDisplay={changeDisplay} />
 			case CHANGE_FORM_DISPLAY.REGISTRATION:
-				return <Registration changeDisplay={changeDisplay} />
+				return (
+					<Registration application_id={application_id} changeDisplay={changeDisplay} />
+				)
 			case CHANGE_FORM_DISPLAY.FORGOT_PASSWORD:
 				return <ForgotPassword changeDisplay={changeDisplay} />
 			default:

@@ -9,7 +9,7 @@ import { REGISTRATION_MUTATION } from './graphql'
 import { RegistrationValidationSchema } from '../validation'
 import { IRegistration, IRegistrationResponse } from './types'
 
-export const Registration: React.FC<IRegistration> = ({ changeDisplay }) => {
+export const Registration: React.FC<IRegistration> = ({ changeDisplay, application_id }) => {
 	const [checkError, setError] = useState(false)
 	const [errorMessage, setErrorMessage] = useState('')
 	const [checkSuccess, setSuccess] = useState(false)
@@ -31,10 +31,9 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay }) => {
 						email,
 						username,
 						password,
+						application_id,
 					}
 				)
-
-				console.log('REQUEST', response)
 
 				if (response.register_user.success) {
 					setSubmitting(false)

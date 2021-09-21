@@ -27,7 +27,7 @@ export const Login: React.FC<ILogin> = ({ changeDisplay }) => {
 					password,
 				})
 
-				console.log(response)
+				// console.log(response)
 
 				setSubmitting(false)
 			} catch (error) {
