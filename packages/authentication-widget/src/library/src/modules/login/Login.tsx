@@ -28,7 +28,7 @@ export const Login: React.FC<ILogin> = ({ changeDisplay }) => {
 				})
 
 				// console.log(response)
-
+				localStorage.setItem('binary-stash-token', response.login_user.token)
 				setSubmitting(false)
 			} catch (error) {
 				if (error instanceof Error) {

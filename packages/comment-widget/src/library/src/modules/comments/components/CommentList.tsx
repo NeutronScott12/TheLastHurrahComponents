@@ -1,18 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Button } from '@material-ui/core'
 import { Comment } from 'semantic-ui-react'
+
 import { useFetchCommentByThreadIdQuery } from '../../../generated/graphql'
+import { CommentComponent } from './Comment'
 import { CreateCommentForm } from './CreateCommentForm'
 
 interface ICommentListProps {
     thread_id: string
+    application_id: string
+    logged_in: boolean
 }
 
-export const CommentList: React.FC<ICommentListProps> = ({ thread_id }) => {
-    const { loading, data } = useFetchCommentByThreadIdQuery({
+export const CommentList: React.FC<ICommentListProps> = ({
+    thread_id,
+    application_id,
+    logged_in,
+}) => {
+    const [limit, changeLimit] = useState(10)
+    const [skip] = useState(0)
+    const { loading, data, fetchMore } = useFetchCommentByThreadIdQuery({
         variables: {
-            fetchCommentByThreadIdInput: { thread_id, skip: 0, limit: 10 },
+            fetchCommentByThreadIdInput: { thread_id, skip, limit },
         },
     })
+
+    const fetchMoreComments = async () => {
+        changeLimit(limit + 10)
+
+        await fetchMore({
+            variables: {
+                fetchCommentByThreadIdInput: { thread_id, skip, limit },
+            },
+        })
+    }
 
     console.log('DATA', data)
 
@@ -20,60 +41,35 @@ export const CommentList: React.FC<ICommentListProps> = ({ thread_id }) => {
         <div>Loading...</div>
     ) : (
         <div>
-            <CreateCommentForm />
-            <Comment.Group>
-                {data?.fetch_comments_by_thread_id.map((comment) => {
-                    return (
-                        <Comment key={comment.id}>
-                            <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/matt.jpg" />
-                            <Comment.Content>
-                                <Comment.Author as="a">
-                                    {comment.author.username}
-                                </Comment.Author>
-                                <Comment.Metadata>
-                                    <div>{comment.created_at}</div>
-                                </Comment.Metadata>
-                                <Comment.Text>{comment.body}</Comment.Text>
-                                <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                </Comment.Actions>
-                            </Comment.Content>
-                        </Comment>
-                    )
-                })}
-                <Comment>
-                    <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/matt.jpg" />
-                    <Comment.Content>
-                        <Comment.Author as="a">Matt</Comment.Author>
-                        <Comment.Metadata>
-                            <div>Today at 5:42PM</div>
-                        </Comment.Metadata>
-                        <Comment.Text>How artistic!</Comment.Text>
-                        <Comment.Actions>
-                            <Comment.Action>Reply</Comment.Action>
-                        </Comment.Actions>
-                    </Comment.Content>
-                    <Comment.Group>
-                        <Comment>
-                            <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/jenny.jpg" />
-                            <Comment.Content>
-                                <Comment.Author as="a">
-                                    Jenny Hess
-                                </Comment.Author>
-                                <Comment.Metadata>
-                                    <div>Just now</div>
-                                </Comment.Metadata>
-                                <Comment.Text>
-                                    Elliot you are always so right :)
-                                </Comment.Text>
-                                <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                </Comment.Actions>
-                            </Comment.Content>
-                        </Comment>
-                    </Comment.Group>
-                </Comment>
+            {logged_in ? (
+                <CreateCommentForm
+                    application_id={application_id}
+                    thread_id={thread_id}
+                    limit={limit}
+                    skip={skip}
+                />
+            ) : (
+                ''
+            )}
+
+            <Comment.Group size="huge">
+                {data &&
+                    data.fetch_comments_by_thread_id.comments.map((comment) => {
+                        return (
+                            <CommentComponent
+                                limit={limit}
+                                skip={skip}
+                                key={comment.id}
+                                comment={comment}
+                            />
+                        )
+                    })}
             </Comment.Group>
+            {data && data.fetch_comments_by_thread_id.comments_count > limit ? (
+                <Button onClick={fetchMoreComments}>Click More</Button>
+            ) : (
+                ''
+            )}
         </div>
     )
 }

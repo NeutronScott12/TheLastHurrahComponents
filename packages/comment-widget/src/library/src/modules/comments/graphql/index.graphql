@@ -23,22 +23,38 @@ input FetchCommentByThreadIdInput {
     thread_id: String!
 }
 
+fragment CommentFragment on CommentModel {
+    application_id
+    author {
+        username
+        email
+        id
+    }
+    body
+    id
+    thread_id
+    created_at
+    updated_at
+    user_id
+
+    ratings {
+        id
+    }
+}
+
 query FetchCommentByThreadId(
     $fetchCommentByThreadIdInput: FetchCommentByThreadIdInput!
 ) {
     fetch_comments_by_thread_id(
         fetchCommentByThreadIdInput: $fetchCommentByThreadIdInput
     ) {
-        application_id
-        author {
-            username
-            email
-            id
+        comments_count
+        comments {
+            ...CommentFragment
+            replies {
+                ...CommentFragment
+            }
         }
-        body
-        id
-        thread_id
-        created_at
     }
 }
 
@@ -50,14 +66,23 @@ input CreateCommentInput {
 
 mutation CreateThreadComent($createCommentInput: CreateCommentInput!) {
     create_comment(CreateCommentInput: $createCommentInput) {
-        application_id
-        author {
-            username
-            email
-            id
+        ...CommentFragment
+        replies {
+            ...CommentFragment
         }
-        body
+    }
+}
+
+mutation DeleteThreadComment($commentId: String!) {
+    delete_comment(commentId: $commentId) {
+        success
+        message
+    }
+}
+
+query CurrentUser {
+    current_user {
         id
-        thread_id
+        email
     }
 }

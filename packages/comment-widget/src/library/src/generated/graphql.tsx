@@ -48,7 +48,7 @@ export type CommentModel = {
   body: Scalars['String'];
   created_at: Scalars['DateTime'];
   id: Scalars['String'];
-  ratings: RatingModel;
+  ratings: Array<RatingModel>;
   replies: Array<CommentModel>;
   thread_id: Scalars['String'];
   updated_at: Scalars['DateTime'];
@@ -69,6 +69,12 @@ export type FetchCommentByThreadIdInput = {
   limit: Scalars['Float'];
   skip: Scalars['Float'];
   thread_id: Scalars['String'];
+};
+
+export type FetchCommentByThreadIdResponse = {
+  __typename?: 'FetchCommentByThreadIdResponse';
+  comments: Array<CommentModel>;
+  comments_count: Scalars['Float'];
 };
 
 export type FindOrCreateOneThreadInput = {
@@ -157,6 +163,7 @@ export type MutationRegenerate_New_Auth_SecretArgs = {
 
 
 export type MutationRegister_UserArgs = {
+  application_id?: Maybe<Scalars['String']>;
   email: Scalars['String'];
   password: Scalars['String'];
   redirect_url?: Maybe<Scalars['String']>;
@@ -196,7 +203,7 @@ export type Query = {
   fetch_all_threads: Array<ThreadModel>;
   fetch_applications_by_owner_id: Array<ApplicationModel>;
   fetch_comments: Array<CommentModel>;
-  fetch_comments_by_thread_id: Array<CommentModel>;
+  fetch_comments_by_thread_id: FetchCommentByThreadIdResponse;
   fetch_users: Array<UserModel>;
   find_one_application_by_id: ApplicationModel;
   find_one_application_by_name: ApplicationModel;
@@ -276,6 +283,7 @@ export type UpdateCommentInput = {
 
 export type UserModel = {
   __typename?: 'UserModel';
+  applications_joined_ids: Array<Scalars['String']>;
   confirmed: Scalars['Boolean'];
   created_at: Scalars['DateTime'];
   email: Scalars['String'];
@@ -292,21 +300,53 @@ export type FindOneOrCreateOneThreadQueryVariables = Exact<{
 
 export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string } };
 
+export type CommentFragmentFragment = { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> };
+
 export type FetchCommentByThreadIdQueryVariables = Exact<{
   fetchCommentByThreadIdInput: FetchCommentByThreadIdInput;
 }>;
 
 
-export type FetchCommentByThreadIdQuery = { __typename?: 'Query', fetch_comments_by_thread_id: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, author: { __typename?: 'UserModel', username: string, email: string, id: string } }> };
+export type FetchCommentByThreadIdQuery = { __typename?: 'Query', fetch_comments_by_thread_id: { __typename?: 'FetchCommentByThreadIdResponse', comments_count: number, comments: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> }> } };
 
 export type CreateThreadComentMutationVariables = Exact<{
   createCommentInput: CreateCommentInput;
 }>;
 
 
-export type CreateThreadComentMutation = { __typename?: 'Mutation', create_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, author: { __typename?: 'UserModel', username: string, email: string, id: string } } };
+export type CreateThreadComentMutation = { __typename?: 'Mutation', create_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> } };
+
+export type DeleteThreadCommentMutationVariables = Exact<{
+  commentId: Scalars['String'];
+}>;
 
 
+export type DeleteThreadCommentMutation = { __typename?: 'Mutation', delete_comment: { __typename?: 'StandardResponseModel', success: boolean, message: string } };
+
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentUserQuery = { __typename?: 'Query', current_user: { __typename?: 'UserModel', id: string, email: string } };
+
+export const CommentFragmentFragmentDoc = gql`
+    fragment CommentFragment on CommentModel {
+  application_id
+  author {
+    username
+    email
+    id
+  }
+  body
+  id
+  thread_id
+  created_at
+  updated_at
+  user_id
+  ratings {
+    id
+  }
+}
+    `;
 export const FindOneOrCreateOneThreadDocument = gql`
     query FindOneOrCreateOneThread($findOrCreateOneThreadInput: FindOrCreateOneThreadInput!) {
   find_one_thread_or_create_one(
@@ -352,19 +392,16 @@ export const FetchCommentByThreadIdDocument = gql`
   fetch_comments_by_thread_id(
     fetchCommentByThreadIdInput: $fetchCommentByThreadIdInput
   ) {
-    application_id
-    author {
-      username
-      email
-      id
+    comments_count
+    comments {
+      ...CommentFragment
+      replies {
+        ...CommentFragment
+      }
     }
-    body
-    id
-    thread_id
-    created_at
   }
 }
-    `;
+    ${CommentFragmentFragmentDoc}`;
 
 /**
  * __useFetchCommentByThreadIdQuery__
@@ -396,18 +433,13 @@ export type FetchCommentByThreadIdQueryResult = Apollo.QueryResult<FetchCommentB
 export const CreateThreadComentDocument = gql`
     mutation CreateThreadComent($createCommentInput: CreateCommentInput!) {
   create_comment(CreateCommentInput: $createCommentInput) {
-    application_id
-    author {
-      username
-      email
-      id
+    ...CommentFragment
+    replies {
+      ...CommentFragment
     }
-    body
-    id
-    thread_id
   }
 }
-    `;
+    ${CommentFragmentFragmentDoc}`;
 export type CreateThreadComentMutationFn = Apollo.MutationFunction<CreateThreadComentMutation, CreateThreadComentMutationVariables>;
 
 /**
@@ -434,6 +466,75 @@ export function useCreateThreadComentMutation(baseOptions?: Apollo.MutationHookO
 export type CreateThreadComentMutationHookResult = ReturnType<typeof useCreateThreadComentMutation>;
 export type CreateThreadComentMutationResult = Apollo.MutationResult<CreateThreadComentMutation>;
 export type CreateThreadComentMutationOptions = Apollo.BaseMutationOptions<CreateThreadComentMutation, CreateThreadComentMutationVariables>;
+export const DeleteThreadCommentDocument = gql`
+    mutation DeleteThreadComment($commentId: String!) {
+  delete_comment(commentId: $commentId) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteThreadCommentMutationFn = Apollo.MutationFunction<DeleteThreadCommentMutation, DeleteThreadCommentMutationVariables>;
+
+/**
+ * __useDeleteThreadCommentMutation__
+ *
+ * To run a mutation, you first call `useDeleteThreadCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteThreadCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteThreadCommentMutation, { data, loading, error }] = useDeleteThreadCommentMutation({
+ *   variables: {
+ *      commentId: // value for 'commentId'
+ *   },
+ * });
+ */
+export function useDeleteThreadCommentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteThreadCommentMutation, DeleteThreadCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteThreadCommentMutation, DeleteThreadCommentMutationVariables>(DeleteThreadCommentDocument, options);
+      }
+export type DeleteThreadCommentMutationHookResult = ReturnType<typeof useDeleteThreadCommentMutation>;
+export type DeleteThreadCommentMutationResult = Apollo.MutationResult<DeleteThreadCommentMutation>;
+export type DeleteThreadCommentMutationOptions = Apollo.BaseMutationOptions<DeleteThreadCommentMutation, DeleteThreadCommentMutationVariables>;
+export const CurrentUserDocument = gql`
+    query CurrentUser {
+  current_user {
+    id
+    email
+  }
+}
+    `;
+
+/**
+ * __useCurrentUserQuery__
+ *
+ * To run a query within a React component, call `useCurrentUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCurrentUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCurrentUserQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCurrentUserQuery(baseOptions?: Apollo.QueryHookOptions<CurrentUserQuery, CurrentUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CurrentUserQuery, CurrentUserQueryVariables>(CurrentUserDocument, options);
+      }
+export function useCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CurrentUserQuery, CurrentUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CurrentUserQuery, CurrentUserQueryVariables>(CurrentUserDocument, options);
+        }
+export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
+export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
+export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
 export type ApplicationModelKeySpecifier = ('application_name' | 'application_owner' | 'application_owner_id' | 'auth_secret' | 'authenticated_users' | 'authenticated_users_ids' | 'comments' | 'cost' | 'created_at' | 'id' | 'moderators' | 'moderators_ids' | 'plan' | 'renewal' | 'updated_at' | ApplicationModelKeySpecifier)[];
 export type ApplicationModelFieldPolicy = {
 	application_name?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -464,6 +565,11 @@ export type CommentModelFieldPolicy = {
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type FetchCommentByThreadIdResponseKeySpecifier = ('comments' | 'comments_count' | FetchCommentByThreadIdResponseKeySpecifier)[];
+export type FetchCommentByThreadIdResponseFieldPolicy = {
+	comments?: FieldPolicy<any> | FieldReadFunction<any>,
+	comments_count?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type LoginResponseKeySpecifier = ('message' | 'refresh_token' | 'success' | 'token' | 'user' | LoginResponseKeySpecifier)[];
 export type LoginResponseFieldPolicy = {
@@ -525,8 +631,9 @@ export type ThreadModelFieldPolicy = {
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	website_url?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserModelKeySpecifier = ('confirmed' | 'created_at' | 'email' | 'id' | 'updated_at' | 'user_role' | 'username' | UserModelKeySpecifier)[];
+export type UserModelKeySpecifier = ('applications_joined_ids' | 'confirmed' | 'created_at' | 'email' | 'id' | 'updated_at' | 'user_role' | 'username' | UserModelKeySpecifier)[];
 export type UserModelFieldPolicy = {
+	applications_joined_ids?: FieldPolicy<any> | FieldReadFunction<any>,
 	confirmed?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -543,6 +650,10 @@ export type StrictTypedTypePolicies = {
 	CommentModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CommentModelKeySpecifier | (() => undefined | CommentModelKeySpecifier),
 		fields?: CommentModelFieldPolicy,
+	},
+	FetchCommentByThreadIdResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FetchCommentByThreadIdResponseKeySpecifier | (() => undefined | FetchCommentByThreadIdResponseKeySpecifier),
+		fields?: FetchCommentByThreadIdResponseFieldPolicy,
 	},
 	LoginResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LoginResponseKeySpecifier | (() => undefined | LoginResponseKeySpecifier),
