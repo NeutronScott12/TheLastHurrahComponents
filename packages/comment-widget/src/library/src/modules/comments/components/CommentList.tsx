@@ -5,6 +5,7 @@ import { Comment } from 'semantic-ui-react'
 import { useFetchCommentByThreadIdQuery } from '../../../generated/graphql'
 import { CommentComponent } from './Comment'
 import { CreateCommentForm } from './CreateCommentForm'
+import { Loader } from './Loader'
 
 interface ICommentListProps {
     thread_id: string
@@ -35,10 +36,8 @@ export const CommentList: React.FC<ICommentListProps> = ({
         })
     }
 
-    console.log('DATA', data)
-
     return loading ? (
-        <div>Loading...</div>
+        <Loader />
     ) : (
         <div>
             {logged_in ? (

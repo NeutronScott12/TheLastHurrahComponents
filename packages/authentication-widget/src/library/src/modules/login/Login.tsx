@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { request } from 'graphql-request'
-import { Button, Grid, TextField } from '@material-ui/core'
+import { Button, TextField } from '@material-ui/core'
 import { useFormik } from 'formik'
 import { Alert } from '@material-ui/lab'
 
@@ -10,7 +10,7 @@ import { LoginValidationSchema } from '../validation'
 import { LOGIN_MUTATION } from './graphql'
 import { ILogin, ILoginResponse } from './types'
 
-export const Login: React.FC<ILogin> = ({ changeDisplay }) => {
+export const Login: React.FC<ILogin> = ({ changeDisplay, logInCallback }) => {
 	const [checkError, setError] = useState(false)
 	const [errorMessage, setErrorMessage] = useState('')
 
@@ -27,8 +27,10 @@ export const Login: React.FC<ILogin> = ({ changeDisplay }) => {
 					password,
 				})
 
-				// console.log(response)
 				localStorage.setItem('binary-stash-token', response.login_user.token)
+
+				logInCallback(response)
+
 				setSubmitting(false)
 			} catch (error) {
 				if (error instanceof Error) {
@@ -45,7 +47,7 @@ export const Login: React.FC<ILogin> = ({ changeDisplay }) => {
 	const changeToForgotPassword = () => changeDisplay(CHANGE_FORM_DISPLAY.FORGOT_PASSWORD)
 
 	return (
-		<Grid item xs={3}>
+		<div>
 			<h2>Login</h2>
 			{checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
 			<form onSubmit={formik.handleSubmit}>
@@ -83,6 +85,6 @@ export const Login: React.FC<ILogin> = ({ changeDisplay }) => {
 					</p>
 				</div>
 			</form>
-		</Grid>
+		</div>
 	)
 }

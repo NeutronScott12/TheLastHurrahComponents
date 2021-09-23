@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Grid, TextField } from '@material-ui/core'
+import { Button, TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { useFormik } from 'formik'
 import request from 'graphql-request'
@@ -55,7 +55,7 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 	}
 
 	return (
-		<Grid item xs={3}>
+		<div>
 			<h2>Registration</h2>
 			{checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
 			{checkSuccess ? <Alert severity="error">{successMessage}</Alert> : ''}
@@ -113,6 +113,6 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 					</p>
 				</div>
 			</form>
-		</Grid>
+		</div>
 	)
 }

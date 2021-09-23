@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import { Button, Grid, TextField } from '@material-ui/core'
+import { Button, TextField } from '@material-ui/core'
 import request from 'graphql-request'
 
 import { CHANGE_FORM_DISPLAY } from '../../entities/enums'
@@ -49,7 +49,7 @@ export const ForgotPassword: React.FC<IForgotPassword> = ({ changeDisplay }) => 
 	const changeToLogin = () => changeDisplay(CHANGE_FORM_DISPLAY.LOGIN)
 
 	return (
-		<Grid item xs={3}>
+		<div>
 			<h2>Forgot Password</h2>
 			{checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
 			{checkSuccess ? <Alert severity="success">{successMessage}</Alert> : ''}
@@ -76,6 +76,6 @@ export const ForgotPassword: React.FC<IForgotPassword> = ({ changeDisplay }) => 
 					</p>
 				</div>
 			</form>
-		</Grid>
+		</div>
 	)
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { BinaryStashAuthenticator } from '@thelasthurrah/binary-stash-authentication'
 
 import {
@@ -9,6 +9,7 @@ import { CommentList } from './components/CommentList'
 import { useCurrentUser } from '../../utils/customApolloHooks'
 import { cache, IS_LOGGED_IN } from '../../apollo/cache'
 import { Grid } from '@material-ui/core'
+import { Loader } from './components/Loader'
 
 interface ICommentContainerProps {
     application_id: string
@@ -17,10 +18,10 @@ interface ICommentContainerProps {
     application_name: string
 }
 
-enum CHANGE_DISPLAY {
-    AUTHENTICATE,
-    COMMENTS,
-}
+// enum CHANGE_DISPLAY {
+//     AUTHENTICATE,
+//     COMMENTS,
+// }
 
 export const CommentContainer: React.FC<ICommentContainerProps> = ({
     application_id,
@@ -53,10 +54,8 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
         },
     })
 
-    console.log('CURRENT_USER', currentUserData)
-
     return loading && currentUserLoading ? (
-        <div>...loading</div>
+        <Loader />
     ) : (
         <div>
             {currentUserData && currentUserData.isLoggedIn === false ? (
