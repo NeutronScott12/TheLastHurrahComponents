@@ -45,7 +45,7 @@ fragment CommentFragment on CommentModel {
     created_at
     updated_at
     user_id
-
+    parent_id
     ratings {
         id
     }
@@ -68,6 +68,7 @@ query FetchCommentByThreadId(
             ...CommentFragment
             replies {
                 ...CommentFragment
+                parent_id
             }
         }
     }
@@ -99,5 +100,24 @@ query CurrentUser {
     current_user {
         id
         email
+    }
+}
+
+input CreateReplyCommentInput {
+    body: String!
+    application_id: String!
+    thread_id: String!
+    parent_id: String!
+    replied_to_id: String!
+}
+
+mutation CreateReplyComment(
+    $CreateReplyCommentInput: CreateReplyCommentInput!
+) {
+    create_reply_comment(CreateReplyCommentInput: $CreateReplyCommentInput) {
+        ...CommentFragment
+        replies {
+            ...CommentFragment
+        }
     }
 }

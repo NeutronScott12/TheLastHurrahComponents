@@ -1,12 +1,15 @@
 import React from 'react'
-import { Comment } from 'semantic-ui-react'
-import Moment from 'react-moment'
+
 import {
     FindOneOrCreateOneThreadDocument,
-    FindOneOrCreateOneThreadQuery,
     useDeleteThreadCommentMutation,
 } from '../../../generated/graphql'
 import { clone, mergeDeepRight } from 'ramda'
+import { CommentView } from '../views/CommentView'
+import {
+    findOneOrCreateOneThreadQueryCache,
+    writeOneOrCreateOneThreadQueryCache,
+} from '../common'
 
 export interface IComment {
     author: {
@@ -16,6 +19,8 @@ export interface IComment {
     body: string
     created_at: string
     thread_id: string
+    application_id: string
+    parent_id: string
     replies?: IComment[]
 }
 
@@ -38,32 +43,23 @@ export const CommentComponent: React.FC<ICommentProps> = ({
 }) => {
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
 
-    const deleteComment = async () => {
+    const deleteComment = async (id: string) => {
         await deleteCommentMutation({
-            variables: { commentId: comment.id },
+            variables: { commentId: id },
             update(cache) {
-                const response = cache.readQuery<FindOneOrCreateOneThreadQuery>(
-                    {
-                        query: FindOneOrCreateOneThreadDocument,
-                        variables: {
-                            findOrCreateOneThreadInput: {
-                                application_id,
-                                title,
-                                website_url,
-                            },
-                            FetchThreadCommentsById: {
-                                limit,
-                                skip,
-                            },
-                        },
-                    },
-                )
+                const response = findOneOrCreateOneThreadQueryCache({
+                    application_id,
+                    title,
+                    website_url,
+                    limit,
+                    skip,
+                })
 
                 if (response && response.find_one_thread_or_create_one) {
                     const cloned = clone(response)
                     const filteredList =
                         cloned.find_one_thread_or_create_one.thread_comments.comments.filter(
-                            (data) => data.id !== comment.id,
+                            (data) => data.id !== id,
                         )
 
                     const newData = mergeDeepRight(cloned, {
@@ -78,7 +74,27 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                         },
                     })
 
-                    cache.writeQuery({
+                    writeOneOrCreateOneThreadQueryCache({
+                        application_id,
+                        title,
+                        website_url,
+                        limit,
+                        skip,
+                        data: newData,
+                    })
+                }
+            },
+        })
+    }
+
+    const deleteReplyComment = async (id: string, parent_id: string) => {
+        try {
+            await deleteCommentMutation({
+                variables: {
+                    commentId: id,
+                },
+                refetchQueries: [
+                    {
                         query: FindOneOrCreateOneThreadDocument,
                         variables: {
                             findOrCreateOneThreadInput: {
@@ -91,54 +107,93 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                                 skip,
                             },
                         },
-                        data: newData,
-                    })
-                }
-            },
-        })
+                    },
+                ],
+
+                // update(cache) {
+                //     const response = findOneOrCreateOneThreadQueryCache({
+                //         application_id,
+                //         title,
+                //         website_url,
+                //         limit,
+                //         skip,
+                //     })
+
+                //     console.log('RESPONSE', response)
+                //     console.log('PARENT_ID', parent_id)
+
+                //     if (
+                //         response &&
+                //         response.find_one_thread_or_create_one &&
+                //         parent_id
+                //     ) {
+                //         const cloned = clone(response)
+                //         console.log('CLONED', cloned)
+
+                //         const augmetedList =
+                //             cloned.find_one_thread_or_create_one.thread_comments.comments.find(
+                //                 (comment) => comment.id === parent_id,
+                //             )
+
+                //         if (augmetedList?.replies) {
+                //             remove(
+                //                 augmetedList.replies,
+                //                 (comment) => comment.id === id,
+                //             )
+
+                //             const index =
+                //                 cloned.find_one_thread_or_create_one.thread_comments.comments.findIndex(
+                //                     (comment) => comment.id === id,
+                //                 )
+
+                //             const newComments =
+                //                 cloned.find_one_thread_or_create_one.thread_comments.comments.splice(
+                //                     index,
+                //                     1,
+                //                     augmetedList,
+                //                 )
+
+                //             console.log('NEW_COMMENTS', newComments)
+
+                //             const newData = mergeDeepRight(cloned, {
+                //                 find_one_thread_or_create_one: {
+                //                     thread_comments: {
+                //                         __typename:
+                //                             'FetchCommentByThreadIdResponse',
+                //                         comments_count:
+                //                             cloned.find_one_thread_or_create_one
+                //                                 .thread_comments.comments_count,
+                //                         comments: newComments,
+                //                     },
+                //                 },
+                //             })
+
+                //             writeOneOrCreateOneThreadQueryCache({
+                //                 application_id,
+                //                 title,
+                //                 website_url,
+                //                 limit,
+                //                 skip,
+                //                 data: newData,
+                //             })
+                //         }
+                //     }
+                // },
+            })
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     return (
-        <Comment>
-            <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/matt.jpg" />
-            <Comment.Content>
-                <Comment.Author as="a">
-                    {comment.author.username}
-                </Comment.Author>
-                <Comment.Metadata>
-                    <Moment format="DD/MM/YYYY">{comment.created_at}</Moment>
-                </Comment.Metadata>
-                <Comment.Text>{comment.body}</Comment.Text>
-                <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
-                    <Comment.Action onClick={deleteComment}>
-                        delete
-                    </Comment.Action>
-                </Comment.Actions>
-            </Comment.Content>
-            <Comment.Group>
-                <Comment>
-                    {comment.replies
-                        ? comment.replies.map((reply) => (
-                              <>
-                                  <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/jenny.jpg" />
-                                  <Comment.Content>
-                                      <Comment.Author as="a">
-                                          {reply.author.username}
-                                      </Comment.Author>
-                                      <Comment.Metadata>
-                                          <Moment>{reply.created_at}</Moment>
-                                      </Comment.Metadata>
-                                      <Comment.Text>{reply.body}</Comment.Text>
-                                      <Comment.Actions>
-                                          <Comment.Action>Reply</Comment.Action>
-                                      </Comment.Actions>
-                                  </Comment.Content>
-                              </>
-                          ))
-                        : ''}
-                </Comment>
-            </Comment.Group>
-        </Comment>
+        <CommentView
+            title={title}
+            website_url={website_url}
+            limit={limit}
+            skip={skip}
+            comment={comment}
+            deleteComment={deleteComment}
+            deleteReplyComment={deleteReplyComment}
+        />
     )
 }

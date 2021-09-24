@@ -11,7 +11,6 @@ import {
 import { CommentList } from './components/CommentList'
 import { useCurrentUser } from '../../utils/customApolloHooks'
 import { cache, IS_LOGGED_IN } from '../../apollo/cache'
-import { Grid } from '@material-ui/core'
 import { Loader } from './components/Loader'
 
 interface ICommentContainerProps {
@@ -90,42 +89,33 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 ''
             )}
 
-            <Grid
-                container
-                spacing={0}
-                direction="column"
-                // alignItems="center"
-                // justifyContent="center"
-                style={{ padding: '5rem', margin: 'auto' }}
-            >
-                {data && data.find_one_thread_or_create_one ? (
-                    <CommentList
-                        comment_count={
-                            data.find_one_thread_or_create_one.thread_comments
-                                .comments_count
-                        }
-                        title={title}
-                        application_id={application_id}
-                        website_url={website_url}
-                        fetchMore={fetchMore}
-                        limit={limit}
-                        skip={skip}
-                        changeLimit={changeLimit}
-                        comments={
-                            data.find_one_thread_or_create_one.thread_comments
-                                .comments
-                        }
-                        logged_in={
-                            currentUserData && currentUserData.isLoggedIn
-                                ? true
-                                : false
-                        }
-                        thread_id={data.find_one_thread_or_create_one.id}
-                    />
-                ) : (
-                    ''
-                )}
-            </Grid>
+            {data && data.find_one_thread_or_create_one ? (
+                <CommentList
+                    comment_count={
+                        data.find_one_thread_or_create_one.thread_comments
+                            .comments_count
+                    }
+                    title={title}
+                    application_id={application_id}
+                    website_url={website_url}
+                    fetchMore={fetchMore}
+                    limit={limit}
+                    skip={skip}
+                    changeLimit={changeLimit}
+                    comments={
+                        data.find_one_thread_or_create_one.thread_comments
+                            .comments
+                    }
+                    logged_in={
+                        currentUserData && currentUserData.isLoggedIn
+                            ? true
+                            : false
+                    }
+                    thread_id={data.find_one_thread_or_create_one.id}
+                />
+            ) : (
+                ''
+            )}
         </div>
     )
 }

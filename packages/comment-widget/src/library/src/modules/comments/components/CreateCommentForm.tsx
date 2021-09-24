@@ -1,17 +1,16 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import * as yup from 'yup'
 import { clone } from 'ramda'
 
-import {
-    FetchCommentByThreadIdDocument,
-    FindOneOrCreateOneThreadDocument,
-    FindOneOrCreateOneThreadQuery,
-    useCreateThreadComentMutation,
-} from '../../../generated/graphql'
+import { useCreateThreadComentMutation } from '../../../generated/graphql'
 import { Button, TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { mergeDeep } from '@apollo/client/utilities'
+import {
+    commentValidationSchema,
+    findOneOrCreateOneThreadQueryCache,
+    writeOneOrCreateOneThreadQueryCache,
+} from '../common'
 
 interface ICreateCommentProps {
     thread_id: string
@@ -21,10 +20,6 @@ interface ICreateCommentProps {
     title: string
     website_url: string
 }
-
-const validationSchema = yup.object().shape({
-    body: yup.string().required(),
-})
 
 export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
     thread_id,
@@ -42,8 +37,8 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
         initialValues: {
             body: '',
         },
-        validationSchema,
-        async onSubmit({ body }) {
+        validationSchema: commentValidationSchema,
+        async onSubmit({ body }, { resetForm, setSubmitting }) {
             try {
                 await createComment({
                     variables: {
@@ -54,21 +49,13 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                         },
                     },
                     update(cache, { data }) {
-                        const response =
-                            cache.readQuery<FindOneOrCreateOneThreadQuery>({
-                                query: FindOneOrCreateOneThreadDocument,
-                                variables: {
-                                    findOrCreateOneThreadInput: {
-                                        application_id,
-                                        title,
-                                        website_url,
-                                    },
-                                    FetchThreadCommentsById: {
-                                        limit,
-                                        skip,
-                                    },
-                                },
-                            })
+                        const response = findOneOrCreateOneThreadQueryCache({
+                            application_id,
+                            title,
+                            website_url,
+                            limit,
+                            skip,
+                        })
 
                         if (
                             response &&
@@ -98,24 +85,20 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
 
                             const changedObject = mergeDeep(cloneData, newData)
 
-                            cache.writeQuery({
-                                query: FindOneOrCreateOneThreadDocument,
-                                variables: {
-                                    findOrCreateOneThreadInput: {
-                                        application_id,
-                                        title,
-                                        website_url,
-                                    },
-                                    FetchThreadCommentsById: {
-                                        limit,
-                                        skip,
-                                    },
-                                },
+                            writeOneOrCreateOneThreadQueryCache({
+                                application_id,
+                                title,
+                                website_url,
+                                limit,
+                                skip,
                                 data: changedObject,
                             })
                         }
                     },
                 })
+
+                resetForm()
+                setSubmitting(false)
             } catch (error) {
                 if (error instanceof Error) {
                     console.log(error)
