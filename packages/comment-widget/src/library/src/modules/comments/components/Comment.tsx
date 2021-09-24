@@ -2,13 +2,13 @@ import React from 'react'
 import { Comment } from 'semantic-ui-react'
 import Moment from 'react-moment'
 import {
-    FetchCommentByThreadIdDocument,
-    FetchCommentByThreadIdQuery,
+    FindOneOrCreateOneThreadDocument,
+    FindOneOrCreateOneThreadQuery,
     useDeleteThreadCommentMutation,
 } from '../../../generated/graphql'
-import { clone } from 'ramda'
+import { clone, mergeDeepRight } from 'ramda'
 
-interface IComment {
+export interface IComment {
     author: {
         username: string
     }
@@ -23,12 +23,18 @@ interface ICommentProps {
     comment: IComment
     skip: number
     limit: number
+    title: string
+    website_url: string
+    application_id: string
 }
 
 export const CommentComponent: React.FC<ICommentProps> = ({
     comment,
     skip,
     limit,
+    title,
+    website_url,
+    application_id,
 }) => {
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
 
@@ -36,41 +42,53 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         await deleteCommentMutation({
             variables: { commentId: comment.id },
             update(cache) {
-                const response = cache.readQuery<FetchCommentByThreadIdQuery>({
-                    query: FetchCommentByThreadIdDocument,
-                    variables: {
-                        fetchCommentByThreadIdInput: {
-                            thread_id: comment.thread_id,
-                            skip,
-                            limit,
+                const response = cache.readQuery<FindOneOrCreateOneThreadQuery>(
+                    {
+                        query: FindOneOrCreateOneThreadDocument,
+                        variables: {
+                            findOrCreateOneThreadInput: {
+                                application_id,
+                                title,
+                                website_url,
+                            },
+                            FetchThreadCommentsById: {
+                                limit,
+                                skip,
+                            },
                         },
                     },
-                })
+                )
 
-                if (response && response.fetch_comments_by_thread_id) {
+                if (response && response.find_one_thread_or_create_one) {
                     const cloned = clone(response)
                     const filteredList =
-                        cloned.fetch_comments_by_thread_id.comments.filter(
+                        cloned.find_one_thread_or_create_one.thread_comments.comments.filter(
                             (data) => data.id !== comment.id,
                         )
 
-                    const newData = Object.assign(cloned, {
-                        __typename: 'FetchCommentByThreadIdResponse',
-                        fetch_comments_by_thread_id: {
-                            comments_count:
-                                cloned.fetch_comments_by_thread_id
-                                    .comments_count,
-                            comments: [...filteredList],
+                    const newData = mergeDeepRight(cloned, {
+                        find_one_thread_or_create_one: {
+                            thread_comments: {
+                                __typename: 'FetchCommentByThreadIdResponse',
+                                comments_count:
+                                    cloned.find_one_thread_or_create_one
+                                        .thread_comments.comments_count,
+                                comments: [...filteredList],
+                            },
                         },
                     })
 
                     cache.writeQuery({
-                        query: FetchCommentByThreadIdDocument,
+                        query: FindOneOrCreateOneThreadDocument,
                         variables: {
-                            fetchCommentByThreadIdInput: {
-                                thread_id: comment.thread_id,
-                                skip,
+                            findOrCreateOneThreadInput: {
+                                application_id,
+                                title,
+                                website_url,
+                            },
+                            FetchThreadCommentsById: {
                                 limit,
+                                skip,
                             },
                         },
                         data: newData,

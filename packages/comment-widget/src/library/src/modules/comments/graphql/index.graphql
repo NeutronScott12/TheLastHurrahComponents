@@ -4,8 +4,14 @@ input FindOrCreateOneThreadInput {
     website_url: String!
 }
 
+input FetchThreadCommentsById {
+    skip: Int!
+    limit: Int!
+}
+
 query FindOneOrCreateOneThread(
     $findOrCreateOneThreadInput: FindOrCreateOneThreadInput!
+    $FetchThreadCommentsById: FetchThreadCommentsById!
 ) {
     find_one_thread_or_create_one(
         findOrCreateOneThreadInput: $findOrCreateOneThreadInput
@@ -14,13 +20,16 @@ query FindOneOrCreateOneThread(
         application_id
         title
         website_url
+        thread_comments(FetchThreadCommentsById: $FetchThreadCommentsById) {
+            comments_count
+            comments {
+                ...CommentFragment
+                replies {
+                    ...CommentFragment
+                }
+            }
+        }
     }
-}
-
-input FetchCommentByThreadIdInput {
-    limit: Int!
-    skip: Int!
-    thread_id: String!
 }
 
 fragment CommentFragment on CommentModel {
@@ -40,6 +49,12 @@ fragment CommentFragment on CommentModel {
     ratings {
         id
     }
+}
+
+input FetchCommentByThreadIdInput {
+    limit: Int!
+    skip: Int!
+    thread_id: String!
 }
 
 query FetchCommentByThreadId(

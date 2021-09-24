@@ -77,6 +77,11 @@ export type FetchCommentByThreadIdResponse = {
   comments_count: Scalars['Float'];
 };
 
+export type FetchThreadCommentsById = {
+  limit: Scalars['Int'];
+  skip: Scalars['Int'];
+};
+
 export type FindOrCreateOneThreadInput = {
   /** Application ID */
   application_id: Scalars['String'];
@@ -266,9 +271,14 @@ export type ThreadModel = {
   application_id: Scalars['String'];
   /** UUID for Thread */
   id: Scalars['String'];
-  thread_comments: Array<CommentModel>;
+  thread_comments: FetchCommentByThreadIdResponse;
   title: Scalars['String'];
   website_url: Scalars['String'];
+};
+
+
+export type ThreadModelThread_CommentsArgs = {
+  FetchThreadCommentsById: FetchThreadCommentsById;
 };
 
 export type UpdateApplicationInput = {
@@ -295,10 +305,11 @@ export type UserModel = {
 
 export type FindOneOrCreateOneThreadQueryVariables = Exact<{
   findOrCreateOneThreadInput: FindOrCreateOneThreadInput;
+  FetchThreadCommentsById: FetchThreadCommentsById;
 }>;
 
 
-export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string } };
+export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, thread_comments: { __typename?: 'FetchCommentByThreadIdResponse', comments_count: number, comments: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> }> } } };
 
 export type CommentFragmentFragment = { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, author: { __typename?: 'UserModel', username: string, email: string, id: string }, ratings: Array<{ __typename?: 'RatingModel', id: string }> };
 
@@ -348,7 +359,7 @@ export const CommentFragmentFragmentDoc = gql`
 }
     `;
 export const FindOneOrCreateOneThreadDocument = gql`
-    query FindOneOrCreateOneThread($findOrCreateOneThreadInput: FindOrCreateOneThreadInput!) {
+    query FindOneOrCreateOneThread($findOrCreateOneThreadInput: FindOrCreateOneThreadInput!, $FetchThreadCommentsById: FetchThreadCommentsById!) {
   find_one_thread_or_create_one(
     findOrCreateOneThreadInput: $findOrCreateOneThreadInput
   ) {
@@ -356,9 +367,18 @@ export const FindOneOrCreateOneThreadDocument = gql`
     application_id
     title
     website_url
+    thread_comments(FetchThreadCommentsById: $FetchThreadCommentsById) {
+      comments_count
+      comments {
+        ...CommentFragment
+        replies {
+          ...CommentFragment
+        }
+      }
+    }
   }
 }
-    `;
+    ${CommentFragmentFragmentDoc}`;
 
 /**
  * __useFindOneOrCreateOneThreadQuery__
@@ -373,6 +393,7 @@ export const FindOneOrCreateOneThreadDocument = gql`
  * const { data, loading, error } = useFindOneOrCreateOneThreadQuery({
  *   variables: {
  *      findOrCreateOneThreadInput: // value for 'findOrCreateOneThreadInput'
+ *      FetchThreadCommentsById: // value for 'FetchThreadCommentsById'
  *   },
  * });
  */

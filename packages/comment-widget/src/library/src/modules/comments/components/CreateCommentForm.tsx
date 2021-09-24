@@ -5,7 +5,8 @@ import { clone } from 'ramda'
 
 import {
     FetchCommentByThreadIdDocument,
-    FetchCommentByThreadIdQuery,
+    FindOneOrCreateOneThreadDocument,
+    FindOneOrCreateOneThreadQuery,
     useCreateThreadComentMutation,
 } from '../../../generated/graphql'
 import { Button, TextField } from '@material-ui/core'
@@ -17,6 +18,8 @@ interface ICreateCommentProps {
     application_id: string
     skip: number
     limit: number
+    title: string
+    website_url: string
 }
 
 const validationSchema = yup.object().shape({
@@ -28,6 +31,8 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
     application_id,
     skip,
     limit,
+    title,
+    website_url,
 }) => {
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -50,47 +55,60 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                     },
                     update(cache, { data }) {
                         const response =
-                            cache.readQuery<FetchCommentByThreadIdQuery>({
-                                query: FetchCommentByThreadIdDocument,
+                            cache.readQuery<FindOneOrCreateOneThreadQuery>({
+                                query: FindOneOrCreateOneThreadDocument,
                                 variables: {
-                                    fetchCommentByThreadIdInput: {
-                                        thread_id,
-                                        skip,
+                                    findOrCreateOneThreadInput: {
+                                        application_id,
+                                        title,
+                                        website_url,
+                                    },
+                                    FetchThreadCommentsById: {
                                         limit,
+                                        skip,
                                     },
                                 },
                             })
 
                         if (
                             response &&
-                            response.fetch_comments_by_thread_id &&
+                            response.find_one_thread_or_create_one &&
                             data &&
                             data.create_comment
                         ) {
                             const cloneData = clone(response)
                             const newData = {
-                                __typename: 'FetchCommentByThreadIdResponse',
-                                fetch_comments_by_thread_id: {
-                                    comments_count:
-                                        cloneData.fetch_comments_by_thread_id
-                                            .comments_count,
-                                    comments: [
-                                        data.create_comment,
-                                        ...cloneData.fetch_comments_by_thread_id
-                                            .comments,
-                                    ],
+                                find_one_thread_or_create_one: {
+                                    thread_comments: {
+                                        __typename:
+                                            'FetchCommentByThreadIdResponse',
+                                        comments_count:
+                                            cloneData
+                                                .find_one_thread_or_create_one
+                                                .thread_comments.comments_count,
+                                        comments: [
+                                            data.create_comment,
+                                            ...cloneData
+                                                .find_one_thread_or_create_one
+                                                .thread_comments.comments,
+                                        ],
+                                    },
                                 },
                             }
 
                             const changedObject = mergeDeep(cloneData, newData)
 
                             cache.writeQuery({
-                                query: FetchCommentByThreadIdDocument,
+                                query: FindOneOrCreateOneThreadDocument,
                                 variables: {
-                                    fetchCommentByThreadIdInput: {
-                                        thread_id,
-                                        skip,
+                                    findOrCreateOneThreadInput: {
+                                        application_id,
+                                        title,
+                                        website_url,
+                                    },
+                                    FetchThreadCommentsById: {
                                         limit,
+                                        skip,
                                     },
                                 },
                                 data: changedObject,

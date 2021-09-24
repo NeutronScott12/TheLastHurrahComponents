@@ -1,44 +1,74 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from '@material-ui/core'
 import { Comment } from 'semantic-ui-react'
 
-import { useFetchCommentByThreadIdQuery } from '../../../generated/graphql'
-import { CommentComponent } from './Comment'
+import { CommentComponent, IComment } from './Comment'
 import { CreateCommentForm } from './CreateCommentForm'
-import { Loader } from './Loader'
+import {
+    ApolloQueryResult,
+    DocumentNode,
+    FetchMoreOptions,
+    FetchMoreQueryOptions,
+    TypedDocumentNode,
+} from '@apollo/client'
 
+type TVariables = {}
+type TData = {}
 interface ICommentListProps {
-    thread_id: string
+    title: string
+    website_url: string
     application_id: string
+    thread_id: string
     logged_in: boolean
+    limit: number
+    skip: number
+    changeLimit: React.Dispatch<React.SetStateAction<number>>
+    fetchMore: ((
+        fetchMoreOptions: FetchMoreQueryOptions<TVariables, TData> &
+            FetchMoreOptions<TData, TVariables>,
+    ) => Promise<ApolloQueryResult<TData>>) &
+        (<TData2, TVariables2>(
+            fetchMoreOptions: {
+                query?: DocumentNode | TypedDocumentNode<TData, TVariables>
+            } & FetchMoreQueryOptions<TVariables2, TData> &
+                FetchMoreOptions<TData2, TVariables2>,
+        ) => Promise<ApolloQueryResult<TData2>>)
+    comments: IComment[]
+    comment_count: number
 }
 
 export const CommentList: React.FC<ICommentListProps> = ({
     thread_id,
     application_id,
     logged_in,
+    changeLimit,
+    limit,
+    skip,
+    comments,
+    title,
+    website_url,
+    fetchMore,
+    comment_count,
 }) => {
-    const [limit, changeLimit] = useState(10)
-    const [skip] = useState(0)
-    const { loading, data, fetchMore } = useFetchCommentByThreadIdQuery({
-        variables: {
-            fetchCommentByThreadIdInput: { thread_id, skip, limit },
-        },
-    })
-
     const fetchMoreComments = async () => {
         changeLimit(limit + 10)
 
         await fetchMore({
             variables: {
-                fetchCommentByThreadIdInput: { thread_id, skip, limit },
+                findOrCreateOneThreadInput: {
+                    application_id,
+                    title,
+                    website_url,
+                },
+                FetchThreadCommentsById: {
+                    limit,
+                    skip,
+                },
             },
         })
     }
 
-    return loading ? (
-        <Loader />
-    ) : (
+    return (
         <div>
             {logged_in ? (
                 <CreateCommentForm
@@ -46,16 +76,21 @@ export const CommentList: React.FC<ICommentListProps> = ({
                     thread_id={thread_id}
                     limit={limit}
                     skip={skip}
+                    title={title}
+                    website_url={website_url}
                 />
             ) : (
                 ''
             )}
 
             <Comment.Group size="huge">
-                {data &&
-                    data.fetch_comments_by_thread_id.comments.map((comment) => {
+                {comments &&
+                    comments.map((comment) => {
                         return (
                             <CommentComponent
+                                title={title}
+                                application_id={application_id}
+                                website_url={website_url}
                                 limit={limit}
                                 skip={skip}
                                 key={comment.id}
@@ -64,7 +99,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
                         )
                     })}
             </Comment.Group>
-            {data && data.fetch_comments_by_thread_id.comments_count > limit ? (
+            {comment_count > limit ? (
                 <Button onClick={fetchMoreComments}>Click More</Button>
             ) : (
                 ''

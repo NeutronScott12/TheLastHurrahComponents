@@ -1,5 +1,8 @@
-import React, { useEffect } from 'react'
-import { BinaryStashAuthenticator } from '@thelasthurrah/binary-stash-authentication'
+import React, { useEffect, useState } from 'react'
+import {
+    BinaryStashAuthenticator,
+    ILoginResponse,
+} from '@thelasthurrah/binary-stash-authentication'
 
 import {
     useCurrentUserQuery,
@@ -29,6 +32,8 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
     title,
     application_name,
 }) => {
+    const [limit, changeLimit] = useState(10)
+    const [skip] = useState(0)
     const { data: currentUserData } = useCurrentUser()
     const { data: currentUser, loading: currentUserLoading } =
         useCurrentUserQuery()
@@ -44,15 +49,32 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
         }
     })
 
-    const { data, loading } = useFindOneOrCreateOneThreadQuery({
+    const { data, loading, fetchMore } = useFindOneOrCreateOneThreadQuery({
         variables: {
             findOrCreateOneThreadInput: {
                 application_id,
                 title,
                 website_url,
             },
+            FetchThreadCommentsById: {
+                limit,
+                skip,
+            },
         },
     })
+
+    const logInCallback = (response: ILoginResponse) => {
+        console.log('RESPONSE', response)
+
+        localStorage.setItem('binary-stash-token', response.login_user.token)
+
+        cache.writeQuery({
+            query: IS_LOGGED_IN,
+            data: {
+                isLoggedIn: true,
+            },
+        })
+    }
 
     return loading && currentUserLoading ? (
         <Loader />
@@ -60,6 +82,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
         <div>
             {currentUserData && currentUserData.isLoggedIn === false ? (
                 <BinaryStashAuthenticator
+                    logInCallback={logInCallback}
                     application_id={application_id}
                     application_name={application_name}
                 />
@@ -75,17 +98,33 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 // justifyContent="center"
                 style={{ padding: '5rem', margin: 'auto' }}
             >
-                <CommentList
-                    logged_in={
-                        currentUserData && currentUserData.isLoggedIn
-                            ? true
-                            : false
-                    }
-                    application_id={application_id}
-                    thread_id={
-                        data ? data?.find_one_thread_or_create_one.id : ''
-                    }
-                />
+                {data && data.find_one_thread_or_create_one ? (
+                    <CommentList
+                        comment_count={
+                            data.find_one_thread_or_create_one.thread_comments
+                                .comments_count
+                        }
+                        title={title}
+                        application_id={application_id}
+                        website_url={website_url}
+                        fetchMore={fetchMore}
+                        limit={limit}
+                        skip={skip}
+                        changeLimit={changeLimit}
+                        comments={
+                            data.find_one_thread_or_create_one.thread_comments
+                                .comments
+                        }
+                        logged_in={
+                            currentUserData && currentUserData.isLoggedIn
+                                ? true
+                                : false
+                        }
+                        thread_id={data.find_one_thread_or_create_one.id}
+                    />
+                ) : (
+                    ''
+                )}
             </Grid>
         </div>
     )
