@@ -27,8 +27,6 @@ export const Login: React.FC<ILogin> = ({ changeDisplay, logInCallback }) => {
 					password,
 				})
 
-				localStorage.setItem('binary-stash-token', response.login_user.token)
-
 				logInCallback(response)
 
 				setSubmitting(false)

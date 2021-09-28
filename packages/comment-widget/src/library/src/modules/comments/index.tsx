@@ -89,7 +89,10 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 ''
             )}
 
-            {data && data.find_one_thread_or_create_one ? (
+            {data &&
+            data.find_one_thread_or_create_one &&
+            data.find_one_thread_or_create_one.thread_comments &&
+            data.find_one_thread_or_create_one.thread_comments.comments ? (
                 <CommentList
                     comment_count={
                         data.find_one_thread_or_create_one.thread_comments
@@ -102,6 +105,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                     limit={limit}
                     skip={skip}
                     changeLimit={changeLimit}
+                    //@ts-ignore
                     comments={
                         data.find_one_thread_or_create_one.thread_comments
                             .comments

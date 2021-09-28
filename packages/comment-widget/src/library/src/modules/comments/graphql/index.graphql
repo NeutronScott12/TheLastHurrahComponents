@@ -46,6 +46,9 @@ fragment CommentFragment on CommentModel {
     updated_at
     user_id
     parent_id
+    replied_to_user {
+        username
+    }
     ratings {
         id
     }
@@ -115,6 +118,20 @@ mutation CreateReplyComment(
     $CreateReplyCommentInput: CreateReplyCommentInput!
 ) {
     create_reply_comment(CreateReplyCommentInput: $CreateReplyCommentInput) {
+        ...CommentFragment
+        replies {
+            ...CommentFragment
+        }
+    }
+}
+
+input UpdateCommentInput {
+    body: String!
+    comment_id: String!
+}
+
+mutation EditThreadComment($UpdateCommentInput: UpdateCommentInput!) {
+    update_comment(UpdateCommentInput: $UpdateCommentInput) {
         ...CommentFragment
         replies {
             ...CommentFragment

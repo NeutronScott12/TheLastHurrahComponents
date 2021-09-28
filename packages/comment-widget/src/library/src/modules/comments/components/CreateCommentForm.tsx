@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import { clone } from 'ramda'
+import { clone, mergeDeepRight } from 'ramda'
 
 import { useCreateThreadComentMutation } from '../../../generated/graphql'
 import { Button, TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import { mergeDeep } from '@apollo/client/utilities'
 import {
     commentValidationSchema,
     findOneOrCreateOneThreadQueryCache,
@@ -83,7 +82,10 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                                 },
                             }
 
-                            const changedObject = mergeDeep(cloneData, newData)
+                            const changedObject = mergeDeepRight(
+                                cloneData,
+                                newData,
+                            )
 
                             writeOneOrCreateOneThreadQueryCache({
                                 application_id,

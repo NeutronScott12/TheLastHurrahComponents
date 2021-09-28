@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import {
+    CommentModel,
     FindOneOrCreateOneThreadDocument,
+    Maybe,
     useDeleteThreadCommentMutation,
 } from '../../../generated/graphql'
 import { clone, mergeDeepRight } from 'ramda'
@@ -11,17 +13,24 @@ import {
     writeOneOrCreateOneThreadQueryCache,
 } from '../common'
 
-export interface IComment {
+export interface IComment extends CommentModel {
     author: {
         username: string
+        email: string
+        id: string
+        applications_joined_ids: string[]
+        confirmed: boolean
+        created_at: string
+        updated_at: string
+        user_role: string
     }
     id: string
     body: string
     created_at: string
     thread_id: string
     application_id: string
-    parent_id: string
-    replies?: IComment[]
+    parent_id: Maybe<string> | undefined
+    replies: CommentModel[]
 }
 
 interface ICommentProps {
@@ -41,53 +50,67 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     website_url,
     application_id,
 }) => {
+    const [checkError, setError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
 
     const deleteComment = async (id: string) => {
-        await deleteCommentMutation({
-            variables: { commentId: id },
-            update(cache) {
-                const response = findOneOrCreateOneThreadQueryCache({
-                    application_id,
-                    title,
-                    website_url,
-                    limit,
-                    skip,
-                })
-
-                if (response && response.find_one_thread_or_create_one) {
-                    const cloned = clone(response)
-                    const filteredList =
-                        cloned.find_one_thread_or_create_one.thread_comments.comments.filter(
-                            (data) => data.id !== id,
-                        )
-
-                    const newData = mergeDeepRight(cloned, {
-                        find_one_thread_or_create_one: {
-                            thread_comments: {
-                                __typename: 'FetchCommentByThreadIdResponse',
-                                comments_count:
-                                    cloned.find_one_thread_or_create_one
-                                        .thread_comments.comments_count,
-                                comments: [...filteredList],
-                            },
-                        },
-                    })
-
-                    writeOneOrCreateOneThreadQueryCache({
+        try {
+            await deleteCommentMutation({
+                variables: { commentId: id },
+                update(cache) {
+                    const response = findOneOrCreateOneThreadQueryCache({
                         application_id,
                         title,
                         website_url,
                         limit,
                         skip,
-                        data: newData,
                     })
-                }
-            },
-        })
+
+                    if (response && response.find_one_thread_or_create_one) {
+                        const cloned = clone(response)
+                        const filteredList =
+                            cloned.find_one_thread_or_create_one.thread_comments.comments.filter(
+                                (data) => data.id !== id,
+                            )
+
+                        const newData = mergeDeepRight(cloned, {
+                            find_one_thread_or_create_one: {
+                                thread_comments: {
+                                    __typename:
+                                        'FetchCommentByThreadIdResponse',
+                                    comments_count:
+                                        cloned.find_one_thread_or_create_one
+                                            .thread_comments.comments_count,
+                                    comments: [...filteredList],
+                                },
+                            },
+                        })
+
+                        writeOneOrCreateOneThreadQueryCache({
+                            application_id,
+                            title,
+                            website_url,
+                            limit,
+                            skip,
+                            data: newData,
+                        })
+                    }
+                },
+            })
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log(error)
+                setError(true)
+                setErrorMessage('something went wrong')
+            }
+        }
     }
 
-    const deleteReplyComment = async (id: string, parent_id: string) => {
+    const deleteReplyComment = async (
+        id: string,
+        parent_id: Maybe<string> | undefined,
+    ) => {
         try {
             await deleteCommentMutation({
                 variables: {

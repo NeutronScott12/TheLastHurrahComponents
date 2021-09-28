@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Comment } from 'semantic-ui-react'
 import Moment from 'react-moment'
+import { ArrowLeft } from '@mui/icons-material'
 
 import { IComment } from '../components/Comment'
 import { ReplyCommentForm } from '../components/ReplyCommentForm'
+import { EditCommentForm } from '../components/EditComment'
 
 interface ICommentViewProps {
     comment: IComment
@@ -26,6 +28,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
 }) => {
     const [useMain, changeUseMain] = useState(false)
     const [useSecondaryReply, changeUseEditSecondary] = useState(false)
+    const [useEdit, changeUseEdit] = useState(false)
+    const [useReplyEdit, changeUseReplyEdit] = useState(false)
 
     return (
         <Comment>
@@ -37,12 +41,26 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 <Comment.Metadata>
                     <Moment format="DD/MM/YYYY">{comment.created_at}</Moment>
                 </Comment.Metadata>
-                <Comment.Text>{comment.body}</Comment.Text>
+                <Comment.Text>
+                    {useEdit ? (
+                        <EditCommentForm
+                            changeUseReplyEdit={changeUseReplyEdit}
+                            comment_id={comment.id}
+                            changeUseEdit={changeUseEdit}
+                            comment_body={comment.body}
+                        />
+                    ) : (
+                        comment.body
+                    )}
+                </Comment.Text>
+
                 <Comment.Actions>
                     <Comment.Action onClick={() => changeUseMain(!useMain)}>
                         Reply
                     </Comment.Action>
-                    <Comment.Action>Edit</Comment.Action>
+                    <Comment.Action onClick={() => changeUseEdit(!useEdit)}>
+                        Edit
+                    </Comment.Action>
                     <Comment.Action onClick={() => deleteComment(comment.id)}>
                         delete
                     </Comment.Action>
@@ -54,7 +72,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                         skip={skip}
                         title={title}
                         comment={comment}
-                        replied_to_id={comment.id}
+                        replied_to_id={comment.author.id}
                         changeUseMain={changeUseMain}
                         parent_id={comment.id}
                     />
@@ -72,11 +90,29 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                                       {reply.author.username}
                                   </Comment.Author>
                                   <Comment.Metadata>
+                                      <ArrowLeft />
+                                      Replied To{' '}
+                                      {reply.replied_to_user?.username}
+                                  </Comment.Metadata>
+                                  <Comment.Metadata>
                                       <Moment format="DD/MM/YYYY">
                                           {reply.created_at}
                                       </Moment>
                                   </Comment.Metadata>
-                                  <Comment.Text>{reply.body}</Comment.Text>
+                                  <Comment.Text>
+                                      {useReplyEdit ? (
+                                          <EditCommentForm
+                                              changeUseReplyEdit={
+                                                  changeUseReplyEdit
+                                              }
+                                              comment_id={reply.id}
+                                              changeUseEdit={changeUseEdit}
+                                              comment_body={reply.body}
+                                          />
+                                      ) : (
+                                          reply.body
+                                      )}
+                                  </Comment.Text>
                                   <Comment.Actions>
                                       <Comment.Action
                                           onClick={() =>
@@ -89,11 +125,20 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                                       </Comment.Action>
                                       <Comment.Action
                                           onClick={() =>
-                                              deleteReplyComment(
-                                                  reply.id,
-                                                  reply.parent_id,
-                                              )
+                                              changeUseReplyEdit(!useReplyEdit)
                                           }
+                                      >
+                                          Edit
+                                      </Comment.Action>
+                                      <Comment.Action
+                                          onClick={() => {
+                                              if (reply.parent_id) {
+                                                  deleteReplyComment(
+                                                      reply.id,
+                                                      reply.parent_id,
+                                                  )
+                                              }
+                                          }}
                                       >
                                           delete
                                       </Comment.Action>
@@ -105,7 +150,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                                           skip={skip}
                                           title={title}
                                           comment={comment}
-                                          replied_to_id={reply.id}
+                                          replied_to_id={reply.author.id}
                                           changeUseMain={changeUseEditSecondary}
                                           parent_id={comment.id}
                                       />

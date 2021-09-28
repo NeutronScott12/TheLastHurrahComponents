@@ -3,9 +3,20 @@ import { CHANGE_FORM_DISPLAY } from './entities/enums'
 import { ForgotPassword } from './modules/forgot_password/ForgotPassword'
 
 import { Login } from './modules/login/Login'
-import { ILoginResponse } from './modules/login/types'
 import { Registration } from './modules/registration/Registration'
 
+export interface ILoginResponse {
+	login_user: {
+		success: boolean
+		refresh_token: string
+		token: string
+		user: {
+			id: string
+			email: string
+			username: string
+		}
+	}
+}
 interface IBinaryStashAuthenticatorProps {
 	application_id: string
 	application_name: string
