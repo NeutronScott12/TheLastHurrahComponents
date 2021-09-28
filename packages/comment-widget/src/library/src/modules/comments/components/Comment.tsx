@@ -4,6 +4,7 @@ import {
     CommentModel,
     FindOneOrCreateOneThreadDocument,
     Maybe,
+    useCurrentUserQuery,
     useDeleteThreadCommentMutation,
 } from '../../../generated/graphql'
 import { clone, mergeDeepRight } from 'ramda'
@@ -12,6 +13,7 @@ import {
     findOneOrCreateOneThreadQueryCache,
     writeOneOrCreateOneThreadQueryCache,
 } from '../common'
+import { Loader } from './Loader'
 
 export interface IComment extends CommentModel {
     author: {
@@ -29,7 +31,7 @@ export interface IComment extends CommentModel {
     created_at: string
     thread_id: string
     application_id: string
-    parent_id: Maybe<string> | undefined
+    parent_id?: Maybe<string> | undefined
     replies: CommentModel[]
 }
 
@@ -50,9 +52,11 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     website_url,
     application_id,
 }) => {
-    const [checkError, setError] = useState(false)
-    const [errorMessage, setErrorMessage] = useState('')
+    const [_checkError, setError] = useState(false)
+    const [_errorMessage, setErrorMessage] = useState('')
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
+
+    const { data, loading } = useCurrentUserQuery()
 
     const deleteComment = async (id: string) => {
         try {
@@ -208,8 +212,11 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         }
     }
 
-    return (
+    return loading ? (
+        <Loader />
+    ) : (
         <CommentView
+            currentUser={data && data.current_user ? data : undefined}
             title={title}
             website_url={website_url}
             limit={limit}
