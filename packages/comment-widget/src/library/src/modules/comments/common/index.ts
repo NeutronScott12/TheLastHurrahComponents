@@ -1,8 +1,8 @@
 import * as yup from 'yup'
 import { cache } from '../../../apollo/cache'
 import {
-    FindOneOrCreateOneThreadDocument,
-    FindOneOrCreateOneThreadQuery,
+    FetchCommentByThreadIdDocument,
+    FetchCommentByThreadIdQuery,
 } from '../../../generated/graphql'
 
 export const FIND_ONE_OR_CREATE_ONE_THREAD_QUERY_OPTIONS = {}
@@ -11,63 +11,40 @@ export const commentValidationSchema = yup.object().shape({
     body: yup.string().required(),
 })
 
-interface IFindOneOrCreateOneThreadQueryCacheArgs {
-    application_id: string
-    title: string
-    website_url: string
-
+interface IFetchCommentByThreadIdQueryArgs {
+    thread_id: string
     limit: number
     skip: number
 }
 
-export const findOneOrCreateOneThreadQueryCache = ({
-    application_id,
-    title,
-    website_url,
+export const fetchCommentByThreadIdQueryCache = ({
+    thread_id,
     limit,
     skip,
-}: IFindOneOrCreateOneThreadQueryCacheArgs) => {
-    return cache.readQuery<FindOneOrCreateOneThreadQuery>({
-        query: FindOneOrCreateOneThreadDocument,
+}: IFetchCommentByThreadIdQueryArgs) => {
+    return cache.readQuery<FetchCommentByThreadIdQuery>({
+        query: FetchCommentByThreadIdDocument,
         variables: {
-            findOrCreateOneThreadInput: {
-                application_id,
-                title,
-                website_url,
-            },
-            FetchThreadCommentsById: {
-                limit,
-                skip,
-            },
+            fetchCommentByThreadIdInput: { thread_id, limit, skip },
         },
     })
 }
 
-interface IWriteOneOrCreateOneThreadQueryCacheArgs
-    extends IFindOneOrCreateOneThreadQueryCacheArgs {
+interface IWriteCommentByThreadIdQueryArgs
+    extends IFetchCommentByThreadIdQueryArgs {
     data: {}
 }
 
-export const writeOneOrCreateOneThreadQueryCache = ({
-    application_id,
-    title,
-    website_url,
+export const WriteCommentByThreadIdQueryArgs = ({
+    thread_id,
     limit,
     skip,
     data,
-}: IWriteOneOrCreateOneThreadQueryCacheArgs) => {
+}: IWriteCommentByThreadIdQueryArgs) => {
     cache.writeQuery({
-        query: FindOneOrCreateOneThreadDocument,
+        query: FetchCommentByThreadIdDocument,
         variables: {
-            findOrCreateOneThreadInput: {
-                application_id,
-                title,
-                website_url,
-            },
-            FetchThreadCommentsById: {
-                limit,
-                skip,
-            },
+            fetchCommentByThreadIdInput: { thread_id, limit, skip },
         },
         data,
     })

@@ -7,8 +7,8 @@ import { Button, TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import {
     commentValidationSchema,
-    findOneOrCreateOneThreadQueryCache,
-    writeOneOrCreateOneThreadQueryCache,
+    fetchCommentByThreadIdQueryCache,
+    WriteCommentByThreadIdQueryArgs,
 } from '../common'
 
 interface ICreateCommentProps {
@@ -48,37 +48,32 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                         },
                     },
                     update(cache, { data }) {
-                        const response = findOneOrCreateOneThreadQueryCache({
-                            application_id,
-                            title,
-                            website_url,
+                        const response = fetchCommentByThreadIdQueryCache({
+                            thread_id,
                             limit,
                             skip,
                         })
 
                         if (
                             response &&
-                            response.find_one_thread_or_create_one &&
+                            response.fetch_comments_by_thread_id &&
                             data &&
                             data.create_comment
                         ) {
                             const cloneData = clone(response)
                             const newData = {
-                                find_one_thread_or_create_one: {
-                                    thread_comments: {
-                                        __typename:
-                                            'FetchCommentByThreadIdResponse',
-                                        comments_count:
-                                            cloneData
-                                                .find_one_thread_or_create_one
-                                                .thread_comments.comments_count,
-                                        comments: [
-                                            data.create_comment,
-                                            ...cloneData
-                                                .find_one_thread_or_create_one
-                                                .thread_comments.comments,
-                                        ],
-                                    },
+                                fetch_comments_by_thread_id: {
+                                    __typename:
+                                        response.fetch_comments_by_thread_id
+                                            .__typename,
+                                    comments_count:
+                                        cloneData.fetch_comments_by_thread_id
+                                            .comments_count,
+                                    comments: [
+                                        data.create_comment,
+                                        ...cloneData.fetch_comments_by_thread_id
+                                            .comments,
+                                    ],
                                 },
                             }
 
@@ -87,10 +82,8 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                                 newData,
                             )
 
-                            writeOneOrCreateOneThreadQueryCache({
-                                application_id,
-                                title,
-                                website_url,
+                            WriteCommentByThreadIdQueryArgs({
+                                thread_id,
                                 limit,
                                 skip,
                                 data: changedObject,

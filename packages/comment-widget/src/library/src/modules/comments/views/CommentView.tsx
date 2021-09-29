@@ -10,6 +10,7 @@ import { CurrentUserQuery } from '../../../generated/graphql'
 
 interface ICommentViewProps {
     currentUser: CurrentUserQuery | undefined
+    thread_id: string
     comment: IComment
     limit: number
     skip: number
@@ -20,6 +21,7 @@ interface ICommentViewProps {
 }
 
 export const CommentView: React.FC<ICommentViewProps> = ({
+    thread_id,
     comment,
     title,
     skip,
@@ -32,9 +34,6 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     const [useMain, changeUseMain] = useState(false)
     const [useEdit, changeUseEdit] = useState(false)
     const [_useReplyEdit, changeUseReplyEdit] = useState(false)
-
-    console.log('CURRENT_USER', currentUser)
-    console.log('COMMENT_AUTHOR_ID', comment.author.id)
 
     return (
         <Comment>
@@ -49,6 +48,12 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 <Comment.Text>
                     {useEdit ? (
                         <EditCommentForm
+                            application_id={comment.application_id}
+                            website_url={website_url}
+                            thread_id={thread_id}
+                            limit={limit}
+                            skip={skip}
+                            title={title}
                             changeUseReplyEdit={changeUseReplyEdit}
                             comment_id={comment.id}
                             changeUseEdit={changeUseEdit}
@@ -100,6 +105,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 {comment.replies
                     ? comment.replies.map((reply) => (
                           <ReplyCommentView
+                              thread_id={thread_id}
                               currentUser={currentUser}
                               key={reply.id}
                               comment={comment}

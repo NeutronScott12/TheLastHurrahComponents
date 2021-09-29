@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '@material-ui/core'
 import { Comment } from 'semantic-ui-react'
 
-import { CommentComponent, IComment } from './Comment'
+import { CommentComponent } from './Comment'
 import { CreateCommentForm } from './CreateCommentForm'
 import {
     ApolloQueryResult,
@@ -11,6 +11,8 @@ import {
     FetchMoreQueryOptions,
     TypedDocumentNode,
 } from '@apollo/client'
+import { useFetchCommentByThreadIdQuery } from '../../../generated/graphql'
+import { Loader } from './Loader'
 
 type TVariables = {}
 type TData = {}
@@ -33,8 +35,6 @@ interface ICommentListProps {
             } & FetchMoreQueryOptions<TVariables2, TData> &
                 FetchMoreOptions<TData2, TVariables2>,
         ) => Promise<ApolloQueryResult<TData2>>)
-    comments: IComment[]
-    comment_count: number
 }
 
 export const CommentList: React.FC<ICommentListProps> = ({
@@ -44,12 +44,14 @@ export const CommentList: React.FC<ICommentListProps> = ({
     changeLimit,
     limit,
     skip,
-    comments,
     title,
     website_url,
     fetchMore,
-    comment_count,
 }) => {
+    const { data, loading } = useFetchCommentByThreadIdQuery({
+        variables: { fetchCommentByThreadIdInput: { thread_id, limit, skip } },
+    })
+
     const fetchMoreComments = async () => {
         changeLimit(limit + 10)
 
@@ -68,7 +70,9 @@ export const CommentList: React.FC<ICommentListProps> = ({
         })
     }
 
-    return (
+    return loading && data && data.fetch_comments_by_thread_id.comments ? (
+        <Loader />
+    ) : (
         <div>
             {logged_in ? (
                 <CreateCommentForm
@@ -84,10 +88,11 @@ export const CommentList: React.FC<ICommentListProps> = ({
             )}
 
             <Comment.Group size="huge">
-                {comments &&
-                    comments.map((comment) => {
+                {data &&
+                    data.fetch_comments_by_thread_id.comments.map((comment) => {
                         return (
                             <CommentComponent
+                                thread_id={thread_id}
                                 title={title}
                                 application_id={application_id}
                                 website_url={website_url}
@@ -99,7 +104,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
                         )
                     })}
             </Comment.Group>
-            {comment_count > limit ? (
+            {data && data.fetch_comments_by_thread_id.comments_count > limit ? (
                 <Button onClick={fetchMoreComments}>Click More</Button>
             ) : (
                 ''

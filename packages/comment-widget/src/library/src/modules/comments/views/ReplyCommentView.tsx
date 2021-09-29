@@ -12,6 +12,7 @@ interface IReplyCommentView {
     deleteComment: (id: string) => void
     deleteReplyComment: (id: string, parent_id: string) => void
     changeUseEdit: React.Dispatch<React.SetStateAction<boolean>>
+    thread_id: string
     reply: IComment
     currentUser: CurrentUserQuery | undefined
     limit: number
@@ -24,6 +25,7 @@ interface IReplyCommentView {
 export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     deleteReplyComment,
     changeUseEdit,
+    thread_id,
     reply,
     limit,
     skip,
@@ -50,6 +52,12 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 <Comment.Text>
                     {useReplyEdit ? (
                         <EditCommentForm
+                            application_id={comment.application_id}
+                            website_url={website_url}
+                            thread_id={thread_id}
+                            limit={limit}
+                            skip={skip}
+                            title={title}
                             changeUseReplyEdit={changeUseReplyEdit}
                             comment_id={reply.id}
                             changeUseEdit={changeUseEdit}

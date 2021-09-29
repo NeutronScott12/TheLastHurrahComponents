@@ -4,18 +4,18 @@ import { Button, TextField } from '@material-ui/core'
 import { useCreateReplyCommentMutation } from '../../../generated/graphql'
 import {
     commentValidationSchema,
-    findOneOrCreateOneThreadQueryCache,
-    writeOneOrCreateOneThreadQueryCache,
+    fetchCommentByThreadIdQueryCache,
+    WriteCommentByThreadIdQueryArgs,
 } from '../common'
 
 import { IComment } from './Comment'
 import { Alert } from '@material-ui/lab'
-import { clone } from 'ramda'
+import { clone, mergeDeepRight } from 'ramda'
 
 interface IReplyCommentFormProps {
+    changeUseMain: React.Dispatch<React.SetStateAction<boolean>>
     parent_id: string
     replied_to_id: string
-    changeUseMain: React.Dispatch<React.SetStateAction<boolean>>
     comment: IComment
     limit: number
     skip: number
@@ -55,38 +55,48 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
                         },
                     },
                     update(cache, { data }) {
-                        const response = findOneOrCreateOneThreadQueryCache({
-                            application_id: comment.application_id,
-                            title,
-                            website_url,
+                        const response = fetchCommentByThreadIdQueryCache({
+                            thread_id: comment.thread_id,
                             limit,
                             skip,
                         })
 
                         changeUseMain(false)
 
-                        if (data && response?.find_one_thread_or_create_one) {
+                        if (data && response?.fetch_comments_by_thread_id) {
                             const cloned = clone(response)
 
-                            const parent_list =
-                                cloned.find_one_thread_or_create_one.thread_comments.comments.find(
-                                    (comment) => comment.id === parent_id,
-                                )
-
-                            if (parent_list?.replies) {
-                                parent_list.replies.push(
-                                    data.create_reply_comment,
-                                )
-
-                                writeOneOrCreateOneThreadQueryCache({
-                                    application_id: comment.application_id,
-                                    title,
-                                    website_url,
-                                    limit,
-                                    skip,
-                                    data: cloned,
-                                })
+                            if (cloned.fetch_comments_by_thread_id.comments) {
+                                //@ts-ignore
+                                cloned.fetch_comments_by_thread_id.comments
+                                    .find(
+                                        (comment) =>
+                                            comment.id ===
+                                            data.create_reply_comment.parent_id,
+                                    )
+                                    .replies.push(data.create_reply_comment)
                             }
+
+                            const newData = mergeDeepRight(cloned, {
+                                fetch_comments_by_thread_id: {
+                                    __typename:
+                                        response.fetch_comments_by_thread_id
+                                            .__typename,
+                                    comments_count:
+                                        cloned.fetch_comments_by_thread_id
+                                            .comments_count,
+                                    comments:
+                                        cloned.fetch_comments_by_thread_id
+                                            .comments,
+                                },
+                            })
+
+                            WriteCommentByThreadIdQueryArgs({
+                                thread_id: comment.thread_id,
+                                limit,
+                                skip,
+                                data: newData,
+                            })
                         }
                     },
                 })

@@ -328,11 +328,10 @@ export type UserModel = {
 
 export type FindOneOrCreateOneThreadQueryVariables = Exact<{
   findOrCreateOneThreadInput: FindOrCreateOneThreadInput;
-  FetchThreadCommentsById: FetchThreadCommentsById;
 }>;
 
 
-export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, thread_comments: { __typename?: 'FetchCommentByThreadIdResponse', comments_count: number, comments: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }> } } };
+export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string } };
 
 export type CommentFragmentFragment = { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> };
 
@@ -341,14 +340,14 @@ export type FetchCommentByThreadIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchCommentByThreadIdQuery = { __typename?: 'Query', fetch_comments_by_thread_id: { __typename?: 'FetchCommentByThreadIdResponse', comments_count: number, comments: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', parent_id?: Maybe<string>, application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }> } };
+export type FetchCommentByThreadIdQuery = { __typename?: 'Query', fetch_comments_by_thread_id: { __typename?: 'FetchCommentByThreadIdResponse', comments_count: number, comments: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', parent_id?: Maybe<string>, application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }> } };
 
 export type CreateThreadComentMutationVariables = Exact<{
   createCommentInput: CreateCommentInput;
 }>;
 
 
-export type CreateThreadComentMutation = { __typename?: 'Mutation', create_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> } };
+export type CreateThreadComentMutation = { __typename?: 'Mutation', create_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> } };
 
 export type DeleteThreadCommentMutationVariables = Exact<{
   commentId: Scalars['String'];
@@ -367,14 +366,14 @@ export type CreateReplyCommentMutationVariables = Exact<{
 }>;
 
 
-export type CreateReplyCommentMutation = { __typename?: 'Mutation', create_reply_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> } };
+export type CreateReplyCommentMutation = { __typename?: 'Mutation', create_reply_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> } };
 
 export type EditThreadCommentMutationVariables = Exact<{
   UpdateCommentInput: UpdateCommentInput;
 }>;
 
 
-export type EditThreadCommentMutation = { __typename?: 'Mutation', update_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> } };
+export type EditThreadCommentMutation = { __typename?: 'Mutation', update_comment: { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, replies: Array<{ __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> }>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> } };
 
 export const CommentFragmentFragmentDoc = gql`
     fragment CommentFragment on CommentModel {
@@ -400,7 +399,7 @@ export const CommentFragmentFragmentDoc = gql`
 }
     `;
 export const FindOneOrCreateOneThreadDocument = gql`
-    query FindOneOrCreateOneThread($findOrCreateOneThreadInput: FindOrCreateOneThreadInput!, $FetchThreadCommentsById: FetchThreadCommentsById!) {
+    query FindOneOrCreateOneThread($findOrCreateOneThreadInput: FindOrCreateOneThreadInput!) {
   find_one_thread_or_create_one(
     findOrCreateOneThreadInput: $findOrCreateOneThreadInput
   ) {
@@ -408,18 +407,9 @@ export const FindOneOrCreateOneThreadDocument = gql`
     application_id
     title
     website_url
-    thread_comments(FetchThreadCommentsById: $FetchThreadCommentsById) {
-      comments_count
-      comments {
-        ...CommentFragment
-        replies {
-          ...CommentFragment
-        }
-      }
-    }
   }
 }
-    ${CommentFragmentFragmentDoc}`;
+    `;
 
 /**
  * __useFindOneOrCreateOneThreadQuery__
@@ -434,7 +424,6 @@ export const FindOneOrCreateOneThreadDocument = gql`
  * const { data, loading, error } = useFindOneOrCreateOneThreadQuery({
  *   variables: {
  *      findOrCreateOneThreadInput: // value for 'findOrCreateOneThreadInput'
- *      FetchThreadCommentsById: // value for 'FetchThreadCommentsById'
  *   },
  * });
  */
@@ -460,6 +449,9 @@ export const FetchCommentByThreadIdDocument = gql`
       replies {
         ...CommentFragment
         parent_id
+        replies {
+          ...CommentFragment
+        }
       }
     }
   }
@@ -499,6 +491,9 @@ export const CreateThreadComentDocument = gql`
     ...CommentFragment
     replies {
       ...CommentFragment
+      replies {
+        ...CommentFragment
+      }
     }
   }
 }
@@ -604,6 +599,9 @@ export const CreateReplyCommentDocument = gql`
     ...CommentFragment
     replies {
       ...CommentFragment
+      replies {
+        ...CommentFragment
+      }
     }
   }
 }
@@ -640,6 +638,9 @@ export const EditThreadCommentDocument = gql`
     ...CommentFragment
     replies {
       ...CommentFragment
+      replies {
+        ...CommentFragment
+      }
     }
   }
 }

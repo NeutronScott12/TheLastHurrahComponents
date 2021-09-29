@@ -1,30 +1,34 @@
 import React, { useState } from 'react'
 
 import {
-    CommentModel,
-    FindOneOrCreateOneThreadDocument,
     Maybe,
     useCurrentUserQuery,
     useDeleteThreadCommentMutation,
 } from '../../../generated/graphql'
-import { clone, mergeDeepRight } from 'ramda'
+import {
+    always,
+    clone,
+    curry,
+    evolve,
+    findIndex,
+    map,
+    mergeDeepRight,
+    propEq,
+    when,
+} from 'ramda'
 import { CommentView } from '../views/CommentView'
 import {
-    findOneOrCreateOneThreadQueryCache,
-    writeOneOrCreateOneThreadQueryCache,
+    fetchCommentByThreadIdQueryCache,
+    WriteCommentByThreadIdQueryArgs,
 } from '../common'
 import { Loader } from './Loader'
+import { Alert } from '@material-ui/lab'
 
-export interface IComment extends CommentModel {
+export interface IComment {
     author: {
         username: string
         email: string
         id: string
-        applications_joined_ids: string[]
-        confirmed: boolean
-        created_at: string
-        updated_at: string
-        user_role: string
     }
     id: string
     body: string
@@ -32,11 +36,16 @@ export interface IComment extends CommentModel {
     thread_id: string
     application_id: string
     parent_id?: Maybe<string> | undefined
-    replies: CommentModel[]
+    replied_to_user?: Maybe<{
+        __typename?: 'UserModel' | undefined
+        username: string
+    }>
+    replies?: IComment[]
 }
 
 interface ICommentProps {
     comment: IComment
+    thread_id: string
     skip: number
     limit: number
     title: string
@@ -45,6 +54,7 @@ interface ICommentProps {
 }
 
 export const CommentComponent: React.FC<ICommentProps> = ({
+    thread_id,
     comment,
     skip,
     limit,
@@ -52,8 +62,8 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     website_url,
     application_id,
 }) => {
-    const [_checkError, setError] = useState(false)
-    const [_errorMessage, setErrorMessage] = useState('')
+    const [checkError, setError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
 
     const { data, loading } = useCurrentUserQuery()
@@ -63,38 +73,33 @@ export const CommentComponent: React.FC<ICommentProps> = ({
             await deleteCommentMutation({
                 variables: { commentId: id },
                 update(cache) {
-                    const response = findOneOrCreateOneThreadQueryCache({
-                        application_id,
-                        title,
-                        website_url,
+                    const response = fetchCommentByThreadIdQueryCache({
+                        thread_id,
                         limit,
                         skip,
                     })
 
-                    if (response && response.find_one_thread_or_create_one) {
+                    if (response && response.fetch_comments_by_thread_id) {
                         const cloned = clone(response)
                         const filteredList =
-                            cloned.find_one_thread_or_create_one.thread_comments.comments.filter(
+                            cloned.fetch_comments_by_thread_id.comments.filter(
                                 (data) => data.id !== id,
                             )
 
                         const newData = mergeDeepRight(cloned, {
-                            find_one_thread_or_create_one: {
-                                thread_comments: {
-                                    __typename:
-                                        'FetchCommentByThreadIdResponse',
-                                    comments_count:
-                                        cloned.find_one_thread_or_create_one
-                                            .thread_comments.comments_count,
-                                    comments: [...filteredList],
-                                },
+                            fetch_comments_by_thread_id: {
+                                __typename:
+                                    cloned.fetch_comments_by_thread_id
+                                        .__typename,
+                                comments_count:
+                                    cloned.fetch_comments_by_thread_id
+                                        .comments_count,
+                                comments: [...filteredList],
                             },
                         })
 
-                        writeOneOrCreateOneThreadQueryCache({
-                            application_id,
-                            title,
-                            website_url,
+                        WriteCommentByThreadIdQueryArgs({
+                            thread_id,
                             limit,
                             skip,
                             data: newData,
@@ -120,92 +125,102 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                 variables: {
                     commentId: id,
                 },
-                refetchQueries: [
-                    {
-                        query: FindOneOrCreateOneThreadDocument,
-                        variables: {
-                            findOrCreateOneThreadInput: {
-                                application_id,
-                                title,
-                                website_url,
-                            },
-                            FetchThreadCommentsById: {
-                                limit,
-                                skip,
-                            },
-                        },
-                    },
-                ],
-
-                // update(cache) {
-                //     const response = findOneOrCreateOneThreadQueryCache({
-                //         application_id,
-                //         title,
-                //         website_url,
-                //         limit,
-                //         skip,
-                //     })
-
-                //     console.log('RESPONSE', response)
-                //     console.log('PARENT_ID', parent_id)
-
-                //     if (
-                //         response &&
-                //         response.find_one_thread_or_create_one &&
-                //         parent_id
-                //     ) {
-                //         const cloned = clone(response)
-                //         console.log('CLONED', cloned)
-
-                //         const augmetedList =
-                //             cloned.find_one_thread_or_create_one.thread_comments.comments.find(
-                //                 (comment) => comment.id === parent_id,
-                //             )
-
-                //         if (augmetedList?.replies) {
-                //             remove(
-                //                 augmetedList.replies,
-                //                 (comment) => comment.id === id,
-                //             )
-
-                //             const index =
-                //                 cloned.find_one_thread_or_create_one.thread_comments.comments.findIndex(
-                //                     (comment) => comment.id === id,
-                //                 )
-
-                //             const newComments =
-                //                 cloned.find_one_thread_or_create_one.thread_comments.comments.splice(
-                //                     index,
-                //                     1,
-                //                     augmetedList,
-                //                 )
-
-                //             console.log('NEW_COMMENTS', newComments)
-
-                //             const newData = mergeDeepRight(cloned, {
-                //                 find_one_thread_or_create_one: {
-                //                     thread_comments: {
-                //                         __typename:
-                //                             'FetchCommentByThreadIdResponse',
-                //                         comments_count:
-                //                             cloned.find_one_thread_or_create_one
-                //                                 .thread_comments.comments_count,
-                //                         comments: newComments,
-                //                     },
-                //                 },
-                //             })
-
-                //             writeOneOrCreateOneThreadQueryCache({
-                //                 application_id,
-                //                 title,
-                //                 website_url,
+                // refetchQueries: [
+                //     {
+                //         query: FetchCommentByThreadIdDocument,
+                //         variables: {
+                //             fetchCommentByThreadIdInput: {
+                //                 thread_id,
                 //                 limit,
                 //                 skip,
-                //                 data: newData,
-                //             })
-                //         }
-                //     }
-                // },
+                //             },
+                //         },
+                //     },
+                // ],
+
+                update(cache) {
+                    const response = fetchCommentByThreadIdQueryCache({
+                        thread_id,
+                        limit,
+                        skip,
+                    })
+
+                    console.log('RESPONSE', response)
+                    console.log('PARENT_ID', parent_id)
+
+                    if (
+                        response &&
+                        response.fetch_comments_by_thread_id &&
+                        parent_id
+                    ) {
+                        const cloned = clone(response)
+                        let comments =
+                            cloned.fetch_comments_by_thread_id.comments
+                        let newComments
+
+                        if (comments) {
+                            const parent_index = findIndex(
+                                (comment) => comment.id === parent_id,
+                                comments,
+                            )
+
+                            console.log('PARENT_INDEX', parent_index)
+
+                            let newReplies = comments[
+                                parent_index
+                            ].replies.filter((comment) => {
+                                console.log('COMMENT', comment)
+                                return comment.id !== id
+                            })
+
+                            console.log('NEW_REPLIES', newReplies)
+
+                            const fn = curry((id, prop, content) =>
+                                map(
+                                    when(
+                                        propEq('id', id),
+                                        evolve({ [prop]: always(content) }),
+                                    ),
+                                ),
+                            )
+
+                            newComments = Array.from(
+                                fn(parent_id, 'replies', newReplies)(comments),
+                            )
+
+                            // comments[parent_index].replies = newReplies
+                        }
+
+                        console.log('NEW_COMMENTS', newComments)
+
+                        const newData = mergeDeepRight(cloned, {
+                            fetch_comments_by_thread_id: {
+                                __typename:
+                                    response.fetch_comments_by_thread_id
+                                        .__typename,
+                                comments_count:
+                                    cloned.fetch_comments_by_thread_id
+                                        .comments_count,
+
+                                comments: newComments,
+                            },
+                        })
+
+                        console.log('NEW_DATA', newData)
+
+                        cache.evict({
+                            fieldName: 'CommentModel',
+                            broadcast: false,
+                        })
+
+                        WriteCommentByThreadIdQueryArgs({
+                            thread_id,
+                            limit,
+                            skip,
+                            data: newData,
+                        })
+                    }
+                },
             })
         } catch (error) {
             console.error(error)
@@ -215,15 +230,19 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     return loading ? (
         <Loader />
     ) : (
-        <CommentView
-            currentUser={data && data.current_user ? data : undefined}
-            title={title}
-            website_url={website_url}
-            limit={limit}
-            skip={skip}
-            comment={comment}
-            deleteComment={deleteComment}
-            deleteReplyComment={deleteReplyComment}
-        />
+        <>
+            {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
+            <CommentView
+                currentUser={data && data.current_user ? data : undefined}
+                thread_id={thread_id}
+                title={title}
+                website_url={website_url}
+                limit={limit}
+                skip={skip}
+                comment={comment}
+                deleteComment={deleteComment}
+                deleteReplyComment={deleteReplyComment}
+            />
+        </>
     )
 }

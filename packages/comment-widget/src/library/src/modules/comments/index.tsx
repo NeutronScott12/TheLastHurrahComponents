@@ -55,10 +55,6 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 title,
                 website_url,
             },
-            FetchThreadCommentsById: {
-                limit,
-                skip,
-            },
         },
     })
 
@@ -89,15 +85,8 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 ''
             )}
 
-            {data &&
-            data.find_one_thread_or_create_one &&
-            data.find_one_thread_or_create_one.thread_comments &&
-            data.find_one_thread_or_create_one.thread_comments.comments ? (
+            {data && data.find_one_thread_or_create_one ? (
                 <CommentList
-                    comment_count={
-                        data.find_one_thread_or_create_one.thread_comments
-                            .comments_count
-                    }
                     title={title}
                     application_id={application_id}
                     website_url={website_url}
@@ -106,10 +95,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                     skip={skip}
                     changeLimit={changeLimit}
                     //@ts-ignore
-                    comments={
-                        data.find_one_thread_or_create_one.thread_comments
-                            .comments
-                    }
+
                     logged_in={
                         currentUserData && currentUserData.isLoggedIn
                             ? true
