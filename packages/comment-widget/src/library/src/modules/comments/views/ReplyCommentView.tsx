@@ -12,6 +12,8 @@ interface IReplyCommentView {
     deleteComment: (id: string) => void
     deleteReplyComment: (id: string, parent_id: string) => void
     changeUseEdit: React.Dispatch<React.SetStateAction<boolean>>
+    displayModerator: (author_id: string) => boolean
+    isModerator: boolean
     thread_id: string
     reply: IComment
     currentUser: CurrentUserQuery | undefined
@@ -25,6 +27,7 @@ interface IReplyCommentView {
 export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     deleteReplyComment,
     changeUseEdit,
+    displayModerator,
     thread_id,
     reply,
     limit,
@@ -33,6 +36,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     title,
     comment,
     currentUser,
+    isModerator,
 }) => {
     const [useSecondaryReply, changeUseEditSecondary] = useState(false)
     const [useReplyEdit, changeUseReplyEdit] = useState(false)
@@ -42,6 +46,9 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
             <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/jenny.jpg" />
             <Comment.Content>
                 <Comment.Author as="a">{reply.author.username}</Comment.Author>
+                <Comment.Metadata>
+                    {displayModerator(reply.author.id) ? 'Mod' : ''}
+                </Comment.Metadata>
                 <Comment.Metadata>
                     <ArrowLeft />
                     Replied To {reply.replied_to_user?.username}
@@ -75,8 +82,9 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                     >
                         Reply
                     </Comment.Action>
-                    {currentUser &&
-                    currentUser.current_user.id === reply.author.id ? (
+                    {(currentUser &&
+                        currentUser.current_user.id === reply.author.id) ||
+                    isModerator ? (
                         <>
                             <Comment.Action
                                 onClick={() =>
@@ -104,10 +112,8 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 </Comment.Actions>
                 {useSecondaryReply ? (
                     <ReplyCommentForm
-                        website_url={website_url}
                         limit={limit}
                         skip={skip}
-                        title={title}
                         comment={comment}
                         replied_to_id={reply.author.id}
                         changeUseMain={changeUseEditSecondary}

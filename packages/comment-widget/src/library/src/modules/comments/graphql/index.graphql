@@ -22,6 +22,17 @@ query FindOneOrCreateOneThread(
     }
 }
 
+query FineOneApplicationById($id: String!) {
+    find_one_application_by_id(id: $id) {
+        id
+        application_name
+        moderators {
+            username
+            id
+        }
+    }
+}
+
 fragment CommentFragment on CommentModel {
     application_id
     author {

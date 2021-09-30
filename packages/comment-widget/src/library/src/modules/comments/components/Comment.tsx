@@ -4,6 +4,7 @@ import {
     Maybe,
     useCurrentUserQuery,
     useDeleteThreadCommentMutation,
+    useFineOneApplicationByIdQuery,
 } from '../../../generated/graphql'
 import {
     always,
@@ -65,6 +66,10 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
+    const { data: applicationData, loading: applicationLoading } =
+        useFineOneApplicationByIdQuery({
+            variables: { id: application_id },
+        })
 
     const { data, loading } = useCurrentUserQuery()
 
@@ -125,18 +130,6 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                 variables: {
                     commentId: id,
                 },
-                // refetchQueries: [
-                //     {
-                //         query: FetchCommentByThreadIdDocument,
-                //         variables: {
-                //             fetchCommentByThreadIdInput: {
-                //                 thread_id,
-                //                 limit,
-                //                 skip,
-                //             },
-                //         },
-                //     },
-                // ],
 
                 update(cache) {
                     const response = fetchCommentByThreadIdQueryCache({
@@ -227,13 +220,17 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         }
     }
 
-    return loading ? (
+    return loading && applicationLoading ? (
         <Loader />
     ) : (
         <>
             {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
             <CommentView
                 currentUser={data && data.current_user ? data : undefined}
+                moderators={
+                    applicationData &&
+                    applicationData?.find_one_application_by_id.moderators
+                }
                 thread_id={thread_id}
                 title={title}
                 website_url={website_url}

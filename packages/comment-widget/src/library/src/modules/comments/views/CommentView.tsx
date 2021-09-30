@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Comment } from 'semantic-ui-react'
 import Moment from 'react-moment'
 
@@ -8,6 +8,10 @@ import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentView } from './ReplyCommentView'
 import { CurrentUserQuery } from '../../../generated/graphql'
 
+export interface IModerator {
+    username: string
+    id: string
+}
 interface ICommentViewProps {
     currentUser: CurrentUserQuery | undefined
     thread_id: string
@@ -16,6 +20,7 @@ interface ICommentViewProps {
     skip: number
     website_url: string
     title: string
+    moderators: IModerator[] | undefined
     deleteComment: (id: string) => void
     deleteReplyComment: (id: string, parent_id: string) => void
 }
@@ -27,13 +32,36 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     skip,
     limit,
     website_url,
+    currentUser,
+    moderators,
     deleteComment,
     deleteReplyComment,
-    currentUser,
 }) => {
     const [useMain, changeUseMain] = useState(false)
     const [useEdit, changeUseEdit] = useState(false)
-    const [_useReplyEdit, changeUseReplyEdit] = useState(false)
+    // const [useReplyEdit, changeUseReplyEdit] = useState(false)
+    const [isModerator, changeIsModerator] = useState(false)
+
+    useEffect(() => {
+        if (moderators && currentUser?.current_user) {
+            const matches = moderators.some(
+                ({ id }: IModerator) => id === currentUser.current_user.id,
+            )
+
+            changeIsModerator(matches)
+        }
+    }, [moderators, currentUser])
+
+    const displayModerator = (author_id: string) => {
+        if (moderators) {
+            const matches = moderators.some(
+                ({ id }: IModerator) => id === author_id,
+            )
+
+            return matches
+        }
+        return false
+    }
 
     return (
         <Comment>
@@ -42,6 +70,9 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 <Comment.Author as="a">
                     {comment.author.username}
                 </Comment.Author>
+                <Comment.Metadata>
+                    {displayModerator(comment.author.id) ? 'Mod' : ''}
+                </Comment.Metadata>
                 <Comment.Metadata>
                     <Moment format="DD/MM/YYYY">{comment.created_at}</Moment>
                 </Comment.Metadata>
@@ -54,7 +85,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                             limit={limit}
                             skip={skip}
                             title={title}
-                            changeUseReplyEdit={changeUseReplyEdit}
+                            // changeUseReplyEdit={changeUseReplyEdit}
                             comment_id={comment.id}
                             changeUseEdit={changeUseEdit}
                             comment_body={comment.body}
@@ -68,8 +99,9 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                     <Comment.Action onClick={() => changeUseMain(!useMain)}>
                         Reply
                     </Comment.Action>
-                    {currentUser &&
-                    currentUser.current_user.id === comment.author.id ? (
+                    {(currentUser &&
+                        currentUser.current_user.id === comment.author.id) ||
+                    isModerator ? (
                         <>
                             <Comment.Action
                                 onClick={() => changeUseEdit(!useEdit)}
@@ -88,10 +120,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 </Comment.Actions>
                 {useMain ? (
                     <ReplyCommentForm
-                        website_url={website_url}
                         limit={limit}
                         skip={skip}
-                        title={title}
                         comment={comment}
                         replied_to_id={comment.author.id}
                         changeUseMain={changeUseMain}
@@ -105,6 +135,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 {comment.replies
                     ? comment.replies.map((reply) => (
                           <ReplyCommentView
+                              displayModerator={displayModerator}
+                              isModerator={isModerator}
                               thread_id={thread_id}
                               currentUser={currentUser}
                               key={reply.id}

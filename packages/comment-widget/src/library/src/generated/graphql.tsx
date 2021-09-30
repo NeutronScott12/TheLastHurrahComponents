@@ -333,6 +333,13 @@ export type FindOneOrCreateOneThreadQueryVariables = Exact<{
 
 export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string } };
 
+export type FineOneApplicationByIdQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type FineOneApplicationByIdQuery = { __typename?: 'Query', find_one_application_by_id: { __typename?: 'ApplicationModel', id: string, application_name: string, moderators: Array<{ __typename?: 'UserModel', username: string, id: string }> } };
+
 export type CommentFragmentFragment = { __typename?: 'CommentModel', application_id: string, body: string, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: Maybe<string>, author: { __typename?: 'UserModel', username: string, email: string, id: string }, replied_to_user?: Maybe<{ __typename?: 'UserModel', username: string }>, ratings: Array<{ __typename?: 'RatingModel', id: string }> };
 
 export type FetchCommentByThreadIdQueryVariables = Exact<{
@@ -438,6 +445,46 @@ export function useFindOneOrCreateOneThreadLazyQuery(baseOptions?: Apollo.LazyQu
 export type FindOneOrCreateOneThreadQueryHookResult = ReturnType<typeof useFindOneOrCreateOneThreadQuery>;
 export type FindOneOrCreateOneThreadLazyQueryHookResult = ReturnType<typeof useFindOneOrCreateOneThreadLazyQuery>;
 export type FindOneOrCreateOneThreadQueryResult = Apollo.QueryResult<FindOneOrCreateOneThreadQuery, FindOneOrCreateOneThreadQueryVariables>;
+export const FineOneApplicationByIdDocument = gql`
+    query FineOneApplicationById($id: String!) {
+  find_one_application_by_id(id: $id) {
+    id
+    application_name
+    moderators {
+      username
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useFineOneApplicationByIdQuery__
+ *
+ * To run a query within a React component, call `useFineOneApplicationByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFineOneApplicationByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFineOneApplicationByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useFineOneApplicationByIdQuery(baseOptions: Apollo.QueryHookOptions<FineOneApplicationByIdQuery, FineOneApplicationByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FineOneApplicationByIdQuery, FineOneApplicationByIdQueryVariables>(FineOneApplicationByIdDocument, options);
+      }
+export function useFineOneApplicationByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FineOneApplicationByIdQuery, FineOneApplicationByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FineOneApplicationByIdQuery, FineOneApplicationByIdQueryVariables>(FineOneApplicationByIdDocument, options);
+        }
+export type FineOneApplicationByIdQueryHookResult = ReturnType<typeof useFineOneApplicationByIdQuery>;
+export type FineOneApplicationByIdLazyQueryHookResult = ReturnType<typeof useFineOneApplicationByIdLazyQuery>;
+export type FineOneApplicationByIdQueryResult = Apollo.QueryResult<FineOneApplicationByIdQuery, FineOneApplicationByIdQueryVariables>;
 export const FetchCommentByThreadIdDocument = gql`
     query FetchCommentByThreadId($fetchCommentByThreadIdInput: FetchCommentByThreadIdInput!) {
   fetch_comments_by_thread_id(

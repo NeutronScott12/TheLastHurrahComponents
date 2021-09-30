@@ -4,18 +4,16 @@ import { useFormik } from 'formik'
 import {
     clone,
     mergeDeepRight,
-    update,
     findIndex,
     propEq,
     curry,
     map,
     when,
     evolve,
-    pick,
     always,
-    replace,
     remove,
     insert,
+    update,
 } from 'ramda'
 import React, { useState } from 'react'
 import { useEditThreadCommentMutation } from '../../../generated/graphql'
@@ -26,7 +24,7 @@ import {
 
 interface IEditCommentForm {
     changeUseEdit: React.Dispatch<React.SetStateAction<boolean>>
-    changeUseReplyEdit: React.Dispatch<React.SetStateAction<boolean>>
+    changeUseReplyEdit?: React.Dispatch<React.SetStateAction<boolean>>
     comment_body: string
     thread_id: string
     comment_id: string
@@ -57,7 +55,9 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
             try {
                 if (body === comment_body) {
                     changeUseEdit(false)
-                    changeUseReplyEdit(false)
+                    if (changeUseReplyEdit) {
+                        changeUseReplyEdit(false)
+                    }
                 } else {
                     await editComment({
                         variables: { UpdateCommentInput: { body, comment_id } },
@@ -85,12 +85,13 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                                         propEq('id', data.update_comment.id),
                                     )(comments)
 
-                                    newComments = comments.splice(
+                                    newComments = update(
                                         index,
-                                        1,
                                         data.update_comment,
+                                        comments,
                                     )
                                 } else {
+                                    console.log('SHOULD NOT BE RUNNING')
                                     const replies = comments.find(
                                         (comment) =>
                                             comment.id ===
@@ -115,8 +116,6 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                                             data.update_comment,
                                             filtered_reply,
                                         )
-
-                                        console.log('NEW_REPLIES', newReplies)
 
                                         const fn = curry((id, prop, content) =>
                                             map(
@@ -168,7 +167,9 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                     })
 
                     changeUseEdit(false)
-                    changeUseReplyEdit(false)
+                    if (changeUseReplyEdit) {
+                        changeUseReplyEdit(false)
+                    }
                 }
             } catch (error) {
                 if (error instanceof Error) {

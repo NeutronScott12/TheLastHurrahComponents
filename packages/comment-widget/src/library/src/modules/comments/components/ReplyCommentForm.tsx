@@ -19,8 +19,6 @@ interface IReplyCommentFormProps {
     comment: IComment
     limit: number
     skip: number
-    website_url: string
-    title: string
 }
 
 export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
@@ -29,8 +27,6 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
     comment,
     limit,
     skip,
-    website_url,
-    title,
     changeUseMain,
 }) => {
     const [checkError, setError] = useState(false)
