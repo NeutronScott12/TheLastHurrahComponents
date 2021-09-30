@@ -6,7 +6,7 @@ import Moment from 'react-moment'
 import { IComment } from '../components/Comment'
 import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentForm } from '../components/ReplyCommentForm'
-import { CurrentUserQuery } from '../../../generated/graphql'
+import { CurrentUserQuery, Sort } from '../../../generated/graphql'
 import { Ratings } from '../components/Rating'
 
 interface IReplyCommentView {
@@ -23,6 +23,7 @@ interface IReplyCommentView {
     website_url: string
     title: string
     comment: IComment
+    currentSort: Sort
 }
 
 export const ReplyCommentView: React.FC<IReplyCommentView> = ({
@@ -38,6 +39,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     comment,
     currentUser,
     isModerator,
+    currentSort,
 }) => {
     const [useSecondaryReply, changeUseEditSecondary] = useState(false)
     const [useReplyEdit, changeUseReplyEdit] = useState(false)
@@ -60,6 +62,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 <Comment.Text>
                     {useReplyEdit ? (
                         <EditCommentForm
+                            currentSort={currentSort}
                             application_id={comment.application_id}
                             website_url={website_url}
                             thread_id={thread_id}
@@ -114,6 +117,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 </Comment.Actions>
                 {useSecondaryReply ? (
                     <ReplyCommentForm
+                        currentSort={currentSort}
                         limit={limit}
                         skip={skip}
                         comment={comment}

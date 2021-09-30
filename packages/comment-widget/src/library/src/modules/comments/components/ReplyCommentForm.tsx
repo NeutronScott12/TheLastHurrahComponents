@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import { Button, TextField } from '@material-ui/core'
-import { useCreateReplyCommentMutation } from '../../../generated/graphql'
+import { Sort, useCreateReplyCommentMutation } from '../../../generated/graphql'
 import {
     commentValidationSchema,
     fetchCommentByThreadIdQueryCache,
@@ -19,6 +19,7 @@ interface IReplyCommentFormProps {
     comment: IComment
     limit: number
     skip: number
+    currentSort: Sort
 }
 
 export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
@@ -27,6 +28,7 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
     comment,
     limit,
     skip,
+    currentSort,
     changeUseMain,
 }) => {
     const [checkError, setError] = useState(false)
@@ -55,6 +57,7 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
                             thread_id: comment.thread_id,
                             limit,
                             skip,
+                            sort: currentSort,
                         })
 
                         changeUseMain(false)
@@ -72,6 +75,8 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
                                     )
                                     .replies.push(data.create_reply_comment)
                             }
+
+                            console.log('CLONED', cloned)
 
                             const newData = mergeDeepRight(cloned, {
                                 fetch_comments_by_thread_id: {
@@ -91,6 +96,7 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
                                 thread_id: comment.thread_id,
                                 limit,
                                 skip,
+                                sort: currentSort,
                                 data: newData,
                             })
                         }

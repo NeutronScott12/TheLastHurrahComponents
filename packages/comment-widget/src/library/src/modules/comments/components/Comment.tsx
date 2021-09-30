@@ -15,6 +15,7 @@ import {
 import {
     CountModel,
     Maybe,
+    Sort,
     useCurrentUserQuery,
     useDeleteThreadCommentMutation,
     useFineOneApplicationByIdQuery,
@@ -54,6 +55,7 @@ interface ICommentProps {
     title: string
     website_url: string
     application_id: string
+    currentSort: Sort
 }
 
 export const CommentComponent: React.FC<ICommentProps> = ({
@@ -64,6 +66,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     title,
     website_url,
     application_id,
+    currentSort,
 }) => {
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -84,6 +87,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                         thread_id,
                         limit,
                         skip,
+                        sort: currentSort,
                     })
 
                     if (response && response.fetch_comments_by_thread_id) {
@@ -109,6 +113,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                             thread_id,
                             limit,
                             skip,
+                            sort: currentSort,
                             data: newData,
                         })
                     }
@@ -138,6 +143,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                         thread_id,
                         limit,
                         skip,
+                        sort: currentSort,
                     })
 
                     console.log('RESPONSE', response)
@@ -182,9 +188,10 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                             newComments = Array.from(
                                 fn(parent_id, 'replies', newReplies)(comments),
                             )
-
                             // comments[parent_index].replies = newReplies
                         }
+
+                        console.log('NEW_COMMENTS', newComments)
 
                         const newData = mergeDeepRight(cloned, {
                             fetch_comments_by_thread_id: {
@@ -208,6 +215,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                             thread_id,
                             limit,
                             skip,
+                            sort: currentSort,
                             data: newData,
                         })
                     }
@@ -224,6 +232,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         <>
             {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
             <CommentView
+                currentSort={currentSort}
                 currentUser={data && data.current_user ? data : undefined}
                 moderators={
                     applicationData &&

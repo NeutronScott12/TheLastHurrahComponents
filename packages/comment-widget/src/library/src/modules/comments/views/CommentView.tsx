@@ -6,7 +6,7 @@ import { IComment } from '../components/Comment'
 import { ReplyCommentForm } from '../components/ReplyCommentForm'
 import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentView } from './ReplyCommentView'
-import { CurrentUserQuery } from '../../../generated/graphql'
+import { CurrentUserQuery, Sort } from '../../../generated/graphql'
 import { Ratings } from '../components/Rating'
 
 export interface IModerator {
@@ -22,6 +22,7 @@ interface ICommentViewProps {
     website_url: string
     title: string
     moderators: IModerator[] | undefined
+    currentSort: Sort
     deleteComment: (id: string) => void
     deleteReplyComment: (id: string, parent_id: string) => void
 }
@@ -35,6 +36,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     website_url,
     currentUser,
     moderators,
+    currentSort,
     deleteComment,
     deleteReplyComment,
 }) => {
@@ -80,6 +82,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 <Comment.Text>
                     {useEdit ? (
                         <EditCommentForm
+                            currentSort={currentSort}
                             application_id={comment.application_id}
                             website_url={website_url}
                             thread_id={thread_id}
@@ -122,6 +125,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 </Comment.Actions>
                 {useMain ? (
                     <ReplyCommentForm
+                        currentSort={currentSort}
                         limit={limit}
                         skip={skip}
                         comment={comment}
@@ -137,6 +141,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 {comment.replies
                     ? comment.replies.map((reply) => (
                           <ReplyCommentView
+                              currentSort={currentSort}
                               displayModerator={displayModerator}
                               isModerator={isModerator}
                               thread_id={thread_id}

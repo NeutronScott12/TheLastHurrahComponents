@@ -16,7 +16,7 @@ import {
     update,
 } from 'ramda'
 import React, { useState } from 'react'
-import { useEditThreadCommentMutation } from '../../../generated/graphql'
+import { Sort, useEditThreadCommentMutation } from '../../../generated/graphql'
 import {
     fetchCommentByThreadIdQueryCache,
     WriteCommentByThreadIdQueryArgs,
@@ -33,6 +33,7 @@ interface IEditCommentForm {
     website_url: string
     limit: number
     skip: number
+    currentSort: Sort
 }
 
 export const EditCommentForm: React.FC<IEditCommentForm> = ({
@@ -43,6 +44,7 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
     comment_id,
     limit,
     skip,
+    currentSort,
 }) => {
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -66,6 +68,7 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                                 thread_id,
                                 limit,
                                 skip,
+                                sort: currentSort,
                             })
 
                             if (
@@ -160,6 +163,7 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                                     thread_id,
                                     limit,
                                     skip,
+                                    sort: currentSort,
                                     data: changedObject,
                                 })
                             }

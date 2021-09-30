@@ -17,6 +17,7 @@ import {
 } from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
 import { FilterComments } from './FilterComments'
+import { MenuBar } from './MenuBar'
 
 type TVariables = {}
 type TData = {}
@@ -89,31 +90,18 @@ export const CommentList: React.FC<ICommentListProps> = ({
         })
     }
 
-    const changeSort = async (sort: Sort) => {
-        changeCurrentSort(sort)
-        localStorage.setItem('currentSort', currentSort)
-        await refetch({
-            fetchCommentByThreadIdInput: {
-                limit,
-                skip,
-                thread_id,
-                sort: currentSort,
-            },
-        })
-    }
-
     return loading && data && data.fetch_comments_by_thread_id.comments ? (
         <Loader />
     ) : (
         <div>
+            <MenuBar />
             {logged_in ? (
                 <CreateCommentForm
+                    currentSort={currentSort}
                     application_id={application_id}
                     thread_id={thread_id}
                     limit={limit}
                     skip={skip}
-                    title={title}
-                    website_url={website_url}
                 />
             ) : (
                 ''
@@ -127,6 +115,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
                     data.fetch_comments_by_thread_id.comments.map((comment) => {
                         return (
                             <CommentComponent
+                                currentSort={currentSort}
                                 thread_id={thread_id}
                                 title={title}
                                 application_id={application_id}

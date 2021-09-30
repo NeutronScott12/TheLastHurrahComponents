@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import { clone, mergeDeepRight } from 'ramda'
 
-import { useCreateThreadComentMutation } from '../../../generated/graphql'
+import { Sort, useCreateThreadComentMutation } from '../../../generated/graphql'
 import { Button, TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import {
@@ -16,8 +16,7 @@ interface ICreateCommentProps {
     application_id: string
     skip: number
     limit: number
-    title: string
-    website_url: string
+    currentSort: Sort
 }
 
 export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
@@ -25,8 +24,7 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
     application_id,
     skip,
     limit,
-    title,
-    website_url,
+    currentSort,
 }) => {
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -52,6 +50,7 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                             thread_id,
                             limit,
                             skip,
+                            sort: currentSort,
                         })
 
                         if (
@@ -86,6 +85,7 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                                 thread_id,
                                 limit,
                                 skip,
+                                sort: currentSort,
                                 data: changedObject,
                             })
                         }
