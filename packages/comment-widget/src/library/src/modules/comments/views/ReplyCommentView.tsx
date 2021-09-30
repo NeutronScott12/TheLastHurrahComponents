@@ -7,6 +7,7 @@ import { IComment } from '../components/Comment'
 import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentForm } from '../components/ReplyCommentForm'
 import { CurrentUserQuery } from '../../../generated/graphql'
+import { Ratings } from '../components/Rating'
 
 interface IReplyCommentView {
     deleteComment: (id: string) => void
@@ -75,6 +76,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                     )}
                 </Comment.Text>
                 <Comment.Actions>
+                    <Ratings comment={reply} />
                     <Comment.Action
                         onClick={() =>
                             changeUseEditSecondary(!useSecondaryReply)

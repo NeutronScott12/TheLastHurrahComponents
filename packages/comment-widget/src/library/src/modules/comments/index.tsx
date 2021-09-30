@@ -11,7 +11,7 @@ import {
 import { CommentList } from './components/CommentList'
 import { useCurrentUser } from '../../utils/customApolloHooks'
 import { cache, IS_LOGGED_IN } from '../../apollo/cache'
-import { Loader } from './components/Loader'
+import { Loader } from './common/Loader'
 
 interface ICommentContainerProps {
     application_id: string

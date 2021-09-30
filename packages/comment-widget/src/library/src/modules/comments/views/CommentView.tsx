@@ -7,6 +7,7 @@ import { ReplyCommentForm } from '../components/ReplyCommentForm'
 import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentView } from './ReplyCommentView'
 import { CurrentUserQuery } from '../../../generated/graphql'
+import { Ratings } from '../components/Rating'
 
 export interface IModerator {
     username: string
@@ -96,6 +97,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 </Comment.Text>
 
                 <Comment.Actions>
+                    <Ratings comment={comment} />
                     <Comment.Action onClick={() => changeUseMain(!useMain)}>
                         Reply
                     </Comment.Action>

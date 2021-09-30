@@ -47,11 +47,13 @@ fragment CommentFragment on CommentModel {
     updated_at
     user_id
     parent_id
+    _count {
+        down_vote
+        replies
+        up_vote
+    }
     replied_to_user {
         username
-    }
-    ratings {
-        id
     }
 }
 
@@ -142,6 +144,30 @@ input UpdateCommentInput {
 
 mutation EditThreadComment($UpdateCommentInput: UpdateCommentInput!) {
     update_comment(UpdateCommentInput: $UpdateCommentInput) {
+        ...CommentFragment
+        replies {
+            ...CommentFragment
+            replies {
+                ...CommentFragment
+            }
+        }
+    }
+}
+
+mutation UpVoteComment($comment_id: String!) {
+    up_vote_comment(comment_id: $comment_id) {
+        ...CommentFragment
+        replies {
+            ...CommentFragment
+            replies {
+                ...CommentFragment
+            }
+        }
+    }
+}
+
+mutation DownVoteComment($comment_id: String!) {
+    down_vote_comment(comment_id: $comment_id) {
         ...CommentFragment
         replies {
             ...CommentFragment

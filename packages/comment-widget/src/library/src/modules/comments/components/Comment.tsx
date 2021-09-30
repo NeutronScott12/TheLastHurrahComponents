@@ -1,11 +1,5 @@
 import React, { useState } from 'react'
-
-import {
-    Maybe,
-    useCurrentUserQuery,
-    useDeleteThreadCommentMutation,
-    useFineOneApplicationByIdQuery,
-} from '../../../generated/graphql'
+import { Alert } from '@material-ui/lab'
 import {
     always,
     clone,
@@ -17,13 +11,20 @@ import {
     propEq,
     when,
 } from 'ramda'
+
+import {
+    CountModel,
+    Maybe,
+    useCurrentUserQuery,
+    useDeleteThreadCommentMutation,
+    useFineOneApplicationByIdQuery,
+} from '../../../generated/graphql'
 import { CommentView } from '../views/CommentView'
 import {
     fetchCommentByThreadIdQueryCache,
     WriteCommentByThreadIdQueryArgs,
 } from '../common'
-import { Loader } from './Loader'
-import { Alert } from '@material-ui/lab'
+import { Loader } from '../common/Loader'
 
 export interface IComment {
     author: {
@@ -42,6 +43,7 @@ export interface IComment {
         username: string
     }>
     replies?: IComment[]
+    _count: CountModel
 }
 
 interface ICommentProps {
@@ -184,8 +186,6 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                             // comments[parent_index].replies = newReplies
                         }
 
-                        console.log('NEW_COMMENTS', newComments)
-
                         const newData = mergeDeepRight(cloned, {
                             fetch_comments_by_thread_id: {
                                 __typename:
@@ -198,8 +198,6 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                                 comments: newComments,
                             },
                         })
-
-                        console.log('NEW_DATA', newData)
 
                         cache.evict({
                             fieldName: 'CommentModel',

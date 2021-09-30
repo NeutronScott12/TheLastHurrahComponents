@@ -12,7 +12,7 @@ import {
     TypedDocumentNode,
 } from '@apollo/client'
 import { useFetchCommentByThreadIdQuery } from '../../../generated/graphql'
-import { Loader } from './Loader'
+import { Loader } from '../common/Loader'
 
 type TVariables = {}
 type TData = {}
