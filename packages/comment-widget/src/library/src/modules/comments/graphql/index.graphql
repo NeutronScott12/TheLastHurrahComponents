@@ -37,7 +37,6 @@ fragment CommentFragment on CommentModel {
     application_id
     author {
         username
-        email
         id
     }
     body
@@ -57,10 +56,17 @@ fragment CommentFragment on CommentModel {
     }
 }
 
+enum SORT {
+    ASC
+    DESC
+    TOP_VOTES
+}
+
 input FetchCommentByThreadIdInput {
     limit: Int!
     skip: Int!
     thread_id: String!
+    sort: SORT!
 }
 
 query FetchCommentByThreadId(
@@ -111,7 +117,7 @@ mutation DeleteThreadComment($commentId: String!) {
 query CurrentUser {
     current_user {
         id
-        email
+        username
     }
 }
 

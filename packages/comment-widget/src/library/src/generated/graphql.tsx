@@ -95,6 +95,7 @@ export type FetchAllComments = {
 export type FetchCommentByThreadIdInput = {
   limit: Scalars['Float'];
   skip: Scalars['Float'];
+  sort: Sort;
   thread_id: Scalars['String'];
 };
 
@@ -107,6 +108,7 @@ export type FetchCommentByThreadIdResponse = {
 export type FetchThreadCommentsById = {
   limit: Scalars['Int'];
   skip: Scalars['Int'];
+  sort?: Maybe<Sort>;
 };
 
 export type FindOrCreateOneThreadInput = {
@@ -295,7 +297,7 @@ export type QuerySearch_User_By_EmailArgs = {
 
 export type RatingModel = {
   __typename?: 'RatingModel';
-  authorId: Scalars['String'];
+  author_id: Scalars['String'];
   id: Scalars['String'];
 };
 
@@ -346,6 +348,12 @@ export type UserModel = {
   user_role: Scalars['String'];
   username: Scalars['String'];
 };
+
+export enum Sort {
+  Asc = 'ASC',
+  Desc = 'DESC',
+  TopVotes = 'TOP_VOTES'
+}
 
 export type FindOneOrCreateOneThreadQueryVariables = Exact<{
   findOrCreateOneThreadInput: FindOrCreateOneThreadInput;
@@ -930,9 +938,9 @@ export type QueryFieldPolicy = {
 	resend_email_code?: FieldPolicy<any> | FieldReadFunction<any>,
 	search_user_by_email?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type RatingModelKeySpecifier = ('authorId' | 'id' | RatingModelKeySpecifier)[];
+export type RatingModelKeySpecifier = ('author_id' | 'id' | RatingModelKeySpecifier)[];
 export type RatingModelFieldPolicy = {
-	authorId?: FieldPolicy<any> | FieldReadFunction<any>,
+	author_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StandardResponseModelKeySpecifier = ('message' | 'success' | StandardResponseModelKeySpecifier)[];

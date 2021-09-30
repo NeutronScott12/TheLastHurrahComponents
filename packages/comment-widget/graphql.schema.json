@@ -971,6 +971,22 @@
             "deprecationReason": null
           },
           {
+            "name": "sort",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "sort",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "thread_id",
             "description": null,
             "type": {
@@ -1075,6 +1091,18 @@
                 "name": "Int",
                 "ofType": null
               }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "sort",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "sort",
+              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -2315,7 +2343,7 @@
         "description": null,
         "fields": [
           {
-            "name": "authorId",
+            "name": "author_id",
             "description": null,
             "args": [],
             "type": {
@@ -3677,6 +3705,35 @@
           {
             "name": "NON_NULL",
             "description": "Indicates this type is a non-null. `ofType` is a valid field.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "sort",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ASC",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DESC",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "TOP_VOTES",
+            "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@material-ui/core'
 import { Comment } from 'semantic-ui-react'
 
@@ -11,8 +11,12 @@ import {
     FetchMoreQueryOptions,
     TypedDocumentNode,
 } from '@apollo/client'
-import { useFetchCommentByThreadIdQuery } from '../../../generated/graphql'
+import {
+    Sort,
+    useFetchCommentByThreadIdQuery,
+} from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
+import { FilterComments } from './FilterComments'
 
 type TVariables = {}
 type TData = {}
@@ -41,16 +45,31 @@ export const CommentList: React.FC<ICommentListProps> = ({
     thread_id,
     application_id,
     logged_in,
-    changeLimit,
     limit,
     skip,
     title,
     website_url,
+    changeLimit,
     fetchMore,
 }) => {
-    const { data, loading } = useFetchCommentByThreadIdQuery({
-        variables: { fetchCommentByThreadIdInput: { thread_id, limit, skip } },
+    const [currentSort, changeCurrentSort] = useState(Sort.Asc)
+    const { data, loading, refetch } = useFetchCommentByThreadIdQuery({
+        variables: {
+            fetchCommentByThreadIdInput: {
+                thread_id,
+                limit,
+                skip,
+                sort: currentSort,
+            },
+        },
     })
+
+    useEffect(() => {
+        const localCurrent = localStorage.getItem('currentSort')
+        if (localCurrent) {
+            changeCurrentSort(localCurrent as Sort)
+        }
+    }, [])
 
     const fetchMoreComments = async () => {
         changeLimit(limit + 10)
@@ -66,6 +85,19 @@ export const CommentList: React.FC<ICommentListProps> = ({
                     limit,
                     skip,
                 },
+            },
+        })
+    }
+
+    const changeSort = async (sort: Sort) => {
+        changeCurrentSort(sort)
+        localStorage.setItem('currentSort', currentSort)
+        await refetch({
+            fetchCommentByThreadIdInput: {
+                limit,
+                skip,
+                thread_id,
+                sort: currentSort,
             },
         })
     }
@@ -86,7 +118,10 @@ export const CommentList: React.FC<ICommentListProps> = ({
             ) : (
                 ''
             )}
-
+            <FilterComments
+                currentSort={currentSort}
+                changeCurrentSort={changeCurrentSort}
+            />
             <Comment.Group size="huge">
                 {data &&
                     data.fetch_comments_by_thread_id.comments.map((comment) => {
