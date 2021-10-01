@@ -30,11 +30,11 @@ import { Loader } from '../common/Loader'
 export interface IComment {
     author: {
         username: string
-        email: string
         id: string
     }
     id: string
-    body: string
+    plain_text_body: string
+    json_body: object
     created_at: string
     thread_id: string
     application_id: string

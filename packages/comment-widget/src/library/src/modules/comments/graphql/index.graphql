@@ -39,7 +39,8 @@ fragment CommentFragment on CommentModel {
         username
         id
     }
-    body
+    plain_text_body
+    json_body
     id
     thread_id
     created_at

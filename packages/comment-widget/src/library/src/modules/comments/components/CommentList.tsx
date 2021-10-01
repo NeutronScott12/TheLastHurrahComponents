@@ -106,10 +106,10 @@ export const CommentList: React.FC<ICommentListProps> = ({
             ) : (
                 ''
             )}
-            <FilterComments
+            {/* <FilterComments
                 currentSort={currentSort}
                 changeCurrentSort={changeCurrentSort}
-            />
+            /> */}
             <Comment.Group size="huge">
                 {data &&
                     data.fetch_comments_by_thread_id.comments.map((comment) => {

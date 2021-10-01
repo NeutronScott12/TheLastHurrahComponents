@@ -92,10 +92,10 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                             // changeUseReplyEdit={changeUseReplyEdit}
                             comment_id={comment.id}
                             changeUseEdit={changeUseEdit}
-                            comment_body={comment.body}
+                            comment_body={comment.plain_text_body}
                         />
                     ) : (
-                        comment.body
+                        comment.plain_text_body
                     )}
                 </Comment.Text>
 

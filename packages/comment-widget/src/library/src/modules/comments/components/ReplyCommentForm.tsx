@@ -35,87 +35,87 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
     const [errorMessage, setErrorMessage] = useState('')
     const [createReply] = useCreateReplyCommentMutation()
 
-    const formik = useFormik({
-        initialValues: {
-            body: '',
-        },
-        validationSchema: commentValidationSchema,
-        async onSubmit({ body }) {
-            try {
-                await createReply({
-                    variables: {
-                        CreateReplyCommentInput: {
-                            body,
-                            application_id: comment.application_id,
-                            thread_id: comment.thread_id,
-                            parent_id,
-                            replied_to_id,
-                        },
-                    },
-                    update(cache, { data }) {
-                        const response = fetchCommentByThreadIdQueryCache({
-                            thread_id: comment.thread_id,
-                            limit,
-                            skip,
-                            sort: currentSort,
-                        })
+    // const formik = useFormik({
+    //     initialValues: {
+    //         body: '',
+    //     },
+    //     validationSchema: commentValidationSchema,
+    //     async onSubmit({ body }) {
+    //         try {
+    //             await createReply({
+    //                 variables: {
+    //                     CreateReplyCommentInput: {
+    //                         body,
+    //                         application_id: comment.application_id,
+    //                         thread_id: comment.thread_id,
+    //                         parent_id,
+    //                         replied_to_id,
+    //                     },
+    //                 },
+    //                 update(cache, { data }) {
+    //                     const response = fetchCommentByThreadIdQueryCache({
+    //                         thread_id: comment.thread_id,
+    //                         limit,
+    //                         skip,
+    //                         sort: currentSort,
+    //                     })
 
-                        changeUseMain(false)
+    //                     changeUseMain(false)
 
-                        if (data && response?.fetch_comments_by_thread_id) {
-                            const cloned = clone(response)
+    //                     if (data && response?.fetch_comments_by_thread_id) {
+    //                         const cloned = clone(response)
 
-                            if (cloned.fetch_comments_by_thread_id.comments) {
-                                //@ts-ignore
-                                cloned.fetch_comments_by_thread_id.comments
-                                    .find(
-                                        (comment) =>
-                                            comment.id ===
-                                            data.create_reply_comment.parent_id,
-                                    )
-                                    .replies.push(data.create_reply_comment)
-                            }
+    //                         if (cloned.fetch_comments_by_thread_id.comments) {
+    //                             //@ts-ignore
+    //                             cloned.fetch_comments_by_thread_id.comments
+    //                                 .find(
+    //                                     (comment) =>
+    //                                         comment.id ===
+    //                                         data.create_reply_comment.parent_id,
+    //                                 )
+    //                                 .replies.push(data.create_reply_comment)
+    //                         }
 
-                            console.log('CLONED', cloned)
+    //                         console.log('CLONED', cloned)
 
-                            const newData = mergeDeepRight(cloned, {
-                                fetch_comments_by_thread_id: {
-                                    __typename:
-                                        response.fetch_comments_by_thread_id
-                                            .__typename,
-                                    comments_count:
-                                        cloned.fetch_comments_by_thread_id
-                                            .comments_count,
-                                    comments:
-                                        cloned.fetch_comments_by_thread_id
-                                            .comments,
-                                },
-                            })
+    //                         const newData = mergeDeepRight(cloned, {
+    //                             fetch_comments_by_thread_id: {
+    //                                 __typename:
+    //                                     response.fetch_comments_by_thread_id
+    //                                         .__typename,
+    //                                 comments_count:
+    //                                     cloned.fetch_comments_by_thread_id
+    //                                         .comments_count,
+    //                                 comments:
+    //                                     cloned.fetch_comments_by_thread_id
+    //                                         .comments,
+    //                             },
+    //                         })
 
-                            WriteCommentByThreadIdQueryArgs({
-                                thread_id: comment.thread_id,
-                                limit,
-                                skip,
-                                sort: currentSort,
-                                data: newData,
-                            })
-                        }
-                    },
-                })
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.log(error)
-                    setError(true)
-                    setErrorMessage('something went wrong')
-                }
-            }
-        },
-    })
+    //                         WriteCommentByThreadIdQueryArgs({
+    //                             thread_id: comment.thread_id,
+    //                             limit,
+    //                             skip,
+    //                             sort: currentSort,
+    //                             data: newData,
+    //                         })
+    //                     }
+    //                 },
+    //             })
+    //         } catch (error) {
+    //             if (error instanceof Error) {
+    //                 console.log(error)
+    //                 setError(true)
+    //                 setErrorMessage('something went wrong')
+    //             }
+    //         }
+    //     },
+    // })
 
     return (
         <div>
             {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
-            <form onSubmit={formik.handleSubmit}>
+            {/* <form onSubmit={formik.handleSubmit}>
                 <TextField
                     fullWidth
                     id="body"
@@ -134,7 +134,7 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
                 >
                     Submit
                 </Button>
-            </form>
+            </form> */}
         </div>
     )
 }

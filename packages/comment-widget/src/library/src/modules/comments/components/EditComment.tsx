@@ -49,146 +49,146 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const [editComment] = useEditThreadCommentMutation()
-    const formik = useFormik({
-        initialValues: {
-            body: comment_body,
-        },
-        async onSubmit({ body }) {
-            try {
-                if (body === comment_body) {
-                    changeUseEdit(false)
-                    if (changeUseReplyEdit) {
-                        changeUseReplyEdit(false)
-                    }
-                } else {
-                    await editComment({
-                        variables: { UpdateCommentInput: { body, comment_id } },
-                        update(cache, { data }) {
-                            const response = fetchCommentByThreadIdQueryCache({
-                                thread_id,
-                                limit,
-                                skip,
-                                sort: currentSort,
-                            })
+    // const formik = useFormik({
+    //     initialValues: {
+    //         body: comment_body,
+    //     },
+    //     async onSubmit({ body }) {
+    //         try {
+    //             if (body === comment_body) {
+    //                 changeUseEdit(false)
+    //                 if (changeUseReplyEdit) {
+    //                     changeUseReplyEdit(false)
+    //                 }
+    //             } else {
+    //                 await editComment({
+    //                     variables: { UpdateCommentInput: { body, comment_id } },
+    //                     update(cache, { data }) {
+    //                         const response = fetchCommentByThreadIdQueryCache({
+    //                             thread_id,
+    //                             limit,
+    //                             skip,
+    //                             sort: currentSort,
+    //                         })
 
-                            if (
-                                response &&
-                                response.fetch_comments_by_thread_id &&
-                                data &&
-                                data.update_comment
-                            ) {
-                                let clonedData = clone(response)
-                                let comments =
-                                    clonedData.fetch_comments_by_thread_id
-                                        .comments
-                                let newComments
+    //                         if (
+    //                             response &&
+    //                             response.fetch_comments_by_thread_id &&
+    //                             data &&
+    //                             data.update_comment
+    //                         ) {
+    //                             let clonedData = clone(response)
+    //                             let comments =
+    //                                 clonedData.fetch_comments_by_thread_id
+    //                                     .comments
+    //                             let newComments
 
-                                if (!data.update_comment.parent_id) {
-                                    const index = findIndex(
-                                        propEq('id', data.update_comment.id),
-                                    )(comments)
+    //                             if (!data.update_comment.parent_id) {
+    //                                 const index = findIndex(
+    //                                     propEq('id', data.update_comment.id),
+    //                                 )(comments)
 
-                                    newComments = update(
-                                        index,
-                                        data.update_comment,
-                                        comments,
-                                    )
-                                } else {
-                                    console.log('SHOULD NOT BE RUNNING')
-                                    const replies = comments.find(
-                                        (comment) =>
-                                            comment.id ===
-                                            data.update_comment.parent_id,
-                                    )?.replies
+    //                                 newComments = update(
+    //                                     index,
+    //                                     data.update_comment,
+    //                                     comments,
+    //                                 )
+    //                             } else {
+    //                                 console.log('SHOULD NOT BE RUNNING')
+    //                                 const replies = comments.find(
+    //                                     (comment) =>
+    //                                         comment.id ===
+    //                                         data.update_comment.parent_id,
+    //                                 )?.replies
 
-                                    if (replies) {
-                                        const replyIndex = replies.findIndex(
-                                            (comment) =>
-                                                comment.id ===
-                                                data.update_comment.id,
-                                        )
+    //                                 if (replies) {
+    //                                     const replyIndex = replies.findIndex(
+    //                                         (comment) =>
+    //                                             comment.id ===
+    //                                             data.update_comment.id,
+    //                                     )
 
-                                        const filtered_reply = remove(
-                                            replyIndex,
-                                            1,
-                                            replies,
-                                        )
+    //                                     const filtered_reply = remove(
+    //                                         replyIndex,
+    //                                         1,
+    //                                         replies,
+    //                                     )
 
-                                        const newReplies = insert(
-                                            replyIndex,
-                                            data.update_comment,
-                                            filtered_reply,
-                                        )
+    //                                     const newReplies = insert(
+    //                                         replyIndex,
+    //                                         data.update_comment,
+    //                                         filtered_reply,
+    //                                     )
 
-                                        const fn = curry((id, prop, content) =>
-                                            map(
-                                                when(
-                                                    propEq('id', id),
-                                                    evolve({
-                                                        [prop]: always(content),
-                                                    }),
-                                                ),
-                                            ),
-                                        )
+    //                                     const fn = curry((id, prop, content) =>
+    //                                         map(
+    //                                             when(
+    //                                                 propEq('id', id),
+    //                                                 evolve({
+    //                                                     [prop]: always(content),
+    //                                                 }),
+    //                                             ),
+    //                                         ),
+    //                                     )
 
-                                        newComments = Array.from(
-                                            fn(
-                                                data.update_comment.parent_id,
-                                                'replies',
-                                                newReplies,
-                                            )(comments),
-                                        )
-                                    }
-                                }
+    //                                     newComments = Array.from(
+    //                                         fn(
+    //                                             data.update_comment.parent_id,
+    //                                             'replies',
+    //                                             newReplies,
+    //                                         )(comments),
+    //                                     )
+    //                                 }
+    //                             }
 
-                                const newData = {
-                                    fetch_comments_by_thread_id: {
-                                        __typename:
-                                            response.fetch_comments_by_thread_id
-                                                .__typename,
-                                        comments_count:
-                                            clonedData
-                                                .fetch_comments_by_thread_id
-                                                .comments_count,
-                                        comments: newComments,
-                                    },
-                                }
+    //                             const newData = {
+    //                                 fetch_comments_by_thread_id: {
+    //                                     __typename:
+    //                                         response.fetch_comments_by_thread_id
+    //                                             .__typename,
+    //                                     comments_count:
+    //                                         clonedData
+    //                                             .fetch_comments_by_thread_id
+    //                                             .comments_count,
+    //                                     comments: newComments,
+    //                                 },
+    //                             }
 
-                                const changedObject = mergeDeepRight(
-                                    clonedData,
-                                    newData,
-                                )
+    //                             const changedObject = mergeDeepRight(
+    //                                 clonedData,
+    //                                 newData,
+    //                             )
 
-                                WriteCommentByThreadIdQueryArgs({
-                                    thread_id,
-                                    limit,
-                                    skip,
-                                    sort: currentSort,
-                                    data: changedObject,
-                                })
-                            }
-                        },
-                    })
+    //                             WriteCommentByThreadIdQueryArgs({
+    //                                 thread_id,
+    //                                 limit,
+    //                                 skip,
+    //                                 sort: currentSort,
+    //                                 data: changedObject,
+    //                             })
+    //                         }
+    //                     },
+    //                 })
 
-                    changeUseEdit(false)
-                    if (changeUseReplyEdit) {
-                        changeUseReplyEdit(false)
-                    }
-                }
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.log(error)
-                    setError(true)
-                    setErrorMessage('something went wrong')
-                }
-            }
-        },
-    })
+    //                 changeUseEdit(false)
+    //                 if (changeUseReplyEdit) {
+    //                     changeUseReplyEdit(false)
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             if (error instanceof Error) {
+    //                 console.log(error)
+    //                 setError(true)
+    //                 setErrorMessage('something went wrong')
+    //             }
+    //         }
+    //     },
+    // })
 
     return (
         <div>
             {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
-            <form onSubmit={formik.handleSubmit}>
+            {/* <form onSubmit={formik.handleSubmit}>
                 <TextField
                     fullWidth
                     id="body"
@@ -206,7 +206,7 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                 >
                     Submit
                 </Button>
-            </form>
+            </form> */}
         </div>
     )
 }

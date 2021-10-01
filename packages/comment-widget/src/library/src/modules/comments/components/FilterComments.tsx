@@ -1,6 +1,5 @@
-import { display } from '@mui/system'
-import React from 'react'
-import { Dropdown, DropdownItemProps, Input } from 'semantic-ui-react'
+import React, { Component, createRef } from 'react'
+import { Dropdown, DropdownItemProps, DropdownProps } from 'semantic-ui-react'
 import { Sort } from '../../../generated/graphql'
 
 const tagOptions = [
@@ -33,7 +32,13 @@ export const FilterComments: React.FC<IFilterComments> = ({
     currentSort,
     changeCurrentSort,
 }) => {
-    const setFilterOption = (e: any, { value }: DropdownItemProps) => {
+    const dropDownRef = createRef<Component<DropdownProps, any, any>>()
+
+    const setFilterOption = (
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        { value }: DropdownItemProps,
+    ) => {
+        e.preventDefault()
         changeCurrentSort(value as Sort)
     }
 
@@ -54,6 +59,7 @@ export const FilterComments: React.FC<IFilterComments> = ({
             labeled
             button
             className="icon"
+            ref={dropDownRef}
         >
             <Dropdown.Menu>
                 {/* <Input icon="search" iconPosition="left" className="search" /> */}
