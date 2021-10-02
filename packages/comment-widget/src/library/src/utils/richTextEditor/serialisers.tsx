@@ -6,7 +6,7 @@ export const plainTextserialiser = (nodes: Descendant[]) => {
     return nodes.map((n) => String(n.children[0].text)).join('\n')
 }
 
-const htmlSerialiser = (node: Descendant): string => {
+export const htmlSerialiser = (node: Descendant): string => {
     if (Text.isText(node)) {
         let string = escapeHtml(node.text)
         //@ts-ignore
