@@ -490,7 +490,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "JSON",
+                "name": "JSONObject",
                 "ofType": null
               }
             },
@@ -800,6 +800,33 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "CreateOrderInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "total_price",
+            "description": "Total cost",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
                 "ofType": null
               }
             },
@@ -1238,16 +1265,6 @@
       },
       {
         "kind": "SCALAR",
-        "name": "JSON",
-        "description": "The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "SCALAR",
         "name": "JSONObject",
         "description": "The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).",
         "fields": null,
@@ -1478,6 +1495,39 @@
               "ofType": {
                 "kind": "OBJECT",
                 "name": "CommentModel",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "create_order",
+            "description": null,
+            "args": [
+              {
+                "name": "CreateOrderInput",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "CreateOrderInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StandardResponseModel",
                 "ofType": null
               }
             },

@@ -19,7 +19,9 @@ export const htmlSerialiser = (node: Descendant): string => {
     const children = node.children.map((n) => htmlSerialiser(n)).join('')
     //@ts-ignore
     switch (node.type) {
-        case 'quote':
+        case 'heading-one':
+            return `<h1>${children}</h1>`
+        case 'block-quote':
             return `<blockquote><p>${children}</p></blockquote>`
         case 'paragraph':
             return `<p>${children}</p>`

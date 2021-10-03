@@ -8,6 +8,7 @@ import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentForm } from '../components/ReplyCommentForm'
 import { CurrentUserQuery, Sort } from '../../../generated/graphql'
 import { Ratings } from '../components/Rating'
+import { displayHtml } from '../helpers'
 
 interface IReplyCommentView {
     deleteComment: (id: string) => void
@@ -69,13 +70,16 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                             limit={limit}
                             skip={skip}
                             title={title}
+                            comment={comment}
                             changeUseReplyEdit={changeUseReplyEdit}
-                            comment_id={reply.id}
                             changeUseEdit={changeUseEdit}
-                            comment_body={reply.plain_text_body}
                         />
                     ) : (
-                        reply.plain_text_body
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: displayHtml(reply),
+                            }}
+                        />
                     )}
                 </Comment.Text>
                 <Comment.Actions>

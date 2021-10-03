@@ -1,6 +1,6 @@
 import { Descendant, Editor, Transforms, Element as SlateElement } from 'slate'
 import { useSlate } from 'slate-react'
-import { Button, Icon } from '../views/RichTextEditorViews'
+import { Button, Icon } from './RichTextEditorViews'
 
 export const HOTKEYS = {
     'mod+b': 'bold',

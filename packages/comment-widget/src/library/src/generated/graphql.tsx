@@ -15,8 +15,6 @@ export type Scalars = {
   Float: number;
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: any;
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: any;
   /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSONObject: any;
 };
@@ -54,7 +52,7 @@ export type CommentModel = {
   created_at: Scalars['DateTime'];
   down_vote: Array<RatingModel>;
   id: Scalars['String'];
-  json_body: Scalars['JSON'];
+  json_body: Scalars['JSONObject'];
   parent_id?: Maybe<Scalars['String']>;
   plain_text_body: Scalars['String'];
   replied_to_id?: Maybe<Scalars['String']>;
@@ -82,6 +80,11 @@ export type CreateCommentInput = {
   json_body: Scalars['JSONObject'];
   plain_text_body: Scalars['String'];
   thread_id: Scalars['String'];
+};
+
+export type CreateOrderInput = {
+  /** Total cost */
+  total_price: Scalars['Float'];
 };
 
 export type CreateReplyCommentInput = {
@@ -142,6 +145,7 @@ export type Mutation = {
   confirm_user: StandardResponseModel;
   create_application: ApplicationModel;
   create_comment: CommentModel;
+  create_order: StandardResponseModel;
   create_reply_comment: CommentModel;
   delete_comment: StandardResponseModel;
   delete_user: StandardResponseModel;
@@ -176,6 +180,11 @@ export type MutationCreate_ApplicationArgs = {
 
 export type MutationCreate_CommentArgs = {
   CreateCommentInput: CreateCommentInput;
+};
+
+
+export type MutationCreate_OrderArgs = {
+  CreateOrderInput: CreateOrderInput;
 };
 
 
@@ -911,12 +920,13 @@ export type LoginResponseFieldPolicy = {
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('add_application_moderator' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_reply_comment' | 'delete_comment' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'reset_password' | 'up_vote_comment' | 'update_application' | 'update_comment' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('add_application_moderator' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_order' | 'create_reply_comment' | 'delete_comment' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'reset_password' | 'up_vote_comment' | 'update_application' | 'update_comment' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	add_application_moderator?: FieldPolicy<any> | FieldReadFunction<any>,
 	confirm_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_application?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_comment?: FieldPolicy<any> | FieldReadFunction<any>,
+	create_order?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_reply_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_user?: FieldPolicy<any> | FieldReadFunction<any>,

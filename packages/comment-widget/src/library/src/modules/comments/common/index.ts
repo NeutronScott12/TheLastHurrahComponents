@@ -9,7 +9,7 @@ import {
 export const FIND_ONE_OR_CREATE_ONE_THREAD_QUERY_OPTIONS = {}
 
 export const commentValidationSchema = yup.object().shape({
-    body: yup.string().required().max(1),
+    body: yup.string().required(),
 })
 
 interface IFetchCommentByThreadIdQueryArgs {

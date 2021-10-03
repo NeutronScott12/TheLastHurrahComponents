@@ -16,7 +16,7 @@ import {
     useFetchCommentByThreadIdQuery,
 } from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
-import { FilterComments } from './FilterComments'
+// import { FilterComments } from './FilterComments'
 import { MenuBar } from './MenuBar'
 
 type TVariables = {}
@@ -54,7 +54,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
     fetchMore,
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Asc)
-    const { data, loading, refetch } = useFetchCommentByThreadIdQuery({
+    const { data, loading } = useFetchCommentByThreadIdQuery({
         variables: {
             fetchCommentByThreadIdInput: {
                 thread_id,

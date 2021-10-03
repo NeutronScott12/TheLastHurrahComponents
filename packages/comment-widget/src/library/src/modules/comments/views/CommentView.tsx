@@ -8,6 +8,8 @@ import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentView } from './ReplyCommentView'
 import { CurrentUserQuery, Sort } from '../../../generated/graphql'
 import { Ratings } from '../components/Rating'
+import { htmlSerialiser } from '../../../utils/richTextEditor/serialisers'
+import { displayHtml } from '../helpers'
 
 export interface IModerator {
     username: string
@@ -90,12 +92,15 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                             skip={skip}
                             title={title}
                             // changeUseReplyEdit={changeUseReplyEdit}
-                            comment_id={comment.id}
+                            comment={comment}
                             changeUseEdit={changeUseEdit}
-                            comment_body={comment.plain_text_body}
                         />
                     ) : (
-                        comment.plain_text_body
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: displayHtml(comment),
+                            }}
+                        />
                     )}
                 </Comment.Text>
 

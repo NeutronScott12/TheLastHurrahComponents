@@ -26,6 +26,7 @@ import {
     WriteCommentByThreadIdQueryArgs,
 } from '../common'
 import { Loader } from '../common/Loader'
+import { Descendant } from 'slate'
 
 export interface IComment {
     author: {
@@ -34,7 +35,7 @@ export interface IComment {
     }
     id: string
     plain_text_body: string
-    json_body: object
+    json_body: Descendant[]
     created_at: string
     thread_id: string
     application_id: string
