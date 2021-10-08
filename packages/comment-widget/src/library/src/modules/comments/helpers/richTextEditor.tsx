@@ -1,4 +1,4 @@
-import { Descendant, Editor, Transforms, Element as SlateElement } from 'slate'
+import { Editor, Transforms, Element as SlateElement } from 'slate'
 import { useSlate } from 'slate-react'
 import { Button, Icon } from './RichTextEditorViews'
 
@@ -8,14 +8,6 @@ export const HOTKEYS = {
     'mod+u': 'underline',
     'mod+`': 'code',
 }
-
-const initialValue: Descendant[] = [
-    {
-        //@ts-ignore
-        type: 'paragraph',
-        children: [{ text: '' }],
-    },
-]
 
 export const LIST_TYPES = ['numbered-list', 'bulleted-list']
 

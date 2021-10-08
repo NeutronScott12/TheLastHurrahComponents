@@ -106,6 +106,15 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
             ) : (
                 ''
             )}
+
+            {currentUserData &&
+            currentUserData.isLoggedIn === true &&
+            data &&
+            data === undefined ? (
+                <h2>No Thread exists</h2>
+            ) : (
+                ''
+            )}
         </div>
     )
 }

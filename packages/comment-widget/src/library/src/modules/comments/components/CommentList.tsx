@@ -53,7 +53,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
     changeLimit,
     fetchMore,
 }) => {
-    const [currentSort, changeCurrentSort] = useState(Sort.Asc)
+    const [currentSort, changeCurrentSort] = useState(Sort.Desc)
     const { data, loading } = useFetchCommentByThreadIdQuery({
         variables: {
             fetchCommentByThreadIdInput: {

@@ -187,3 +187,37 @@ mutation DownVoteComment($comment_id: String!) {
         }
     }
 }
+
+mutation BlockUser($user_id: String!) {
+    block_user(user_id: $user_id) {
+        success
+        message
+    }
+}
+
+mutation UnBlockUser($user_id: String!) {
+    unblock_user(user_id: $user_id) {
+        success
+        message
+    }
+}
+
+enum REPORT_REASON {
+    DISAGREE
+    SPAM
+    INAPPROPRIATE_PROFILE
+    THREATENING_CONTENT
+    PRIVATE_INFORMATION
+}
+
+input CreateReportInput {
+    comment_id: String!
+    report: REPORT_REASON!
+}
+
+mutation CreateReport($createReportInput: CreateReportInput!) {
+    create_report(createReportInput: $createReportInput) {
+        success
+        message
+    }
+}

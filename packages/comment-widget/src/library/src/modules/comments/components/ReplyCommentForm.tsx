@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import { Button, TextField } from '@material-ui/core'
 import { Sort, useCreateReplyCommentMutation } from '../../../generated/graphql'
 import {
     commentValidationSchema,
@@ -10,18 +9,18 @@ import {
 
 import { IComment } from './Comment'
 import { Alert } from '@material-ui/lab'
-import { clone, mergeDeepRight, values } from 'ramda'
+import { clone, mergeDeepRight } from 'ramda'
 import { Descendant } from 'slate'
 import { RichTextEditorView } from '../views/RichTextEditorView'
 
 interface IReplyCommentFormProps {
-    changeUseMain: React.Dispatch<React.SetStateAction<boolean>>
     parent_id: string
     replied_to_id: string
     comment: IComment
     limit: number
     skip: number
     currentSort: Sort
+    changeUseMain: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const initialValue: Descendant[] = [

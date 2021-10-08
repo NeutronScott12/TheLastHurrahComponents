@@ -9,6 +9,7 @@ import { ReplyCommentForm } from '../components/ReplyCommentForm'
 import { CurrentUserQuery, Sort } from '../../../generated/graphql'
 import { Ratings } from '../components/Rating'
 import { displayHtml } from '../helpers'
+import { BlockComponent } from '../components/BlockComponent'
 
 interface IReplyCommentView {
     deleteComment: (id: string) => void
@@ -44,6 +45,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
 }) => {
     const [useSecondaryReply, changeUseEditSecondary] = useState(false)
     const [useReplyEdit, changeUseReplyEdit] = useState(false)
+    const [openReport, changeOpenReport] = useState(false)
 
     return (
         <Comment key={reply.id}>
@@ -60,6 +62,17 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 <Comment.Metadata>
                     <Moment format="DD/MM/YYYY">{reply.created_at}</Moment>
                 </Comment.Metadata>
+                {currentUser &&
+                currentUser.current_user.id !== reply.author.id ? (
+                    <Comment.Metadata>
+                        <BlockComponent
+                            changeOpenReport={changeOpenReport}
+                            comment_author_id={reply.author.id}
+                        />
+                    </Comment.Metadata>
+                ) : (
+                    ''
+                )}
                 <Comment.Text>
                     {useReplyEdit ? (
                         <EditCommentForm

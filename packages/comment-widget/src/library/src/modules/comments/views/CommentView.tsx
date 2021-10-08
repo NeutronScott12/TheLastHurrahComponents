@@ -8,8 +8,9 @@ import { EditCommentForm } from '../components/EditComment'
 import { ReplyCommentView } from './ReplyCommentView'
 import { CurrentUserQuery, Sort } from '../../../generated/graphql'
 import { Ratings } from '../components/Rating'
-import { htmlSerialiser } from '../../../utils/richTextEditor/serialisers'
 import { displayHtml } from '../helpers'
+import { BlockComponent } from '../components/BlockComponent'
+import { ReportFormComponent } from '../components/ReportFormComponent'
 
 export interface IModerator {
     username: string
@@ -44,6 +45,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
 }) => {
     const [useMain, changeUseMain] = useState(false)
     const [useEdit, changeUseEdit] = useState(false)
+    const [openReport, changeOpenReport] = useState(false)
     // const [useReplyEdit, changeUseReplyEdit] = useState(false)
     const [isModerator, changeIsModerator] = useState(false)
 
@@ -81,6 +83,18 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 <Comment.Metadata>
                     <Moment format="DD/MM/YYYY">{comment.created_at}</Moment>
                 </Comment.Metadata>
+                {currentUser &&
+                currentUser.current_user.id !== comment.author.id ? (
+                    <Comment.Metadata>
+                        <BlockComponent
+                            changeOpenReport={changeOpenReport}
+                            comment_author_id={comment.author.id}
+                        />
+                    </Comment.Metadata>
+                ) : (
+                    ''
+                )}
+
                 <Comment.Text>
                     {useEdit ? (
                         <EditCommentForm
@@ -137,6 +151,14 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                         replied_to_id={comment.author.id}
                         changeUseMain={changeUseMain}
                         parent_id={comment.id}
+                    />
+                ) : (
+                    ''
+                )}
+                {openReport ? (
+                    <ReportFormComponent
+                        comment_id={comment.id}
+                        changeOpenReport={changeOpenReport}
                     />
                 ) : (
                     ''

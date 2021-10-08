@@ -48,6 +48,8 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
         // validationSchema: commentValidationSchema,
         async onSubmit({ body }, { resetForm, setSubmitting }) {
             try {
+                console.log('VALUE', value)
+
                 await createComment({
                     variables: {
                         createCommentInput: {
@@ -104,6 +106,7 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                     },
                 })
 
+                setValue(initialValue)
                 resetForm()
                 setSubmitting(false)
             } catch (error) {
