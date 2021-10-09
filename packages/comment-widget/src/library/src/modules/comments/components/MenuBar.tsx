@@ -4,7 +4,11 @@ import { AppBar, Button, Menu, MenuItem } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import { cache, IS_LOGGED_IN } from '../../../apollo/cache'
 
-export const MenuBar = () => {
+interface IMenuBar {
+    setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const MenuBar: React.FC<IMenuBar> = ({ setLoggedIn }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
 
@@ -24,6 +28,7 @@ export const MenuBar = () => {
                 isLoggedIn: false,
             },
         })
+        setLoggedIn(false)
         localStorage.removeItem('binary-stash-token')
     }
 

@@ -29,6 +29,7 @@ interface ICommentListProps {
     logged_in: boolean
     limit: number
     skip: number
+    setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
     changeLimit: React.Dispatch<React.SetStateAction<number>>
     fetchMore: ((
         fetchMoreOptions: FetchMoreQueryOptions<TVariables, TData> &
@@ -52,6 +53,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
     website_url,
     changeLimit,
     fetchMore,
+    setLoggedIn,
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Desc)
     const { data, loading } = useFetchCommentByThreadIdQuery({
@@ -94,7 +96,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
         <Loader />
     ) : (
         <div>
-            <MenuBar />
+            <MenuBar setLoggedIn={setLoggedIn} />
             {logged_in ? (
                 <CreateCommentForm
                     currentSort={currentSort}

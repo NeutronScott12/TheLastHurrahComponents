@@ -33,6 +33,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
 }) => {
     const [limit, changeLimit] = useState(10)
     const [skip] = useState(0)
+    const [loggedIn, setLoggedIn] = useState(false)
     const { data: currentUserData } = useCurrentUser()
     const { data: currentUser, loading: currentUserLoading } =
         useCurrentUserQuery()
@@ -45,22 +46,22 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                     isLoggedIn: true,
                 },
             })
+            setLoggedIn(true)
         }
-    })
+    }, [currentUser?.current_user])
 
-    const { data, loading, fetchMore } = useFindOneOrCreateOneThreadQuery({
-        variables: {
-            findOrCreateOneThreadInput: {
-                application_id,
-                title,
-                website_url,
+    const { data, loading, fetchMore, refetch } =
+        useFindOneOrCreateOneThreadQuery({
+            variables: {
+                findOrCreateOneThreadInput: {
+                    application_id,
+                    title,
+                    website_url,
+                },
             },
-        },
-    })
+        })
 
     const logInCallback = (response: ILoginResponse) => {
-        console.log('RESPONSE', response)
-
         localStorage.setItem('binary-stash-token', response.login_user.token)
 
         cache.writeQuery({
@@ -69,9 +70,11 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 isLoggedIn: true,
             },
         })
+        refetch()
+        setLoggedIn(true)
     }
 
-    return loading && currentUserLoading ? (
+    return loading || currentUserLoading ? (
         <Loader />
     ) : (
         <div>
@@ -85,7 +88,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 ''
             )}
 
-            {data && data.find_one_thread_or_create_one ? (
+            {data && data.find_one_thread_or_create_one && loggedIn ? (
                 <CommentList
                     title={title}
                     application_id={application_id}
@@ -95,7 +98,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                     skip={skip}
                     changeLimit={changeLimit}
                     //@ts-ignore
-
+                    setLoggedIn={setLoggedIn}
                     logged_in={
                         currentUserData && currentUserData.isLoggedIn
                             ? true
