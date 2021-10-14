@@ -9,16 +9,45 @@ input FetchThreadCommentsById {
     limit: Int!
 }
 
+fragment ThreadFragment on ThreadModel {
+    id
+    application_id
+    title
+    website_url
+    pinned_comment {
+        application_id
+        author {
+            username
+            id
+        }
+        plain_text_body
+        json_body
+        id
+        thread_id
+        created_at
+        updated_at
+        user_id
+        parent_id
+    }
+}
+
 query FindOneOrCreateOneThread(
     $findOrCreateOneThreadInput: FindOrCreateOneThreadInput!
 ) {
     find_one_thread_or_create_one(
         findOrCreateOneThreadInput: $findOrCreateOneThreadInput
     ) {
-        id
-        application_id
-        title
-        website_url
+        ...ThreadFragment
+    }
+}
+
+input FindThreadByIdInput {
+    thread_id: String!
+}
+
+query FindThreadById($findThreadById: FindThreadByIdInput!) {
+    find_thread_by_id(findThreadById: $findThreadById) {
+        ...ThreadFragment
     }
 }
 
@@ -219,5 +248,16 @@ mutation CreateReport($createReportInput: CreateReportInput!) {
     create_report(createReportInput: $createReportInput) {
         success
         message
+    }
+}
+
+input AddPinnedCommentInput {
+    thread_id: String!
+    comment_id: String!
+}
+
+mutation AddPinnedComment($addPinnedCommentInput: AddPinnedCommentInput!) {
+    add_pinned_comment(addPinnedCommentInput: $addPinnedCommentInput) {
+        ...ThreadFragment
     }
 }

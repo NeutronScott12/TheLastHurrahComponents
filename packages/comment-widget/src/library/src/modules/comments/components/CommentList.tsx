@@ -14,10 +14,12 @@ import {
 import {
     Sort,
     useFetchCommentByThreadIdQuery,
+    useFindThreadByIdQuery,
 } from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
 // import { FilterComments } from './FilterComments'
 import { MenuBar } from './MenuBar'
+import { PinnedCommentView } from '../views/PinnedComment'
 
 type TVariables = {}
 type TData = {}
@@ -56,6 +58,10 @@ export const CommentList: React.FC<ICommentListProps> = ({
     setLoggedIn,
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Desc)
+
+    const { data: threadData, loading: threadloading } = useFindThreadByIdQuery(
+        { variables: { findThreadById: { thread_id } } },
+    )
     const { data, loading } = useFetchCommentByThreadIdQuery({
         variables: {
             fetchCommentByThreadIdInput: {
@@ -92,7 +98,10 @@ export const CommentList: React.FC<ICommentListProps> = ({
         })
     }
 
-    return loading && data && data.fetch_comments_by_thread_id.comments ? (
+    return threadloading &&
+        loading &&
+        data &&
+        data.fetch_comments_by_thread_id.comments ? (
         <Loader />
     ) : (
         <div>
@@ -108,10 +117,19 @@ export const CommentList: React.FC<ICommentListProps> = ({
             ) : (
                 ''
             )}
+            {threadData?.find_thread_by_id &&
+            threadData.find_thread_by_id.pinned_comment ? (
+                <PinnedCommentView
+                    comment={threadData.find_thread_by_id.pinned_comment}
+                />
+            ) : (
+                ''
+            )}
             {/* <FilterComments
                 currentSort={currentSort}
                 changeCurrentSort={changeCurrentSort}
             /> */}
+
             <Comment.Group size="huge">
                 {data &&
                     data.fetch_comments_by_thread_id.comments.map((comment) => {

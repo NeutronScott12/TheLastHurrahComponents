@@ -48,7 +48,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
             })
             setLoggedIn(true)
         }
-    }, [currentUser?.current_user])
+    }, [currentUser])
 
     const { data, loading, fetchMore, refetch } =
         useFindOneOrCreateOneThreadQuery({

@@ -24,6 +24,11 @@ export type AddModeratorInput = {
   moderator_id: Scalars['String'];
 };
 
+export type AddPinnedCommentInput = {
+  comment_id: Scalars['String'];
+  thread_id: Scalars['String'];
+};
+
 export type ApplicationModel = {
   __typename?: 'ApplicationModel';
   adult_content: Scalars['Boolean'];
@@ -52,10 +57,15 @@ export type ApplicationModel = {
   plan: Scalars['String'];
   pre_comment_moderation: Pre_Comment_Moderation;
   renewal?: Maybe<Scalars['DateTime']>;
+  short_name: Scalars['String'];
   theme: Theme;
   threads: Array<ThreadModel>;
   updated_at: Scalars['DateTime'];
   website_url?: Maybe<Scalars['String']>;
+};
+
+export type ApproveCommentsInput = {
+  comment_ids: Array<Scalars['String']>;
 };
 
 export enum Category {
@@ -68,15 +78,21 @@ export type CommentModel = {
   application_id: Scalars['String'];
   author: UserModel;
   created_at: Scalars['DateTime'];
+  deleted: Scalars['Boolean'];
   down_vote: Array<RatingModel>;
+  flagged: Scalars['Boolean'];
   id: Scalars['String'];
   json_body: Array<Scalars['JSONObject']>;
   parent_id?: Maybe<Scalars['String']>;
+  pending: Scalars['Boolean'];
   plain_text_body: Scalars['String'];
+  private_information: Scalars['Boolean'];
   replied_to_id?: Maybe<Scalars['String']>;
   replied_to_user?: Maybe<UserModel>;
   replies: Array<CommentModel>;
+  reports: Array<ReportModel>;
   thread_id: Scalars['String'];
+  threatening_content: Scalars['Boolean'];
   up_vote: Array<RatingModel>;
   updated_at: Scalars['DateTime'];
   user_id: Scalars['String'];
@@ -92,6 +108,7 @@ export type CountModel = {
 export type CreateApplicationInput = {
   adult_content: Scalars['Boolean'];
   application_name: Scalars['String'];
+  application_short_name: Scalars['String'];
   category: Category;
   comment_policy_summary?: Maybe<Scalars['String']>;
   comment_policy_url?: Maybe<Scalars['String']>;
@@ -130,12 +147,25 @@ export type CreateReportInput = {
 
 export type DeleteManyCommentsInput = {
   comment_ids: Array<Scalars['String']>;
+  permanent_delete: Scalars['Boolean'];
+};
+
+export type DeleteManyNotificationsInput = {
+  notifications_ids: Array<Scalars['String']>;
+};
+
+export type DeleteNotificationInput = {
+  id: Scalars['String'];
 };
 
 export type FetchAllComments = {
   __typename?: 'FetchAllComments';
   comments: Array<CommentModel>;
   comments_count: Scalars['Int'];
+};
+
+export type FetchApplicationByShortNameInput = {
+  application_short_name: Scalars['String'];
 };
 
 export type FetchCommentByApplicationName = {
@@ -170,12 +200,24 @@ export type FetchCommentsByApplicationIdInput = {
   sort: Sort;
 };
 
-export type FetchCommentsByApplicationNameInput = {
-  application_name: Scalars['String'];
+export type FetchCommentsByApplicationShortNameInput = {
+  application_short_name: Scalars['String'];
   limit: Scalars['Float'];
   skip: Scalars['Float'];
   sort: Sort;
   where: Where;
+};
+
+export type FetchNotificationByApplicationIdInput = {
+  application_id: Scalars['String'];
+};
+
+export type FetchNotificationByApplicationShortNameInput = {
+  short_name: Scalars['String'];
+};
+
+export type FetchNotificationsByUserIdInput = {
+  user_id: Scalars['String'];
 };
 
 export type FetchThreadCommentsById = {
@@ -191,6 +233,10 @@ export type FindOrCreateOneThreadInput = {
   title?: Maybe<Scalars['String']>;
   /** Thread website url */
   website_url: Scalars['String'];
+};
+
+export type FindThreadByIdInput = {
+  thread_id: Scalars['String'];
 };
 
 export enum Language {
@@ -209,6 +255,8 @@ export type LoginResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   add_application_moderator: ApplicationModel;
+  add_pinned_comment: ThreadModel;
+  approve_comments: StandardResponseModel;
   block_user: StandardResponseModel;
   confirm_user: StandardResponseModel;
   create_application: ApplicationModel;
@@ -218,6 +266,8 @@ export type Mutation = {
   create_report: StandardResponseModel;
   delete_comment: StandardResponseModel;
   delete_many_comments: StandardResponseModel;
+  delete_many_notifications: StandardResponse;
+  delete_notification: StandardResponse;
   delete_user: StandardResponseModel;
   down_vote_comment: CommentModel;
   forgot_password: StandardResponseModel;
@@ -225,7 +275,7 @@ export type Mutation = {
   logout_user: StandardResponseModel;
   regenerate_new_auth_secret: ApplicationModel;
   register_user: StandardResponseModel;
-  remove_application: ApplicationModel;
+  remove_application: StandardResponseModel;
   remove_application_moderator: ApplicationModel;
   reset_password: StandardResponseModel;
   unblock_user: StandardResponseModel;
@@ -238,6 +288,16 @@ export type Mutation = {
 
 export type MutationAdd_Application_ModeratorArgs = {
   addModeratorInput: AddModeratorInput;
+};
+
+
+export type MutationAdd_Pinned_CommentArgs = {
+  addPinnedCommentInput: AddPinnedCommentInput;
+};
+
+
+export type MutationApprove_CommentsArgs = {
+  approveCommentsInput: ApproveCommentsInput;
 };
 
 
@@ -282,7 +342,17 @@ export type MutationDelete_CommentArgs = {
 
 
 export type MutationDelete_Many_CommentsArgs = {
-  deleteManyCommentsInput: Array<DeleteManyCommentsInput>;
+  deleteManyCommentsInput: DeleteManyCommentsInput;
+};
+
+
+export type MutationDelete_Many_NotificationsArgs = {
+  deleteManyNotifications: DeleteManyNotificationsInput;
+};
+
+
+export type MutationDelete_NotificationArgs = {
+  deleteNotification: DeleteNotificationInput;
 };
 
 
@@ -362,6 +432,16 @@ export type MutationUpdate_CommentArgs = {
   UpdateCommentInput: UpdateCommentInput;
 };
 
+export type Notification = {
+  __typename?: 'Notification';
+  application_id?: Maybe<Scalars['String']>;
+  created_at: Scalars['DateTime'];
+  id: Scalars['String'];
+  message: Scalars['String'];
+  updated_at: Scalars['DateTime'];
+  url: Scalars['String'];
+};
+
 export enum Pre_Comment_Moderation {
   All = 'ALL',
   NewComments = 'NEW_COMMENTS',
@@ -373,17 +453,28 @@ export type Query = {
   current_user: UserModel;
   fetch_all_applications: Array<ApplicationModel>;
   fetch_all_threads: Array<ThreadModel>;
+  fetch_application_by_short_name: ApplicationModel;
   fetch_applications_by_owner_id: Array<ApplicationModel>;
   fetch_comments: FetchAllComments;
   fetch_comments_by_application_id: FetchCommentsByApplicationId;
-  fetch_comments_by_application_name: FetchCommentByApplicationName;
+  fetch_comments_by_application_short_name: FetchCommentByApplicationName;
   fetch_comments_by_thread_id: FetchCommentByThreadIdResponse;
+  fetch_notifications: Array<Notification>;
+  fetch_notifications_by_application_id: Array<Notification>;
+  fetch_notifications_by_short_name: Array<Notification>;
+  fetch_notifications_by_user_id: Array<Notification>;
   fetch_users: Array<UserModel>;
   find_one_application_by_id: ApplicationModel;
   find_one_application_by_name: ApplicationModel;
   find_one_thread_or_create_one: ThreadModel;
+  find_thread_by_id: ThreadModel;
   resend_email_code: StandardResponseModel;
   search_user_by_email: UserModel;
+};
+
+
+export type QueryFetch_Application_By_Short_NameArgs = {
+  fetchApplicationByShortNameInput: FetchApplicationByShortNameInput;
 };
 
 
@@ -392,13 +483,28 @@ export type QueryFetch_Comments_By_Application_IdArgs = {
 };
 
 
-export type QueryFetch_Comments_By_Application_NameArgs = {
-  fetchCommentsByApplicationName: FetchCommentsByApplicationNameInput;
+export type QueryFetch_Comments_By_Application_Short_NameArgs = {
+  fetchCommentsByApplicationShortNameInput: FetchCommentsByApplicationShortNameInput;
 };
 
 
 export type QueryFetch_Comments_By_Thread_IdArgs = {
   fetchCommentByThreadIdInput: FetchCommentByThreadIdInput;
+};
+
+
+export type QueryFetch_Notifications_By_Application_IdArgs = {
+  fetchNotificationsByApplicationIdInput: FetchNotificationByApplicationIdInput;
+};
+
+
+export type QueryFetch_Notifications_By_Short_NameArgs = {
+  fetchNotificationByApplicationShortNameInput: FetchNotificationByApplicationShortNameInput;
+};
+
+
+export type QueryFetch_Notifications_By_User_IdArgs = {
+  fetchNotificationsByUserIdInput: FetchNotificationsByUserIdInput;
 };
 
 
@@ -414,6 +520,11 @@ export type QueryFind_One_Application_By_NameArgs = {
 
 export type QueryFind_One_Thread_Or_Create_OneArgs = {
   findOrCreateOneThreadInput: FindOrCreateOneThreadInput;
+};
+
+
+export type QueryFind_Thread_By_IdArgs = {
+  findThreadById: FindThreadByIdInput;
 };
 
 
@@ -446,6 +557,21 @@ export type RemoveModeratorInput = {
   moderator_id: Scalars['String'];
 };
 
+export type ReportModel = {
+  __typename?: 'ReportModel';
+  created_at: Scalars['DateTime'];
+  id: Scalars['String'];
+  reason: Report_Reason;
+  updated_at: Scalars['DateTime'];
+  user_id: Scalars['String'];
+};
+
+export type StandardResponse = {
+  __typename?: 'StandardResponse';
+  message: Scalars['String'];
+  success: Scalars['Boolean'];
+};
+
 export type StandardResponseModel = {
   __typename?: 'StandardResponseModel';
   message: Scalars['String'];
@@ -463,6 +589,8 @@ export type ThreadModel = {
   application_id: Scalars['String'];
   /** UUID for Thread */
   id: Scalars['String'];
+  pinned_comment?: Maybe<CommentModel>;
+  pinned_comment_id?: Maybe<Scalars['String']>;
   thread_comments: FetchCommentByThreadIdResponse;
   title: Scalars['String'];
   website_url: Scalars['String'];
@@ -475,7 +603,7 @@ export type ThreadModelThread_CommentsArgs = {
 
 export type UpdateApplicationCommentRulesInput = {
   allow_images_and_videos_on_comments: Scalars['Boolean'];
-  application_name: Scalars['String'];
+  application_short_name: Scalars['String'];
   display_comments_when_flagged: Scalars['Boolean'];
   email_mods_when_comments_flagged: Scalars['Boolean'];
   links_in_comments: Scalars['Boolean'];
@@ -484,7 +612,7 @@ export type UpdateApplicationCommentRulesInput = {
 
 export type UpdateApplicationInput = {
   adult_content: Scalars['Boolean'];
-  application_name: Scalars['String'];
+  application_short_name: Scalars['String'];
   category: Category;
   comment_policy_summary?: Maybe<Scalars['String']>;
   comment_policy_url?: Maybe<Scalars['String']>;
@@ -530,12 +658,21 @@ export enum Where {
   Spam = 'SPAM'
 }
 
+export type ThreadFragmentFragment = { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined };
+
 export type FindOneOrCreateOneThreadQueryVariables = Exact<{
   findOrCreateOneThreadInput: FindOrCreateOneThreadInput;
 }>;
 
 
-export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string } };
+export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
+
+export type FindThreadByIdQueryVariables = Exact<{
+  findThreadById: FindThreadByIdInput;
+}>;
+
+
+export type FindThreadByIdQuery = { __typename?: 'Query', find_thread_by_id: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
 
 export type FineOneApplicationByIdQueryVariables = Exact<{
   id: Scalars['String'];
@@ -621,6 +758,36 @@ export type CreateReportMutationVariables = Exact<{
 
 export type CreateReportMutation = { __typename?: 'Mutation', create_report: { __typename?: 'StandardResponseModel', success: boolean, message: string } };
 
+export type AddPinnedCommentMutationVariables = Exact<{
+  addPinnedCommentInput: AddPinnedCommentInput;
+}>;
+
+
+export type AddPinnedCommentMutation = { __typename?: 'Mutation', add_pinned_comment: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
+
+export const ThreadFragmentFragmentDoc = gql`
+    fragment ThreadFragment on ThreadModel {
+  id
+  application_id
+  title
+  website_url
+  pinned_comment {
+    application_id
+    author {
+      username
+      id
+    }
+    plain_text_body
+    json_body
+    id
+    thread_id
+    created_at
+    updated_at
+    user_id
+    parent_id
+  }
+}
+    `;
 export const CommentFragmentFragmentDoc = gql`
     fragment CommentFragment on CommentModel {
   application_id
@@ -651,13 +818,10 @@ export const FindOneOrCreateOneThreadDocument = gql`
   find_one_thread_or_create_one(
     findOrCreateOneThreadInput: $findOrCreateOneThreadInput
   ) {
-    id
-    application_id
-    title
-    website_url
+    ...ThreadFragment
   }
 }
-    `;
+    ${ThreadFragmentFragmentDoc}`;
 
 /**
  * __useFindOneOrCreateOneThreadQuery__
@@ -686,6 +850,41 @@ export function useFindOneOrCreateOneThreadLazyQuery(baseOptions?: Apollo.LazyQu
 export type FindOneOrCreateOneThreadQueryHookResult = ReturnType<typeof useFindOneOrCreateOneThreadQuery>;
 export type FindOneOrCreateOneThreadLazyQueryHookResult = ReturnType<typeof useFindOneOrCreateOneThreadLazyQuery>;
 export type FindOneOrCreateOneThreadQueryResult = Apollo.QueryResult<FindOneOrCreateOneThreadQuery, FindOneOrCreateOneThreadQueryVariables>;
+export const FindThreadByIdDocument = gql`
+    query FindThreadById($findThreadById: FindThreadByIdInput!) {
+  find_thread_by_id(findThreadById: $findThreadById) {
+    ...ThreadFragment
+  }
+}
+    ${ThreadFragmentFragmentDoc}`;
+
+/**
+ * __useFindThreadByIdQuery__
+ *
+ * To run a query within a React component, call `useFindThreadByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindThreadByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindThreadByIdQuery({
+ *   variables: {
+ *      findThreadById: // value for 'findThreadById'
+ *   },
+ * });
+ */
+export function useFindThreadByIdQuery(baseOptions: Apollo.QueryHookOptions<FindThreadByIdQuery, FindThreadByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindThreadByIdQuery, FindThreadByIdQueryVariables>(FindThreadByIdDocument, options);
+      }
+export function useFindThreadByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindThreadByIdQuery, FindThreadByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindThreadByIdQuery, FindThreadByIdQueryVariables>(FindThreadByIdDocument, options);
+        }
+export type FindThreadByIdQueryHookResult = ReturnType<typeof useFindThreadByIdQuery>;
+export type FindThreadByIdLazyQueryHookResult = ReturnType<typeof useFindThreadByIdLazyQuery>;
+export type FindThreadByIdQueryResult = Apollo.QueryResult<FindThreadByIdQuery, FindThreadByIdQueryVariables>;
 export const FineOneApplicationByIdDocument = gql`
     query FineOneApplicationById($id: String!) {
   find_one_application_by_id(id: $id) {
@@ -1139,7 +1338,40 @@ export function useCreateReportMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateReportMutationHookResult = ReturnType<typeof useCreateReportMutation>;
 export type CreateReportMutationResult = Apollo.MutationResult<CreateReportMutation>;
 export type CreateReportMutationOptions = Apollo.BaseMutationOptions<CreateReportMutation, CreateReportMutationVariables>;
-export type ApplicationModelKeySpecifier = ('adult_content' | 'allow_images_and_videos_on_comments' | 'application_name' | 'application_owner' | 'application_owner_id' | 'auth_secret' | 'authenticated_users' | 'authenticated_users_ids' | 'category' | 'comment_policy_summary' | 'comment_policy_url' | 'comments' | 'cost' | 'created_at' | 'default_avatar_url' | 'description' | 'display_comments_when_flagged' | 'email_mods_when_comments_flagged' | 'id' | 'language' | 'links_in_comments' | 'moderators' | 'moderators_ids' | 'plan' | 'pre_comment_moderation' | 'renewal' | 'theme' | 'threads' | 'updated_at' | 'website_url' | ApplicationModelKeySpecifier)[];
+export const AddPinnedCommentDocument = gql`
+    mutation AddPinnedComment($addPinnedCommentInput: AddPinnedCommentInput!) {
+  add_pinned_comment(addPinnedCommentInput: $addPinnedCommentInput) {
+    ...ThreadFragment
+  }
+}
+    ${ThreadFragmentFragmentDoc}`;
+export type AddPinnedCommentMutationFn = Apollo.MutationFunction<AddPinnedCommentMutation, AddPinnedCommentMutationVariables>;
+
+/**
+ * __useAddPinnedCommentMutation__
+ *
+ * To run a mutation, you first call `useAddPinnedCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddPinnedCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addPinnedCommentMutation, { data, loading, error }] = useAddPinnedCommentMutation({
+ *   variables: {
+ *      addPinnedCommentInput: // value for 'addPinnedCommentInput'
+ *   },
+ * });
+ */
+export function useAddPinnedCommentMutation(baseOptions?: Apollo.MutationHookOptions<AddPinnedCommentMutation, AddPinnedCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddPinnedCommentMutation, AddPinnedCommentMutationVariables>(AddPinnedCommentDocument, options);
+      }
+export type AddPinnedCommentMutationHookResult = ReturnType<typeof useAddPinnedCommentMutation>;
+export type AddPinnedCommentMutationResult = Apollo.MutationResult<AddPinnedCommentMutation>;
+export type AddPinnedCommentMutationOptions = Apollo.BaseMutationOptions<AddPinnedCommentMutation, AddPinnedCommentMutationVariables>;
+export type ApplicationModelKeySpecifier = ('adult_content' | 'allow_images_and_videos_on_comments' | 'application_name' | 'application_owner' | 'application_owner_id' | 'auth_secret' | 'authenticated_users' | 'authenticated_users_ids' | 'category' | 'comment_policy_summary' | 'comment_policy_url' | 'comments' | 'cost' | 'created_at' | 'default_avatar_url' | 'description' | 'display_comments_when_flagged' | 'email_mods_when_comments_flagged' | 'id' | 'language' | 'links_in_comments' | 'moderators' | 'moderators_ids' | 'plan' | 'pre_comment_moderation' | 'renewal' | 'short_name' | 'theme' | 'threads' | 'updated_at' | 'website_url' | ApplicationModelKeySpecifier)[];
 export type ApplicationModelFieldPolicy = {
 	adult_content?: FieldPolicy<any> | FieldReadFunction<any>,
 	allow_images_and_videos_on_comments?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1167,26 +1399,33 @@ export type ApplicationModelFieldPolicy = {
 	plan?: FieldPolicy<any> | FieldReadFunction<any>,
 	pre_comment_moderation?: FieldPolicy<any> | FieldReadFunction<any>,
 	renewal?: FieldPolicy<any> | FieldReadFunction<any>,
+	short_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	theme?: FieldPolicy<any> | FieldReadFunction<any>,
 	threads?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	website_url?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type CommentModelKeySpecifier = ('_count' | 'application_id' | 'author' | 'created_at' | 'down_vote' | 'id' | 'json_body' | 'parent_id' | 'plain_text_body' | 'replied_to_id' | 'replied_to_user' | 'replies' | 'thread_id' | 'up_vote' | 'updated_at' | 'user_id' | CommentModelKeySpecifier)[];
+export type CommentModelKeySpecifier = ('_count' | 'application_id' | 'author' | 'created_at' | 'deleted' | 'down_vote' | 'flagged' | 'id' | 'json_body' | 'parent_id' | 'pending' | 'plain_text_body' | 'private_information' | 'replied_to_id' | 'replied_to_user' | 'replies' | 'reports' | 'thread_id' | 'threatening_content' | 'up_vote' | 'updated_at' | 'user_id' | CommentModelKeySpecifier)[];
 export type CommentModelFieldPolicy = {
 	_count?: FieldPolicy<any> | FieldReadFunction<any>,
 	application_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	author?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	deleted?: FieldPolicy<any> | FieldReadFunction<any>,
 	down_vote?: FieldPolicy<any> | FieldReadFunction<any>,
+	flagged?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	json_body?: FieldPolicy<any> | FieldReadFunction<any>,
 	parent_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	pending?: FieldPolicy<any> | FieldReadFunction<any>,
 	plain_text_body?: FieldPolicy<any> | FieldReadFunction<any>,
+	private_information?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	replies?: FieldPolicy<any> | FieldReadFunction<any>,
+	reports?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	threatening_content?: FieldPolicy<any> | FieldReadFunction<any>,
 	up_vote?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
@@ -1225,9 +1464,11 @@ export type LoginResponseFieldPolicy = {
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('add_application_moderator' | 'block_user' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_order' | 'create_reply_comment' | 'create_report' | 'delete_comment' | 'delete_many_comments' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'logout_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'reset_password' | 'unblock_user' | 'up_vote_comment' | 'update_application' | 'update_application_comment_rules' | 'update_comment' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('add_application_moderator' | 'add_pinned_comment' | 'approve_comments' | 'block_user' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_order' | 'create_reply_comment' | 'create_report' | 'delete_comment' | 'delete_many_comments' | 'delete_many_notifications' | 'delete_notification' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'logout_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'reset_password' | 'unblock_user' | 'up_vote_comment' | 'update_application' | 'update_application_comment_rules' | 'update_comment' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	add_application_moderator?: FieldPolicy<any> | FieldReadFunction<any>,
+	add_pinned_comment?: FieldPolicy<any> | FieldReadFunction<any>,
+	approve_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	block_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	confirm_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_application?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1237,6 +1478,8 @@ export type MutationFieldPolicy = {
 	create_report?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_many_comments?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_many_notifications?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_notification?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	down_vote_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	forgot_password?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1253,20 +1496,35 @@ export type MutationFieldPolicy = {
 	update_application_comment_rules?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_comment?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('current_user' | 'fetch_all_applications' | 'fetch_all_threads' | 'fetch_applications_by_owner_id' | 'fetch_comments' | 'fetch_comments_by_application_id' | 'fetch_comments_by_application_name' | 'fetch_comments_by_thread_id' | 'fetch_users' | 'find_one_application_by_id' | 'find_one_application_by_name' | 'find_one_thread_or_create_one' | 'resend_email_code' | 'search_user_by_email' | QueryKeySpecifier)[];
+export type NotificationKeySpecifier = ('application_id' | 'created_at' | 'id' | 'message' | 'updated_at' | 'url' | NotificationKeySpecifier)[];
+export type NotificationFieldPolicy = {
+	application_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	url?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type QueryKeySpecifier = ('current_user' | 'fetch_all_applications' | 'fetch_all_threads' | 'fetch_application_by_short_name' | 'fetch_applications_by_owner_id' | 'fetch_comments' | 'fetch_comments_by_application_id' | 'fetch_comments_by_application_short_name' | 'fetch_comments_by_thread_id' | 'fetch_notifications' | 'fetch_notifications_by_application_id' | 'fetch_notifications_by_short_name' | 'fetch_notifications_by_user_id' | 'fetch_users' | 'find_one_application_by_id' | 'find_one_application_by_name' | 'find_one_thread_or_create_one' | 'find_thread_by_id' | 'resend_email_code' | 'search_user_by_email' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	current_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_all_applications?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_all_threads?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetch_application_by_short_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_applications_by_owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_comments_by_application_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	fetch_comments_by_application_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetch_comments_by_application_short_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_comments_by_thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetch_notifications?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetch_notifications_by_application_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetch_notifications_by_short_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetch_notifications_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_users?: FieldPolicy<any> | FieldReadFunction<any>,
 	find_one_application_by_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	find_one_application_by_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	find_one_thread_or_create_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	find_thread_by_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	resend_email_code?: FieldPolicy<any> | FieldReadFunction<any>,
 	search_user_by_email?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -1275,15 +1533,30 @@ export type RatingModelFieldPolicy = {
 	author_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type ReportModelKeySpecifier = ('created_at' | 'id' | 'reason' | 'updated_at' | 'user_id' | ReportModelKeySpecifier)[];
+export type ReportModelFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	reason?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type StandardResponseKeySpecifier = ('message' | 'success' | StandardResponseKeySpecifier)[];
+export type StandardResponseFieldPolicy = {
+	message?: FieldPolicy<any> | FieldReadFunction<any>,
+	success?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type StandardResponseModelKeySpecifier = ('message' | 'success' | StandardResponseModelKeySpecifier)[];
 export type StandardResponseModelFieldPolicy = {
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	success?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ThreadModelKeySpecifier = ('application_id' | 'id' | 'thread_comments' | 'title' | 'website_url' | ThreadModelKeySpecifier)[];
+export type ThreadModelKeySpecifier = ('application_id' | 'id' | 'pinned_comment' | 'pinned_comment_id' | 'thread_comments' | 'title' | 'website_url' | ThreadModelKeySpecifier)[];
 export type ThreadModelFieldPolicy = {
 	application_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	pinned_comment?: FieldPolicy<any> | FieldReadFunction<any>,
+	pinned_comment_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	website_url?: FieldPolicy<any> | FieldReadFunction<any>
@@ -1338,6 +1611,10 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
 		fields?: MutationFieldPolicy,
 	},
+	Notification?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | NotificationKeySpecifier | (() => undefined | NotificationKeySpecifier),
+		fields?: NotificationFieldPolicy,
+	},
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
 		fields?: QueryFieldPolicy,
@@ -1345,6 +1622,14 @@ export type StrictTypedTypePolicies = {
 	RatingModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | RatingModelKeySpecifier | (() => undefined | RatingModelKeySpecifier),
 		fields?: RatingModelFieldPolicy,
+	},
+	ReportModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ReportModelKeySpecifier | (() => undefined | ReportModelKeySpecifier),
+		fields?: ReportModelFieldPolicy,
+	},
+	StandardResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | StandardResponseKeySpecifier | (() => undefined | StandardResponseKeySpecifier),
+		fields?: StandardResponseFieldPolicy,
 	},
 	StandardResponseModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | StandardResponseModelKeySpecifier | (() => undefined | StandardResponseModelKeySpecifier),

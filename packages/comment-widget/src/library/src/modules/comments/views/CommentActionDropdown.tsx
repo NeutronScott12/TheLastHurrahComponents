@@ -24,7 +24,7 @@ export const CommentActionDropdown: React.FC<ICommentActionDropdown> = ({
     changeOpenReport,
 }) => {
     return (
-        <>
+        <span>
             <IconButton
                 aria-label="more"
                 id="long-button"
@@ -60,6 +60,6 @@ export const CommentActionDropdown: React.FC<ICommentActionDropdown> = ({
                     Report
                 </MenuItem>
             </Menu>
-        </>
+        </span>
     )
 }

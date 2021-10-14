@@ -16,8 +16,10 @@ import {
     CountModel,
     Maybe,
     Sort,
+    useAddPinnedCommentMutation,
     useCurrentUserQuery,
     useDeleteThreadCommentMutation,
+    useFindThreadByIdQuery,
     useFineOneApplicationByIdQuery,
 } from '../../../generated/graphql'
 import { CommentView } from '../views/CommentView'
@@ -71,7 +73,11 @@ export const CommentComponent: React.FC<ICommentProps> = ({
 }) => {
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+    const { refetch } = useFindThreadByIdQuery({
+        variables: { findThreadById: { thread_id } },
+    })
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
+    const [addPinnedCommentMutation] = useAddPinnedCommentMutation()
     const { data: applicationData, loading: applicationLoading } =
         useFineOneApplicationByIdQuery({
             variables: { id: application_id },
@@ -227,6 +233,26 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         }
     }
 
+    const addPinnedComment = async (comment_id: string) => {
+        try {
+            await addPinnedCommentMutation({
+                variables: {
+                    addPinnedCommentInput: {
+                        thread_id,
+                        comment_id,
+                    },
+                },
+            })
+            await refetch()
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log(error)
+                setError(true)
+                setErrorMessage('something went wrong')
+            }
+        }
+    }
+
     return loading && applicationLoading ? (
         <Loader />
     ) : (
@@ -247,6 +273,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                 comment={comment}
                 deleteComment={deleteComment}
                 deleteReplyComment={deleteReplyComment}
+                addPinnedComment={addPinnedComment}
             />
         </>
     )
