@@ -10,6 +10,7 @@ import { CurrentUserQuery, Sort } from '../../../generated/graphql'
 import { Ratings } from '../components/Rating'
 import { displayHtml } from '../helpers'
 import { BlockComponent } from '../components/BlockComponent'
+import { ReportFormComponent } from '../components/ReportFormComponent'
 
 interface IReplyCommentView {
     deleteComment: (id: string) => void
@@ -141,6 +142,14 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                         replied_to_id={reply.author.id}
                         changeUseMain={changeUseEditSecondary}
                         parent_id={comment.id}
+                    />
+                ) : (
+                    ''
+                )}
+                {openReport ? (
+                    <ReportFormComponent
+                        comment_id={comment.id}
+                        changeOpenReport={changeOpenReport}
                     />
                 ) : (
                     ''
