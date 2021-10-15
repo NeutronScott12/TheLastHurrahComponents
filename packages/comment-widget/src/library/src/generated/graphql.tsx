@@ -131,6 +131,12 @@ export type CreateOrderInput = {
   total_price: Scalars['Float'];
 };
 
+export type CreatePollInput = {
+  options: Array<OptionInput>;
+  thread_id: Scalars['String'];
+  title: Scalars['String'];
+};
+
 export type CreateReplyCommentInput = {
   application_id: Scalars['String'];
   json_body: Scalars['JSONObject'];
@@ -156,6 +162,11 @@ export type DeleteManyNotificationsInput = {
 
 export type DeleteNotificationInput = {
   id: Scalars['String'];
+};
+
+export type DeletePollInput = {
+  poll_id: Scalars['String'];
+  thread_id: Scalars['String'];
 };
 
 export type FetchAllComments = {
@@ -262,12 +273,14 @@ export type Mutation = {
   create_application: ApplicationModel;
   create_comment: CommentModel;
   create_order: StandardResponseModel;
+  create_poll: PollEntity;
   create_reply_comment: CommentModel;
   create_report: StandardResponseModel;
   delete_comment: StandardResponseModel;
   delete_many_comments: StandardResponseModel;
   delete_many_notifications: StandardResponse;
   delete_notification: StandardResponse;
+  delete_poll: StandardResponseModel;
   delete_user: StandardResponseModel;
   down_vote_comment: CommentModel;
   forgot_password: StandardResponseModel;
@@ -283,6 +296,7 @@ export type Mutation = {
   update_application: ApplicationModel;
   update_application_comment_rules: ApplicationModel;
   update_comment: CommentModel;
+  update_poll_vote: PollEntity;
 };
 
 
@@ -326,6 +340,11 @@ export type MutationCreate_OrderArgs = {
 };
 
 
+export type MutationCreate_PollArgs = {
+  createPollInput: CreatePollInput;
+};
+
+
 export type MutationCreate_Reply_CommentArgs = {
   CreateReplyCommentInput: CreateReplyCommentInput;
 };
@@ -353,6 +372,11 @@ export type MutationDelete_Many_NotificationsArgs = {
 
 export type MutationDelete_NotificationArgs = {
   deleteNotification: DeleteNotificationInput;
+};
+
+
+export type MutationDelete_PollArgs = {
+  deletePollInput: DeletePollInput;
 };
 
 
@@ -432,6 +456,11 @@ export type MutationUpdate_CommentArgs = {
   UpdateCommentInput: UpdateCommentInput;
 };
 
+
+export type MutationUpdate_Poll_VoteArgs = {
+  updatePollVoteInput: UpdatePollVoteInput;
+};
+
 export type Notification = {
   __typename?: 'Notification';
   application_id?: Maybe<Scalars['String']>;
@@ -442,11 +471,31 @@ export type Notification = {
   url: Scalars['String'];
 };
 
+export type OptionEntity = {
+  __typename?: 'OptionEntity';
+  id: Scalars['String'];
+  option: Scalars['String'];
+  votes: Array<VoteEntity>;
+};
+
+export type OptionInput = {
+  option: Scalars['String'];
+};
+
 export enum Pre_Comment_Moderation {
   All = 'ALL',
   NewComments = 'NEW_COMMENTS',
   None = 'NONE'
 }
+
+export type PollEntity = {
+  __typename?: 'PollEntity';
+  created_at: Scalars['DateTime'];
+  id: Scalars['String'];
+  options: Array<OptionEntity>;
+  title: Scalars['String'];
+  updated_at: Scalars['DateTime'];
+};
 
 export type Query = {
   __typename?: 'Query';
@@ -591,6 +640,7 @@ export type ThreadModel = {
   id: Scalars['String'];
   pinned_comment?: Maybe<CommentModel>;
   pinned_comment_id?: Maybe<Scalars['String']>;
+  poll?: Maybe<PollEntity>;
   thread_comments: FetchCommentByThreadIdResponse;
   title: Scalars['String'];
   website_url: Scalars['String'];
@@ -630,6 +680,11 @@ export type UpdateCommentInput = {
   plain_text_body: Scalars['String'];
 };
 
+export type UpdatePollVoteInput = {
+  options_id: Scalars['String'];
+  poll_id: Scalars['String'];
+};
+
 export type UserModel = {
   __typename?: 'UserModel';
   applications_joined_ids: Array<Scalars['String']>;
@@ -642,6 +697,12 @@ export type UserModel = {
   updated_at: Scalars['DateTime'];
   user_role: Scalars['String'];
   username: Scalars['String'];
+};
+
+export type VoteEntity = {
+  __typename?: 'VoteEntity';
+  id: Scalars['String'];
+  user_id: Scalars['String'];
 };
 
 export enum Sort {
@@ -658,21 +719,23 @@ export enum Where {
   Spam = 'SPAM'
 }
 
-export type ThreadFragmentFragment = { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined };
+export type ThreadFragmentFragment = { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, poll?: { __typename?: 'PollEntity', id: string, title: string, created_at: any, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> } | null | undefined, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined };
+
+export type PollFragmentFragment = { __typename?: 'PollEntity', id: string, title: string, created_at: any, updated_at: any, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> };
 
 export type FindOneOrCreateOneThreadQueryVariables = Exact<{
   findOrCreateOneThreadInput: FindOrCreateOneThreadInput;
 }>;
 
 
-export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
+export type FindOneOrCreateOneThreadQuery = { __typename?: 'Query', find_one_thread_or_create_one: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, poll?: { __typename?: 'PollEntity', id: string, title: string, created_at: any, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> } | null | undefined, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
 
 export type FindThreadByIdQueryVariables = Exact<{
   findThreadById: FindThreadByIdInput;
 }>;
 
 
-export type FindThreadByIdQuery = { __typename?: 'Query', find_thread_by_id: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
+export type FindThreadByIdQuery = { __typename?: 'Query', find_thread_by_id: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, poll?: { __typename?: 'PollEntity', id: string, title: string, created_at: any, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> } | null | undefined, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
 
 export type FineOneApplicationByIdQueryVariables = Exact<{
   id: Scalars['String'];
@@ -763,7 +826,28 @@ export type AddPinnedCommentMutationVariables = Exact<{
 }>;
 
 
-export type AddPinnedCommentMutation = { __typename?: 'Mutation', add_pinned_comment: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
+export type AddPinnedCommentMutation = { __typename?: 'Mutation', add_pinned_comment: { __typename?: 'ThreadModel', id: string, application_id: string, title: string, website_url: string, poll?: { __typename?: 'PollEntity', id: string, title: string, created_at: any, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> } | null | undefined, pinned_comment?: { __typename?: 'CommentModel', application_id: string, plain_text_body: string, json_body: Array<any>, id: string, thread_id: string, created_at: any, updated_at: any, user_id: string, parent_id?: string | null | undefined, author: { __typename?: 'UserModel', username: string, id: string } } | null | undefined } };
+
+export type CreatePollMutationMutationVariables = Exact<{
+  createPollInput: CreatePollInput;
+}>;
+
+
+export type CreatePollMutationMutation = { __typename?: 'Mutation', create_poll: { __typename?: 'PollEntity', id: string, title: string, created_at: any, updated_at: any, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> } };
+
+export type UpdatePollVoteMutationVariables = Exact<{
+  updatePollVoteInput: UpdatePollVoteInput;
+}>;
+
+
+export type UpdatePollVoteMutation = { __typename?: 'Mutation', update_poll_vote: { __typename?: 'PollEntity', id: string, title: string, created_at: any, updated_at: any, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> } };
+
+export type DeletePollMutationVariables = Exact<{
+  deletePollInput: DeletePollInput;
+}>;
+
+
+export type DeletePollMutation = { __typename?: 'Mutation', delete_poll: { __typename?: 'StandardResponseModel', success: boolean, message: string } };
 
 export const ThreadFragmentFragmentDoc = gql`
     fragment ThreadFragment on ThreadModel {
@@ -771,6 +855,19 @@ export const ThreadFragmentFragmentDoc = gql`
   application_id
   title
   website_url
+  poll {
+    id
+    title
+    created_at
+    options {
+      id
+      option
+      votes {
+        id
+        user_id
+      }
+    }
+  }
   pinned_comment {
     application_id
     author {
@@ -785,6 +882,22 @@ export const ThreadFragmentFragmentDoc = gql`
     updated_at
     user_id
     parent_id
+  }
+}
+    `;
+export const PollFragmentFragmentDoc = gql`
+    fragment PollFragment on PollEntity {
+  id
+  title
+  created_at
+  updated_at
+  options {
+    id
+    option
+    votes {
+      id
+      user_id
+    }
   }
 }
     `;
@@ -1371,6 +1484,106 @@ export function useAddPinnedCommentMutation(baseOptions?: Apollo.MutationHookOpt
 export type AddPinnedCommentMutationHookResult = ReturnType<typeof useAddPinnedCommentMutation>;
 export type AddPinnedCommentMutationResult = Apollo.MutationResult<AddPinnedCommentMutation>;
 export type AddPinnedCommentMutationOptions = Apollo.BaseMutationOptions<AddPinnedCommentMutation, AddPinnedCommentMutationVariables>;
+export const CreatePollMutationDocument = gql`
+    mutation CreatePollMutation($createPollInput: CreatePollInput!) {
+  create_poll(createPollInput: $createPollInput) {
+    ...PollFragment
+  }
+}
+    ${PollFragmentFragmentDoc}`;
+export type CreatePollMutationMutationFn = Apollo.MutationFunction<CreatePollMutationMutation, CreatePollMutationMutationVariables>;
+
+/**
+ * __useCreatePollMutationMutation__
+ *
+ * To run a mutation, you first call `useCreatePollMutationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePollMutationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPollMutationMutation, { data, loading, error }] = useCreatePollMutationMutation({
+ *   variables: {
+ *      createPollInput: // value for 'createPollInput'
+ *   },
+ * });
+ */
+export function useCreatePollMutationMutation(baseOptions?: Apollo.MutationHookOptions<CreatePollMutationMutation, CreatePollMutationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePollMutationMutation, CreatePollMutationMutationVariables>(CreatePollMutationDocument, options);
+      }
+export type CreatePollMutationMutationHookResult = ReturnType<typeof useCreatePollMutationMutation>;
+export type CreatePollMutationMutationResult = Apollo.MutationResult<CreatePollMutationMutation>;
+export type CreatePollMutationMutationOptions = Apollo.BaseMutationOptions<CreatePollMutationMutation, CreatePollMutationMutationVariables>;
+export const UpdatePollVoteDocument = gql`
+    mutation UpdatePollVote($updatePollVoteInput: UpdatePollVoteInput!) {
+  update_poll_vote(updatePollVoteInput: $updatePollVoteInput) {
+    ...PollFragment
+  }
+}
+    ${PollFragmentFragmentDoc}`;
+export type UpdatePollVoteMutationFn = Apollo.MutationFunction<UpdatePollVoteMutation, UpdatePollVoteMutationVariables>;
+
+/**
+ * __useUpdatePollVoteMutation__
+ *
+ * To run a mutation, you first call `useUpdatePollVoteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePollVoteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePollVoteMutation, { data, loading, error }] = useUpdatePollVoteMutation({
+ *   variables: {
+ *      updatePollVoteInput: // value for 'updatePollVoteInput'
+ *   },
+ * });
+ */
+export function useUpdatePollVoteMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePollVoteMutation, UpdatePollVoteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePollVoteMutation, UpdatePollVoteMutationVariables>(UpdatePollVoteDocument, options);
+      }
+export type UpdatePollVoteMutationHookResult = ReturnType<typeof useUpdatePollVoteMutation>;
+export type UpdatePollVoteMutationResult = Apollo.MutationResult<UpdatePollVoteMutation>;
+export type UpdatePollVoteMutationOptions = Apollo.BaseMutationOptions<UpdatePollVoteMutation, UpdatePollVoteMutationVariables>;
+export const DeletePollDocument = gql`
+    mutation DeletePoll($deletePollInput: DeletePollInput!) {
+  delete_poll(deletePollInput: $deletePollInput) {
+    success
+    message
+  }
+}
+    `;
+export type DeletePollMutationFn = Apollo.MutationFunction<DeletePollMutation, DeletePollMutationVariables>;
+
+/**
+ * __useDeletePollMutation__
+ *
+ * To run a mutation, you first call `useDeletePollMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletePollMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletePollMutation, { data, loading, error }] = useDeletePollMutation({
+ *   variables: {
+ *      deletePollInput: // value for 'deletePollInput'
+ *   },
+ * });
+ */
+export function useDeletePollMutation(baseOptions?: Apollo.MutationHookOptions<DeletePollMutation, DeletePollMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeletePollMutation, DeletePollMutationVariables>(DeletePollDocument, options);
+      }
+export type DeletePollMutationHookResult = ReturnType<typeof useDeletePollMutation>;
+export type DeletePollMutationResult = Apollo.MutationResult<DeletePollMutation>;
+export type DeletePollMutationOptions = Apollo.BaseMutationOptions<DeletePollMutation, DeletePollMutationVariables>;
 export type ApplicationModelKeySpecifier = ('adult_content' | 'allow_images_and_videos_on_comments' | 'application_name' | 'application_owner' | 'application_owner_id' | 'auth_secret' | 'authenticated_users' | 'authenticated_users_ids' | 'category' | 'comment_policy_summary' | 'comment_policy_url' | 'comments' | 'cost' | 'created_at' | 'default_avatar_url' | 'description' | 'display_comments_when_flagged' | 'email_mods_when_comments_flagged' | 'id' | 'language' | 'links_in_comments' | 'moderators' | 'moderators_ids' | 'plan' | 'pre_comment_moderation' | 'renewal' | 'short_name' | 'theme' | 'threads' | 'updated_at' | 'website_url' | ApplicationModelKeySpecifier)[];
 export type ApplicationModelFieldPolicy = {
 	adult_content?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1464,7 +1677,7 @@ export type LoginResponseFieldPolicy = {
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('add_application_moderator' | 'add_pinned_comment' | 'approve_comments' | 'block_user' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_order' | 'create_reply_comment' | 'create_report' | 'delete_comment' | 'delete_many_comments' | 'delete_many_notifications' | 'delete_notification' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'logout_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'reset_password' | 'unblock_user' | 'up_vote_comment' | 'update_application' | 'update_application_comment_rules' | 'update_comment' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('add_application_moderator' | 'add_pinned_comment' | 'approve_comments' | 'block_user' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_order' | 'create_poll' | 'create_reply_comment' | 'create_report' | 'delete_comment' | 'delete_many_comments' | 'delete_many_notifications' | 'delete_notification' | 'delete_poll' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'logout_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'reset_password' | 'unblock_user' | 'up_vote_comment' | 'update_application' | 'update_application_comment_rules' | 'update_comment' | 'update_poll_vote' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	add_application_moderator?: FieldPolicy<any> | FieldReadFunction<any>,
 	add_pinned_comment?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1474,12 +1687,14 @@ export type MutationFieldPolicy = {
 	create_application?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_order?: FieldPolicy<any> | FieldReadFunction<any>,
+	create_poll?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_reply_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_report?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_many_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_many_notifications?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_notification?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_poll?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	down_vote_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	forgot_password?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1494,7 +1709,8 @@ export type MutationFieldPolicy = {
 	up_vote_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_application?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_application_comment_rules?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_comment?: FieldPolicy<any> | FieldReadFunction<any>
+	update_comment?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_poll_vote?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type NotificationKeySpecifier = ('application_id' | 'created_at' | 'id' | 'message' | 'updated_at' | 'url' | NotificationKeySpecifier)[];
 export type NotificationFieldPolicy = {
@@ -1504,6 +1720,20 @@ export type NotificationFieldPolicy = {
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	url?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type OptionEntityKeySpecifier = ('id' | 'option' | 'votes' | OptionEntityKeySpecifier)[];
+export type OptionEntityFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	option?: FieldPolicy<any> | FieldReadFunction<any>,
+	votes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type PollEntityKeySpecifier = ('created_at' | 'id' | 'options' | 'title' | 'updated_at' | PollEntityKeySpecifier)[];
+export type PollEntityFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	options?: FieldPolicy<any> | FieldReadFunction<any>,
+	title?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type QueryKeySpecifier = ('current_user' | 'fetch_all_applications' | 'fetch_all_threads' | 'fetch_application_by_short_name' | 'fetch_applications_by_owner_id' | 'fetch_comments' | 'fetch_comments_by_application_id' | 'fetch_comments_by_application_short_name' | 'fetch_comments_by_thread_id' | 'fetch_notifications' | 'fetch_notifications_by_application_id' | 'fetch_notifications_by_short_name' | 'fetch_notifications_by_user_id' | 'fetch_users' | 'find_one_application_by_id' | 'find_one_application_by_name' | 'find_one_thread_or_create_one' | 'find_thread_by_id' | 'resend_email_code' | 'search_user_by_email' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
@@ -1551,12 +1781,13 @@ export type StandardResponseModelFieldPolicy = {
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	success?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ThreadModelKeySpecifier = ('application_id' | 'id' | 'pinned_comment' | 'pinned_comment_id' | 'thread_comments' | 'title' | 'website_url' | ThreadModelKeySpecifier)[];
+export type ThreadModelKeySpecifier = ('application_id' | 'id' | 'pinned_comment' | 'pinned_comment_id' | 'poll' | 'thread_comments' | 'title' | 'website_url' | ThreadModelKeySpecifier)[];
 export type ThreadModelFieldPolicy = {
 	application_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	pinned_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	pinned_comment_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	poll?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	website_url?: FieldPolicy<any> | FieldReadFunction<any>
@@ -1573,6 +1804,11 @@ export type UserModelFieldPolicy = {
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_role?: FieldPolicy<any> | FieldReadFunction<any>,
 	username?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type VoteEntityKeySpecifier = ('id' | 'user_id' | VoteEntityKeySpecifier)[];
+export type VoteEntityFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
 	ApplicationModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
@@ -1615,6 +1851,14 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | NotificationKeySpecifier | (() => undefined | NotificationKeySpecifier),
 		fields?: NotificationFieldPolicy,
 	},
+	OptionEntity?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | OptionEntityKeySpecifier | (() => undefined | OptionEntityKeySpecifier),
+		fields?: OptionEntityFieldPolicy,
+	},
+	PollEntity?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | PollEntityKeySpecifier | (() => undefined | PollEntityKeySpecifier),
+		fields?: PollEntityFieldPolicy,
+	},
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
 		fields?: QueryFieldPolicy,
@@ -1642,6 +1886,10 @@ export type StrictTypedTypePolicies = {
 	UserModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UserModelKeySpecifier | (() => undefined | UserModelKeySpecifier),
 		fields?: UserModelFieldPolicy,
+	},
+	VoteEntity?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | VoteEntityKeySpecifier | (() => undefined | VoteEntityKeySpecifier),
+		fields?: VoteEntityFieldPolicy,
 	}
 };
 export type TypedTypePolicies = StrictTypedTypePolicies & TypePolicies;

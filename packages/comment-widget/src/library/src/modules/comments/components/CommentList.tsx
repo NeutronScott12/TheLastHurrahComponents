@@ -20,6 +20,8 @@ import { Loader } from '../common/Loader'
 // import { FilterComments } from './FilterComments'
 import { MenuBar } from './MenuBar'
 import { PinnedCommentView } from '../views/PinnedComment'
+import { VoteFormComponent } from './VoteFormComponent'
+import { VoteComponent } from './VoteComponent'
 
 type TVariables = {}
 type TData = {}
@@ -59,9 +61,11 @@ export const CommentList: React.FC<ICommentListProps> = ({
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Desc)
 
-    const { data: threadData, loading: threadloading } = useFindThreadByIdQuery(
-        { variables: { findThreadById: { thread_id } } },
-    )
+    const {
+        data: threadData,
+        loading: threadloading,
+        refetch,
+    } = useFindThreadByIdQuery({ variables: { findThreadById: { thread_id } } })
     const { data, loading } = useFetchCommentByThreadIdQuery({
         variables: {
             fetchCommentByThreadIdInput: {
@@ -125,6 +129,20 @@ export const CommentList: React.FC<ICommentListProps> = ({
             ) : (
                 ''
             )}
+
+            {threadData?.find_thread_by_id &&
+            threadData.find_thread_by_id.poll ? (
+                <VoteComponent
+                    refetch={refetch}
+                    thread_id={thread_id}
+                    poll={threadData.find_thread_by_id.poll}
+                />
+            ) : (
+                ''
+            )}
+
+            <VoteFormComponent thread_id={thread_id} />
+
             {/* <FilterComments
                 currentSort={currentSort}
                 changeCurrentSort={changeCurrentSort}

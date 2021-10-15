@@ -14,6 +14,19 @@ fragment ThreadFragment on ThreadModel {
     application_id
     title
     website_url
+    poll {
+        id
+        title
+        created_at
+        options {
+            id
+            option
+            votes {
+                id
+                user_id
+            }
+        }
+    }
     pinned_comment {
         application_id
         author {
@@ -28,6 +41,21 @@ fragment ThreadFragment on ThreadModel {
         updated_at
         user_id
         parent_id
+    }
+}
+
+fragment PollFragment on PollEntity {
+    id
+    title
+    created_at
+    updated_at
+    options {
+        id
+        option
+        votes {
+            id
+            user_id
+        }
     }
 }
 
@@ -259,5 +287,45 @@ input AddPinnedCommentInput {
 mutation AddPinnedComment($addPinnedCommentInput: AddPinnedCommentInput!) {
     add_pinned_comment(addPinnedCommentInput: $addPinnedCommentInput) {
         ...ThreadFragment
+    }
+}
+
+input OptionInput {
+    id: String!
+    option: String!
+}
+
+input CreatePollInput {
+    thread_id: String!
+    title: String!
+    options: [OptionInput!]!
+}
+
+mutation CreatePollMutation($createPollInput: CreatePollInput!) {
+    create_poll(createPollInput: $createPollInput) {
+        ...PollFragment
+    }
+}
+
+input UpdatePollVoteInput {
+    poll_id: String!
+    options_id: String!
+}
+
+mutation UpdatePollVote($updatePollVoteInput: UpdatePollVoteInput!) {
+    update_poll_vote(updatePollVoteInput: $updatePollVoteInput) {
+        ...PollFragment
+    }
+}
+
+input DeletePollInput {
+    thread_id: String!
+    poll_id: String!
+}
+
+mutation DeletePoll($deletePollInput: DeletePollInput!) {
+    delete_poll(deletePollInput: $deletePollInput) {
+        success
+        message
     }
 }
