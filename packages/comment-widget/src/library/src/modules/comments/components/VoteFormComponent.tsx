@@ -6,6 +6,8 @@ import {
     OptionInput,
     useCreatePollMutationMutation,
 } from '../../../generated/graphql'
+import { IModerator } from '../types'
+import { useCurrentUserClient } from '../../../utils/customApolloHooks'
 
 type IOptionInput = {
     option: string
@@ -19,12 +21,15 @@ interface IVoteFormValues {
 
 interface IVoteFormComponent {
     thread_id: string
+    moderators: IModerator[] | undefined
 }
 
 export const VoteFormComponent: React.FC<IVoteFormComponent> = ({
     thread_id,
+    moderators,
 }) => {
     const [createPoll] = useCreatePollMutationMutation()
+    const { data } = useCurrentUserClient()
     const initialValues: IVoteFormValues = {
         questions: 0,
         options: [],
@@ -90,6 +95,8 @@ export const VoteFormComponent: React.FC<IVoteFormComponent> = ({
         }
     }
 
+    console.log('CLIENT_USER', data)
+
     return (
         <Formik
             //@ts-ignore
@@ -113,6 +120,7 @@ export const VoteFormComponent: React.FC<IVoteFormComponent> = ({
                         {({ field }: any) => (
                             <Select
                                 {...field}
+                                defaultValue={1}
                                 onChange={(e) =>
                                     //@ts-ignore
                                     onChangeTickets(e, field, values, setValues)

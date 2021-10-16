@@ -1,27 +1,20 @@
 import React from 'react'
-import { Grid } from '@mui/material'
-import { Button, List } from 'semantic-ui-react'
 
 import {
     Exact,
     FindThreadByIdInput,
     FindThreadByIdQuery,
-    OptionEntity,
-    Scalars,
+    useClosePollMutation,
     useDeletePollMutation,
     useUpdatePollVoteMutation,
 } from '../../../generated/graphql'
 import { ApolloQueryResult } from '@apollo/client'
+import { VoteView } from '../views/VoteView'
+import { IPollEntity } from '../types'
 
 interface IVoteComponent {
     thread_id: string
-    poll: {
-        __typename?: 'PollEntity'
-        created_at: Scalars['DateTime']
-        id: Scalars['String']
-        options: Array<OptionEntity>
-        title: Scalars['String']
-    }
+    poll: IPollEntity
     refetch: (
         variables?:
             | Partial<
@@ -40,6 +33,7 @@ export const VoteComponent: React.FC<IVoteComponent> = ({
 }) => {
     const [updateVote] = useUpdatePollVoteMutation()
     const [deletePollMutation] = useDeletePollMutation()
+    const [closePollMutation] = useClosePollMutation()
 
     const increaseVote = async (options_id: string) => {
         try {
@@ -78,29 +72,26 @@ export const VoteComponent: React.FC<IVoteComponent> = ({
         }
     }
 
+    const closePoll = async (poll_id: string) => {
+        try {
+            await closePollMutation({
+                variables: { closePollInput: { poll_id } },
+            })
+        } catch (error) {
+            if (error instanceof Error) {
+                // console.log(error)
+                // setError(true)
+                // setErrorMessage(error.message)
+            }
+        }
+    }
+
     return (
-        <Grid>
-            <h2>{poll.title}</h2>
-            <Button onClick={() => deletePoll()}>Delete Poll</Button>
-            <List divided verticalAlign="middle">
-                {poll.options.map((option) => {
-                    return (
-                        <List.Item>
-                            <List.Content floated="right">
-                                <Button onClick={() => increaseVote(option.id)}>
-                                    Vote
-                                </Button>
-                            </List.Content>
-                            <List.Content>
-                                <h3>{option.option}</h3>
-                            </List.Content>
-                            <List.Content>
-                                <h3>{option.votes.length}</h3>
-                            </List.Content>
-                        </List.Item>
-                    )
-                })}
-            </List>
-        </Grid>
+        <VoteView
+            poll={poll}
+            deletePoll={deletePoll}
+            increaseVote={increaseVote}
+            closePoll={closePoll}
+        />
     )
 }

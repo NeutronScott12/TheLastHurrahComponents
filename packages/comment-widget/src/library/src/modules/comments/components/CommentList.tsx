@@ -15,6 +15,7 @@ import {
     Sort,
     useFetchCommentByThreadIdQuery,
     useFindThreadByIdQuery,
+    useFineOneApplicationByIdQuery,
 } from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
 // import { FilterComments } from './FilterComments'
@@ -22,6 +23,7 @@ import { MenuBar } from './MenuBar'
 import { PinnedCommentView } from '../views/PinnedComment'
 import { VoteFormComponent } from './VoteFormComponent'
 import { VoteComponent } from './VoteComponent'
+import { useCurrentUserClient } from '../../../utils/customApolloHooks'
 
 type TVariables = {}
 type TData = {}
@@ -60,7 +62,12 @@ export const CommentList: React.FC<ICommentListProps> = ({
     setLoggedIn,
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Desc)
-
+    const { data: currentUserClient } = useCurrentUserClient()
+    const { data: applicationData } = useFineOneApplicationByIdQuery({
+        variables: {
+            id: application_id,
+        },
+    })
     const {
         data: threadData,
         loading: threadloading,
@@ -141,7 +148,17 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 ''
             )}
 
-            <VoteFormComponent thread_id={thread_id} />
+            {currentUserClient?.isModerator ? (
+                <VoteFormComponent
+                    moderators={
+                        applicationData &&
+                        applicationData.find_one_application_by_id.moderators
+                    }
+                    thread_id={thread_id}
+                />
+            ) : (
+                ''
+            )}
 
             {/* <FilterComments
                 currentSort={currentSort}

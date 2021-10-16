@@ -11,11 +11,8 @@ import { Ratings } from '../components/Rating'
 import { displayHtml } from '../helpers'
 import { BlockComponent } from '../components/BlockComponent'
 import { ReportFormComponent } from '../components/ReportFormComponent'
+import { IModerator } from '../types'
 
-export interface IModerator {
-    username: string
-    id: string
-}
 interface ICommentViewProps {
     currentUser: CurrentUserQuery | undefined
     thread_id: string

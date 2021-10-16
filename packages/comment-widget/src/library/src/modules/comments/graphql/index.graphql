@@ -15,17 +15,7 @@ fragment ThreadFragment on ThreadModel {
     title
     website_url
     poll {
-        id
-        title
-        created_at
-        options {
-            id
-            option
-            votes {
-                id
-                user_id
-            }
-        }
+        ...PollFragment
     }
     pinned_comment {
         application_id
@@ -49,6 +39,8 @@ fragment PollFragment on PollEntity {
     title
     created_at
     updated_at
+    closed
+    voted
     options {
         id
         option
@@ -327,5 +319,15 @@ mutation DeletePoll($deletePollInput: DeletePollInput!) {
     delete_poll(deletePollInput: $deletePollInput) {
         success
         message
+    }
+}
+
+input ClosePollInput {
+    poll_id: String!
+}
+
+mutation ClosePoll($closePollInput: ClosePollInput!) {
+    close_poll(closePollInput: $closePollInput) {
+        ...PollFragment
     }
 }

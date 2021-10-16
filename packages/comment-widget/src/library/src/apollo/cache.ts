@@ -8,6 +8,14 @@ export const IS_LOGGED_IN = gql`
     }
 `
 
+export const CURRENT_USER_CLIENT = gql`
+    query CurrentUserClient @client {
+        username
+        id
+        isModerator
+    }
+`
+
 localCache.writeQuery({
     query: IS_LOGGED_IN,
     data: {

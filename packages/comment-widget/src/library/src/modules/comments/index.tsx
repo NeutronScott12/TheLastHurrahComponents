@@ -7,10 +7,11 @@ import {
 import {
     useCurrentUserQuery,
     useFindOneOrCreateOneThreadQuery,
+    useFineOneApplicationByIdQuery,
 } from '../../generated/graphql'
 import { CommentList } from './components/CommentList'
-import { useCurrentUser } from '../../utils/customApolloHooks'
-import { cache, IS_LOGGED_IN } from '../../apollo/cache'
+import { useIsLoggedIn } from '../../utils/customApolloHooks'
+import { cache, CURRENT_USER_CLIENT, IS_LOGGED_IN } from '../../apollo/cache'
 import { Loader } from './common/Loader'
 
 interface ICommentContainerProps {
@@ -34,21 +35,38 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
     const [limit, changeLimit] = useState(10)
     const [skip] = useState(0)
     const [loggedIn, setLoggedIn] = useState(false)
-    const { data: currentUserData } = useCurrentUser()
+    const { data: currentUserData } = useIsLoggedIn()
+    const { data: applicationData } = useFineOneApplicationByIdQuery({
+        variables: { id: application_id },
+    })
     const { data: currentUser, loading: currentUserLoading } =
         useCurrentUserQuery()
 
     useEffect(() => {
-        if (currentUser) {
+        if (applicationData && currentUser) {
             cache.writeQuery({
                 query: IS_LOGGED_IN,
                 data: {
                     isLoggedIn: true,
                 },
             })
+
+            const match =
+                applicationData.find_one_application_by_id.moderators.some(
+                    ({ id }) => id === currentUser.current_user.id,
+                )
+            console.log('MATCH', match)
+            cache.writeQuery({
+                query: CURRENT_USER_CLIENT,
+                data: {
+                    username: currentUser.current_user.username,
+                    id: currentUser.current_user.id,
+                    isModerator: match,
+                },
+            })
             setLoggedIn(true)
         }
-    }, [currentUser])
+    }, [currentUser, applicationData])
 
     const { data, loading, fetchMore, refetch } =
         useFindOneOrCreateOneThreadQuery({
