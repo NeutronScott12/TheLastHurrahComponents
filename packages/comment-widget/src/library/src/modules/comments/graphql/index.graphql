@@ -75,6 +75,9 @@ query FineOneApplicationById($id: String!) {
     find_one_application_by_id(id: $id) {
         id
         application_name
+        application_owner {
+            username
+        }
         moderators {
             username
             id

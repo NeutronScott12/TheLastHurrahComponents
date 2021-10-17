@@ -29,7 +29,7 @@ export const VoteFormComponent: React.FC<IVoteFormComponent> = ({
     moderators,
 }) => {
     const [createPoll] = useCreatePollMutationMutation()
-    const { data } = useCurrentUserClient()
+   
     const initialValues: IVoteFormValues = {
         questions: 0,
         options: [],
@@ -94,8 +94,6 @@ export const VoteFormComponent: React.FC<IVoteFormComponent> = ({
             console.log(error)
         }
     }
-
-    console.log('CLIENT_USER', data)
 
     return (
         <Formik

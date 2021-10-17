@@ -55,13 +55,16 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 applicationData.find_one_application_by_id.moderators.some(
                     ({ id }) => id === currentUser.current_user.id,
                 )
-            console.log('MATCH', match)
+            const isOwner =
+                applicationData.find_one_application_by_id.application_owner
+                    .username === currentUser.current_user.username
             cache.writeQuery({
                 query: CURRENT_USER_CLIENT,
                 data: {
                     username: currentUser.current_user.username,
                     id: currentUser.current_user.id,
-                    isModerator: match,
+                    isModerator: match || isOwner,
+                    isOwner,
                 },
             })
             setLoggedIn(true)

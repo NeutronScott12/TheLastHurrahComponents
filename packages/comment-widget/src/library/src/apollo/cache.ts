@@ -13,6 +13,7 @@ export const CURRENT_USER_CLIENT = gql`
         username
         id
         isModerator
+        isOwner
     }
 `
 
