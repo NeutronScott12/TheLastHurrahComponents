@@ -27,6 +27,7 @@ interface IReplyCommentView {
     title: string
     comment: IComment
     currentSort: Sort
+    application_short_name: string
 }
 
 export const ReplyCommentView: React.FC<IReplyCommentView> = ({
@@ -43,6 +44,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     currentUser,
     isModerator,
     currentSort,
+    application_short_name,
 }) => {
     const [useSecondaryReply, changeUseEditSecondary] = useState(false)
     const [useReplyEdit, changeUseReplyEdit] = useState(false)
@@ -77,6 +79,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 <Comment.Text>
                     {useReplyEdit ? (
                         <EditCommentForm
+                            application_short_name={application_short_name}
                             currentSort={currentSort}
                             application_id={comment.application_id}
                             website_url={website_url}
@@ -89,11 +92,17 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                             changeUseEdit={changeUseEdit}
                         />
                     ) : (
-                        <div
-                            dangerouslySetInnerHTML={{
-                                __html: displayHtml(reply),
-                            }}
-                        />
+                        <>
+                            {reply.pending ? (
+                                'Comment waiting for approval'
+                            ) : (
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: displayHtml(comment),
+                                    }}
+                                />
+                            )}
+                        </>
                     )}
                 </Comment.Text>
                 <Comment.Actions>
@@ -135,6 +144,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 </Comment.Actions>
                 {useSecondaryReply ? (
                     <ReplyCommentForm
+                        application_short_name={application_short_name}
                         currentSort={currentSort}
                         limit={limit}
                         skip={skip}

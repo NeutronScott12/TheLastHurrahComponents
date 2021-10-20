@@ -14,8 +14,8 @@ import {
 import {
     Sort,
     useFetchCommentByThreadIdQuery,
+    useFindOneApplicationByIdQuery,
     useFindThreadByIdQuery,
-    useFineOneApplicationByIdQuery,
 } from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
 // import { FilterComments } from './FilterComments'
@@ -35,6 +35,7 @@ interface ICommentListProps {
     logged_in: boolean
     limit: number
     skip: number
+    application_short_name: string
     setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
     changeLimit: React.Dispatch<React.SetStateAction<number>>
     fetchMore: ((
@@ -57,13 +58,14 @@ export const CommentList: React.FC<ICommentListProps> = ({
     skip,
     title,
     website_url,
+    application_short_name,
     changeLimit,
     fetchMore,
     setLoggedIn,
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Desc)
     const { data: currentUserClient } = useCurrentUserClient()
-    const { data: applicationData } = useFineOneApplicationByIdQuery({
+    const { data: applicationData } = useFindOneApplicationByIdQuery({
         variables: {
             id: application_id,
         },
@@ -80,6 +82,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 limit,
                 skip,
                 sort: currentSort,
+                application_short_name,
             },
         },
     })
@@ -119,6 +122,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
             <MenuBar setLoggedIn={setLoggedIn} />
             {logged_in ? (
                 <CreateCommentForm
+                    application_short_name={application_short_name}
                     currentSort={currentSort}
                     application_id={application_id}
                     thread_id={thread_id}
@@ -170,6 +174,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
                     data.fetch_comments_by_thread_id.comments.map((comment) => {
                         return (
                             <CommentComponent
+                                application_short_name={application_short_name}
                                 currentSort={currentSort}
                                 thread_id={thread_id}
                                 title={title}

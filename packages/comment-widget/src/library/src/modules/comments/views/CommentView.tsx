@@ -23,6 +23,7 @@ interface ICommentViewProps {
     title: string
     moderators: IModerator[] | undefined
     currentSort: Sort
+    application_short_name: string
     addPinnedComment: (comment_id: string) => void
     deleteComment: (id: string) => void
     deleteReplyComment: (id: string, parent_id: string) => void
@@ -38,6 +39,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     currentUser,
     moderators,
     currentSort,
+    application_short_name,
     deleteComment,
     deleteReplyComment,
     addPinnedComment,
@@ -100,6 +102,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                     <Comment.Text>
                         {useEdit ? (
                             <EditCommentForm
+                                application_short_name={application_short_name}
                                 currentSort={currentSort}
                                 application_id={comment.application_id}
                                 website_url={website_url}
@@ -112,11 +115,17 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                                 changeUseEdit={changeUseEdit}
                             />
                         ) : (
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: displayHtml(comment),
-                                }}
-                            />
+                            <>
+                                {comment.pending ? (
+                                    'Comment waiting for approval'
+                                ) : (
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html: displayHtml(comment),
+                                        }}
+                                    />
+                                )}
+                            </>
                         )}
                     </Comment.Text>
 
@@ -156,6 +165,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                     </Comment.Actions>
                     {useMain ? (
                         <ReplyCommentForm
+                            application_short_name={application_short_name}
                             currentSort={currentSort}
                             limit={limit}
                             skip={skip}
@@ -180,6 +190,9 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                     {comment.replies
                         ? comment.replies.map((reply) => (
                               <ReplyCommentView
+                                  application_short_name={
+                                      application_short_name
+                                  }
                                   currentSort={currentSort}
                                   displayModerator={displayModerator}
                                   isModerator={isModerator}

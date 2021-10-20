@@ -19,8 +19,8 @@ import {
     useAddPinnedCommentMutation,
     useCurrentUserQuery,
     useDeleteThreadCommentMutation,
+    useFindOneApplicationByIdQuery,
     useFindThreadByIdQuery,
-    useFineOneApplicationByIdQuery,
 } from '../../../generated/graphql'
 import { CommentView } from '../views/CommentView'
 import {
@@ -41,6 +41,7 @@ export interface IComment {
     created_at: string
     thread_id: string
     application_id: string
+    pending: boolean
     parent_id?: Maybe<string> | undefined
     replied_to_user?: Maybe<{
         __typename?: 'UserModel' | undefined
@@ -58,6 +59,7 @@ interface ICommentProps {
     title: string
     website_url: string
     application_id: string
+    application_short_name: string
     currentSort: Sort
 }
 
@@ -69,6 +71,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     title,
     website_url,
     application_id,
+    application_short_name,
     currentSort,
 }) => {
     const [checkError, setError] = useState(false)
@@ -79,7 +82,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     const [deleteCommentMutation] = useDeleteThreadCommentMutation()
     const [addPinnedCommentMutation] = useAddPinnedCommentMutation()
     const { data: applicationData, loading: applicationLoading } =
-        useFineOneApplicationByIdQuery({
+        useFindOneApplicationByIdQuery({
             variables: { id: application_id },
         })
 
@@ -95,6 +98,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                         limit,
                         skip,
                         sort: currentSort,
+                        application_short_name,
                     })
 
                     if (response && response.fetch_comments_by_thread_id) {
@@ -121,6 +125,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                             limit,
                             skip,
                             sort: currentSort,
+                            application_short_name,
                             data: newData,
                         })
                     }
@@ -150,6 +155,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                         thread_id,
                         limit,
                         skip,
+                        application_short_name,
                         sort: currentSort,
                     })
 
@@ -223,6 +229,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
                             limit,
                             skip,
                             sort: currentSort,
+                            application_short_name,
                             data: newData,
                         })
                     }
@@ -259,6 +266,7 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         <>
             {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
             <CommentView
+                application_short_name={application_short_name}
                 currentSort={currentSort}
                 currentUser={data && data.current_user ? data : undefined}
                 moderators={

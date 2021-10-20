@@ -71,10 +71,11 @@ query FindThreadById($findThreadById: FindThreadByIdInput!) {
     }
 }
 
-query FineOneApplicationById($id: String!) {
+query FindOneApplicationById($id: String!) {
     find_one_application_by_id(id: $id) {
         id
         application_name
+        short_name
         application_owner {
             username
         }
@@ -99,6 +100,7 @@ fragment CommentFragment on CommentModel {
     updated_at
     user_id
     parent_id
+    pending
     _count {
         down_vote
         replies
@@ -120,6 +122,7 @@ input FetchCommentByThreadIdInput {
     skip: Int!
     thread_id: String!
     sort: SORT!
+    application_short_name: String!
 }
 
 query FetchCommentByThreadId(

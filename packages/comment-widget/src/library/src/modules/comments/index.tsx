@@ -6,13 +6,14 @@ import {
 
 import {
     useCurrentUserQuery,
+    useFindOneApplicationByIdQuery,
     useFindOneOrCreateOneThreadQuery,
-    useFineOneApplicationByIdQuery,
 } from '../../generated/graphql'
 import { CommentList } from './components/CommentList'
 import { useIsLoggedIn } from '../../utils/customApolloHooks'
 import { cache, CURRENT_USER_CLIENT, IS_LOGGED_IN } from '../../apollo/cache'
 import { Loader } from './common/Loader'
+import { DataSaverOffRounded } from '@mui/icons-material'
 
 interface ICommentContainerProps {
     application_id: string
@@ -36,7 +37,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
     const [skip] = useState(0)
     const [loggedIn, setLoggedIn] = useState(false)
     const { data: currentUserData } = useIsLoggedIn()
-    const { data: applicationData } = useFineOneApplicationByIdQuery({
+    const { data: applicationData } = useFindOneApplicationByIdQuery({
         variables: { id: application_id },
     })
     const { data: currentUser, loading: currentUserLoading } =
@@ -109,7 +110,11 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                 ''
             )}
 
-            {data && data.find_one_thread_or_create_one && loggedIn ? (
+            {data &&
+            data.find_one_thread_or_create_one &&
+            applicationData &&
+            applicationData.find_one_application_by_id.short_name &&
+            loggedIn ? (
                 <CommentList
                     title={title}
                     application_id={application_id}
@@ -120,6 +125,9 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                     changeLimit={changeLimit}
                     //@ts-ignore
                     setLoggedIn={setLoggedIn}
+                    application_short_name={
+                        applicationData.find_one_application_by_id.short_name
+                    }
                     logged_in={
                         currentUserData && currentUserData.isLoggedIn
                             ? true

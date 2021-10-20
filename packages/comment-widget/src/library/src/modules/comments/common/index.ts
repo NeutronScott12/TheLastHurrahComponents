@@ -17,6 +17,7 @@ interface IFetchCommentByThreadIdQueryArgs {
     limit: number
     skip: number
     sort: Sort
+    application_short_name: string
 }
 
 export const fetchCommentByThreadIdQueryCache = ({
@@ -24,11 +25,18 @@ export const fetchCommentByThreadIdQueryCache = ({
     limit,
     skip,
     sort,
+    application_short_name,
 }: IFetchCommentByThreadIdQueryArgs) => {
     return cache.readQuery<FetchCommentByThreadIdQuery>({
         query: FetchCommentByThreadIdDocument,
         variables: {
-            fetchCommentByThreadIdInput: { thread_id, limit, skip, sort },
+            fetchCommentByThreadIdInput: {
+                thread_id,
+                limit,
+                skip,
+                sort,
+                application_short_name,
+            },
         },
     })
 }
@@ -43,12 +51,19 @@ export const WriteCommentByThreadIdQueryArgs = ({
     limit,
     skip,
     sort,
+    application_short_name,
     data,
 }: IWriteCommentByThreadIdQueryArgs) => {
     cache.writeQuery({
         query: FetchCommentByThreadIdDocument,
         variables: {
-            fetchCommentByThreadIdInput: { thread_id, limit, skip, sort },
+            fetchCommentByThreadIdInput: {
+                thread_id,
+                limit,
+                skip,
+                sort,
+                application_short_name,
+            },
         },
         data,
     })

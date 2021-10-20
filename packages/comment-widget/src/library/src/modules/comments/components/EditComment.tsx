@@ -22,17 +22,9 @@ import {
     fetchCommentByThreadIdQueryCache,
     WriteCommentByThreadIdQueryArgs,
 } from '../common'
-import {
-    HOTKEYS,
-    Leaf,
-    toggleMark,
-    Element,
-    MarkButton,
-    BlockButton,
-} from '../helpers/richTextEditor'
+
 import { IComment } from './Comment'
-import { Toolbar } from '../helpers/RichTextEditorViews'
-import { plainTextserialiser } from '../../../utils/richTextEditor/serialisers'
+
 import { Descendant } from 'slate'
 import { RichTextEditorView } from '../views/RichTextEditorView'
 
@@ -47,6 +39,7 @@ interface IEditCommentForm {
     limit: number
     skip: number
     currentSort: Sort
+    application_short_name: string
 }
 
 export const EditCommentForm: React.FC<IEditCommentForm> = ({
@@ -57,6 +50,7 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
     limit,
     skip,
     currentSort,
+    application_short_name,
 }) => {
     const { plain_text_body, json_body, id } = comment
     const [checkError, setError] = useState(false)
@@ -89,6 +83,7 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                                 thread_id,
                                 limit,
                                 skip,
+                                application_short_name,
                                 sort: currentSort,
                             })
 
@@ -185,6 +180,7 @@ export const EditCommentForm: React.FC<IEditCommentForm> = ({
                                     limit,
                                     skip,
                                     sort: currentSort,
+                                    application_short_name,
                                     data: changedObject,
                                 })
                             }

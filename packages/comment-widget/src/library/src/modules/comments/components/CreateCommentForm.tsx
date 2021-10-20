@@ -18,6 +18,7 @@ interface ICreateCommentProps {
     application_id: string
     skip: number
     limit: number
+    application_short_name: string
     currentSort: Sort
 }
 
@@ -35,6 +36,7 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
     skip,
     limit,
     currentSort,
+    application_short_name,
 }) => {
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -64,6 +66,7 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                             thread_id,
                             limit,
                             skip,
+                            application_short_name,
                             sort: currentSort,
                         })
 
@@ -100,6 +103,7 @@ export const CreateCommentForm: React.FC<ICreateCommentProps> = ({
                                 limit,
                                 skip,
                                 sort: currentSort,
+                                application_short_name,
                                 data: changedObject,
                             })
                         }

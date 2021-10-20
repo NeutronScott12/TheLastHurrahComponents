@@ -20,6 +20,7 @@ interface IReplyCommentFormProps {
     limit: number
     skip: number
     currentSort: Sort
+    application_short_name: string
     changeUseMain: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -38,6 +39,7 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
     limit,
     skip,
     currentSort,
+    application_short_name,
     changeUseMain,
 }) => {
     const [checkError, setError] = useState(false)
@@ -69,9 +71,13 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
                             limit,
                             skip,
                             sort: currentSort,
+                            application_short_name,
                         })
 
                         changeUseMain(false)
+
+                        console.log('RESPONSE', response)
+                        console.log('DATA', data)
 
                         if (data && response?.fetch_comments_by_thread_id) {
                             const cloned = clone(response)
@@ -108,6 +114,7 @@ export const ReplyCommentForm: React.FC<IReplyCommentFormProps> = ({
                                 limit,
                                 skip,
                                 sort: currentSort,
+                                application_short_name,
                                 data: newData,
                             })
                         }
