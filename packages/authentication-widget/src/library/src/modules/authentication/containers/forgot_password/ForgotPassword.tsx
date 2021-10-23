@@ -1,16 +1,14 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import { Button, TextField } from '@material-ui/core'
-import request from 'graphql-request'
 
-import { CHANGE_FORM_DISPLAY } from '../../entities/enums'
-import { Alert } from '@material-ui/lab'
-import { GRAPHQL_ENDPOINT } from '../../constants'
-import { forgotPasswordValidationSchema } from '../validation'
-import { FORGOT_PASSWORD } from './graphql'
-import { IForgotPassword, IForgotPasswordResponse } from './types'
+import { CHANGE_FORM_DISPLAY } from '../../../../entities/enums'
+import { forgotPasswordValidationSchema } from '../../../validation'
+import { IForgotPassword } from './types'
+import { useForgotPasswordMutation } from '../../../../generated/graphql'
+import { Alert, Button, TextField } from '@mui/material'
 
 export const ForgotPassword: React.FC<IForgotPassword> = ({ changeDisplay }) => {
+	const [forgotPassword] = useForgotPasswordMutation()
 	const [checkError, setError] = useState(false)
 	const [errorMessage, setErrorMessage] = useState('')
 	const [checkSuccess, setSuccess] = useState(false)
@@ -23,16 +21,14 @@ export const ForgotPassword: React.FC<IForgotPassword> = ({ changeDisplay }) => 
 		validationSchema: forgotPasswordValidationSchema,
 		async onSubmit({ email }, { setSubmitting }) {
 			try {
-				const response = await request<IForgotPasswordResponse>(
-					GRAPHQL_ENDPOINT,
-					FORGOT_PASSWORD,
-					{ email }
-				)
+				const response = await forgotPassword({
+					variables: { forgotPasswordInput: { email } },
+				})
 
-				if (response.forgot_password.success) {
+				if (response && response.data && response.data.forgot_password) {
 					setSubmitting(false)
 					setSuccess(true)
-					setSuccessMessage(response.forgot_password.message)
+					setSuccessMessage(response.data.forgot_password.message)
 				}
 			} catch (error) {
 				if (error instanceof Error) {

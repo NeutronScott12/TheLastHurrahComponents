@@ -1,22 +1,13 @@
+import { ApolloProvider } from '@apollo/client'
 import React, { useState } from 'react'
+import { client } from '../apollo'
 import { CHANGE_FORM_DISPLAY } from './entities/enums'
-import { ForgotPassword } from './modules/forgot_password/ForgotPassword'
+import { ForgotPassword } from './modules/authentication/containers/forgot_password/ForgotPassword'
 
-import { Login } from './modules/login/Login'
-import { Registration } from './modules/registration/Registration'
+import { Login } from './modules/authentication/containers/login/Login'
+import { ILoginResponse } from './modules/authentication/containers/login/types'
+import { Registration } from './modules/authentication/containers/registration/Registration'
 
-export interface ILoginResponse {
-	login_user: {
-		success: boolean
-		refresh_token: string
-		token: string
-		user: {
-			id: string
-			email: string
-			username: string
-		}
-	}
-}
 interface IBinaryStashAuthenticatorProps {
 	application_id: string
 	application_name: string
@@ -46,7 +37,7 @@ export const BinaryStashAuthenticator: React.FC<IBinaryStashAuthenticatorProps> 
 	}
 
 	return (
-		<div>
+		<ApolloProvider client={client}>
 			<h2>Authentication Should load here</h2>
 			{/* <Grid
 				container
@@ -58,6 +49,6 @@ export const BinaryStashAuthenticator: React.FC<IBinaryStashAuthenticatorProps> 
 			> */}
 			<Display />
 			{/* </Grid> */}
-		</div>
+		</ApolloProvider>
 	)
 }

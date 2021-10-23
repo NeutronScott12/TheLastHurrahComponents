@@ -1,4 +1,4 @@
-import { CHANGE_FORM_DISPLAY } from '../../../entities/enums'
+import { CHANGE_FORM_DISPLAY } from '../../../../../entities/enums'
 
 export interface IForgotPassword {
 	changeDisplay: React.Dispatch<React.SetStateAction<CHANGE_FORM_DISPLAY>>

@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
-import { Button, TextField } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
 import { useFormik } from 'formik'
-import request from 'graphql-request'
-import { CHANGE_FORM_DISPLAY } from '../../entities/enums'
-import { GRAPHQL_ENDPOINT } from '../../constants'
-import { REGISTRATION_MUTATION } from './graphql'
-import { RegistrationValidationSchema } from '../validation'
-import { IRegistration, IRegistrationResponse } from './types'
+import { Alert, Button, TextField } from '@mui/material'
+
+import { CHANGE_FORM_DISPLAY } from '../../../../entities/enums'
+import { RegistrationValidationSchema } from '../../../validation'
+import { IRegistration } from './types'
+import { useRegistrationMutation } from '../../../../generated/graphql'
 
 export const Registration: React.FC<IRegistration> = ({ changeDisplay, application_id }) => {
+	const [registrationMutation] = useRegistrationMutation()
 	const [checkError, setError] = useState(false)
 	const [errorMessage, setErrorMessage] = useState('')
 	const [checkSuccess, setSuccess] = useState(false)
@@ -24,21 +23,21 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 		validationSchema: RegistrationValidationSchema,
 		async onSubmit({ email, username, password }, { setSubmitting }) {
 			try {
-				const response = await request<IRegistrationResponse>(
-					GRAPHQL_ENDPOINT,
-					REGISTRATION_MUTATION,
-					{
-						email,
-						username,
-						password,
-						application_id,
-					}
-				)
+				const response = await registrationMutation({
+					variables: {
+						registrationInput: {
+							email,
+							password,
+							username,
+							application_id,
+						},
+					},
+				})
 
-				if (response.register_user.success) {
+				if (response.data?.register_user.success) {
 					setSubmitting(false)
 					setSuccess(true)
-					setSuccessMessage(response.register_user.message)
+					setSuccessMessage(response.data.register_user.message)
 				}
 			} catch (error) {
 				if (error instanceof Error) {

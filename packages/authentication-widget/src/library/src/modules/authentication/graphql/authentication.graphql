@@ -1,0 +1,44 @@
+input RegistrationInput {
+	username: String!
+	email: String!
+	password: String!
+	application_id: String
+	redirect_url: String
+}
+
+mutation Registration($registrationInput: RegistrationInput!) {
+	register_user(registrationInput: $registrationInput) {
+		success
+		message
+	}
+}
+
+input LoginInput {
+	username: String!
+	email: String!
+}
+
+mutation Login($loginInput: LoginInput!) {
+	login_user(loginInput: $loginInput) {
+		success
+		message
+		token
+		refresh_token
+		user {
+			username
+			id
+		}
+	}
+}
+
+input ForgotPasswordInput {
+	email: String!
+	redirect_url: String
+}
+
+mutation ForgotPassword($forgotPasswordInput: ForgotPasswordInput!) {
+	forgot_password(forgotPasswordInput: $forgotPasswordInput) {
+		success
+		message
+	}
+}
