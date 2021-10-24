@@ -88,13 +88,19 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                         </Moment>
                     </Comment.Metadata>
                     {currentUser &&
-                    currentUser.current_user.id !== comment.author.id ? (
+                    currentUser.current_user.id !== comment.author.id &&
+                    comment.approved === false ? (
                         <Comment.Metadata>
                             <BlockComponent
                                 changeOpenReport={changeOpenReport}
                                 comment_author_id={comment.author.id}
                             />
                         </Comment.Metadata>
+                    ) : (
+                        ''
+                    )}
+                    {comment.approved ? (
+                        <Comment.Metadata>approved</Comment.Metadata>
                     ) : (
                         ''
                     )}

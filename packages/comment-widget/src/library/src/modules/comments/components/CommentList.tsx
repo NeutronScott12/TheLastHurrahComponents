@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '@material-ui/core'
 import { Comment } from 'semantic-ui-react'
 
-import { CommentComponent } from './Comment'
+import { CommentComponent, IComment } from './Comment'
 import { CreateCommentForm } from './CreateCommentForm'
 import {
     ApolloQueryResult,
@@ -10,6 +10,7 @@ import {
     FetchMoreOptions,
     FetchMoreQueryOptions,
     TypedDocumentNode,
+    useSubscription,
 } from '@apollo/client'
 import {
     Sort,
@@ -24,6 +25,16 @@ import { PinnedCommentView } from '../views/PinnedComment'
 import { VoteFormComponent } from './VoteFormComponent'
 import { VoteComponent } from './VoteComponent'
 import { useCurrentUserClient } from '../../../utils/customApolloHooks'
+import {
+    COMMENT_ADDED_SUBSCRIPTION,
+    ICommentAddedSubscriptionResponse,
+    ICommentAddedSubscriptionVariables,
+} from '../graphql'
+import {
+    fetchCommentByThreadIdQueryCache,
+    WriteCommentByThreadIdQueryArgs,
+} from '../common'
+import { clone, mergeDeepRight } from 'ramda'
 
 type TVariables = {}
 type TData = {}
@@ -64,7 +75,18 @@ export const CommentList: React.FC<ICommentListProps> = ({
     setLoggedIn,
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Desc)
+    const [pendingComments, setPendingComments] = useState<IComment[]>([])
     const { data: currentUserClient } = useCurrentUserClient()
+    const {
+        loading: commentSubscriptionLoading,
+        data: commentSubscriptionData,
+        error,
+    } = useSubscription<
+        ICommentAddedSubscriptionResponse,
+        ICommentAddedSubscriptionVariables
+    >(COMMENT_ADDED_SUBSCRIPTION, {
+        variables: { thread_id },
+    })
     const { data: applicationData } = useFindOneApplicationByIdQuery({
         variables: {
             id: application_id,
@@ -92,7 +114,13 @@ export const CommentList: React.FC<ICommentListProps> = ({
         if (localCurrent) {
             changeCurrentSort(localCurrent as Sort)
         }
-    }, [])
+        if (commentSubscriptionData) {
+            setPendingComments([
+                commentSubscriptionData.comment_added,
+                ...pendingComments,
+            ])
+        }
+    }, [commentSubscriptionData])
 
     const fetchMoreComments = async () => {
         changeLimit(limit + 10)
@@ -112,8 +140,66 @@ export const CommentList: React.FC<ICommentListProps> = ({
         })
     }
 
+    const showPendingComments = () => {
+        if (commentSubscriptionData) {
+            const response = fetchCommentByThreadIdQueryCache({
+                thread_id,
+                limit,
+                skip,
+                sort: currentSort,
+                application_short_name,
+            })
+
+            console.log('RESPONSE', response)
+
+            if (response?.fetch_comments_by_thread_id.comments) {
+                const cloneData = clone(response)
+                pendingComments.forEach(
+                    //@ts-ignore
+                    (comment) => (comment['__typename'] = 'CommentModel'),
+                )
+                console.log('PENDING', pendingComments)
+                const newData = {
+                    fetch_comments_by_thread_id: {
+                        __typename:
+                            response.fetch_comments_by_thread_id.__typename,
+                        comments_count:
+                            cloneData.fetch_comments_by_thread_id
+                                .comments_count,
+                        comments: [
+                            ...pendingComments,
+                            ...cloneData.fetch_comments_by_thread_id.comments,
+                        ],
+                    },
+                }
+                setPendingComments([])
+
+                const changedObject = mergeDeepRight(cloneData, newData)
+
+                console.log('CHANGED_OBJECT', changedObject)
+
+                WriteCommentByThreadIdQueryArgs({
+                    thread_id,
+                    limit,
+                    skip,
+                    sort: currentSort,
+                    application_short_name,
+                    data: changedObject,
+                })
+            }
+        }
+    }
+
+    console.log('error', error)
+    console.log('SUBSCRIPTION', commentSubscriptionData)
+
+    if (data) {
+        console.log('COMMENTS', data.fetch_comments_by_thread_id)
+    }
+
     return threadloading &&
         loading &&
+        commentSubscriptionLoading &&
         data &&
         data.fetch_comments_by_thread_id.comments ? (
         <Loader />
@@ -132,10 +218,14 @@ export const CommentList: React.FC<ICommentListProps> = ({
             ) : (
                 ''
             )}
-            {threadData?.find_thread_by_id &&
-            threadData.find_thread_by_id.pinned_comment ? (
-                <PinnedCommentView
-                    comment={threadData.find_thread_by_id.pinned_comment}
+
+            {currentUserClient?.isModerator ? (
+                <VoteFormComponent
+                    moderators={
+                        applicationData &&
+                        applicationData.find_one_application_by_id.moderators
+                    }
+                    thread_id={thread_id}
                 />
             ) : (
                 ''
@@ -152,14 +242,19 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 ''
             )}
 
-            {currentUserClient?.isModerator ? (
-                <VoteFormComponent
-                    moderators={
-                        applicationData &&
-                        applicationData.find_one_application_by_id.moderators
-                    }
-                    thread_id={thread_id}
+            {threadData?.find_thread_by_id &&
+            threadData.find_thread_by_id.pinned_comment ? (
+                <PinnedCommentView
+                    comment={threadData.find_thread_by_id.pinned_comment}
                 />
+            ) : (
+                ''
+            )}
+
+            {pendingComments.length > 0 ? (
+                <Button onClick={showPendingComments}>
+                    {pendingComments.length} Show More
+                </Button>
             ) : (
                 ''
             )}

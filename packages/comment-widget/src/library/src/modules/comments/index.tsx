@@ -27,6 +27,7 @@ interface ICommentContainerProps {
 //     COMMENTS,
 // }
 
+
 export const CommentContainer: React.FC<ICommentContainerProps> = ({
     application_id,
     website_url,
@@ -84,7 +85,8 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
         })
 
     const logInCallback = (response: ILoginResponse) => {
-        localStorage.setItem('binary-stash-token', response.login_user.token)
+        console.log('RESPONSE', response)
+        localStorage.setItem('binary-stash-token', response.token)
 
         cache.writeQuery({
             query: IS_LOGGED_IN,

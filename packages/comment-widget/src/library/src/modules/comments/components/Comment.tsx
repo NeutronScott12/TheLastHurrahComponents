@@ -42,6 +42,7 @@ export interface IComment {
     thread_id: string
     application_id: string
     pending: boolean
+    approved: boolean
     parent_id?: Maybe<string> | undefined
     replied_to_user?: Maybe<{
         __typename?: 'UserModel' | undefined

@@ -87,7 +87,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                             limit={limit}
                             skip={skip}
                             title={title}
-                            comment={comment}
+                            comment={reply}
                             changeUseReplyEdit={changeUseReplyEdit}
                             changeUseEdit={changeUseEdit}
                         />
@@ -98,7 +98,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                             ) : (
                                 <div
                                     dangerouslySetInnerHTML={{
-                                        __html: displayHtml(comment),
+                                        __html: displayHtml(reply),
                                     }}
                                 />
                             )}
@@ -148,7 +148,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                         currentSort={currentSort}
                         limit={limit}
                         skip={skip}
-                        comment={comment}
+                        comment={reply}
                         replied_to_id={reply.author.id}
                         changeUseMain={changeUseEditSecondary}
                         parent_id={comment.id}
@@ -158,7 +158,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                 )}
                 {openReport ? (
                     <ReportFormComponent
-                        comment_id={comment.id}
+                        comment_id={reply.id}
                         changeOpenReport={changeOpenReport}
                     />
                 ) : (
