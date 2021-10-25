@@ -7,9 +7,11 @@ import { CHANGE_FORM_DISPLAY } from '../../../../entities/enums'
 import { LoginValidationSchema } from '../../../validation'
 import { ILogin } from './types'
 import { useLoginMutation } from '../../../../generated/graphql'
+import { TwoFactorLogin } from './TwoFactorLogin'
 
 export const Login: React.FC<ILogin> = ({ changeDisplay, logInCallback }) => {
 	const [loginMutation] = useLoginMutation()
+	const [twoFactor, setTwoFactor] = useState(false)
 	const [checkError, setError] = useState(false)
 	const [errorMessage, setErrorMessage] = useState('')
 
@@ -30,10 +32,13 @@ export const Login: React.FC<ILogin> = ({ changeDisplay, logInCallback }) => {
 					},
 				})
 
-				console.log(response)
+				console.log(response.data?.login_user)
 
-				if (response.data && response.data.login_user) {
-					logInCallback(response.data?.login_user)
+				if (response.data && response.data.login_user.two_factor_authentication) {
+					setTwoFactor(true)
+				} else if (response.data && response.data.login_user) {
+					//@ts-ignore
+					logInCallback(response.data.login_user)
 				} else {
 					throw new Error('Something went wrong, please try again')
 				}
@@ -55,43 +60,55 @@ export const Login: React.FC<ILogin> = ({ changeDisplay, logInCallback }) => {
 
 	return (
 		<div>
-			<h2>Login</h2>
-			{checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
-			<form onSubmit={formik.handleSubmit}>
-				<TextField
-					fullWidth
-					id="email"
-					name="email"
-					label="Email"
-					value={formik.values.email}
-					onChange={formik.handleChange}
-					error={formik.touched.email && Boolean(formik.errors.email)}
-					helperText={formik.touched.email && formik.errors.email}
-				/>
-				<TextField
-					autoComplete="off"
-					fullWidth
-					id="password"
-					name="password"
-					label="Password"
-					type="password"
-					value={formik.values.password}
-					onChange={formik.handleChange}
-					error={formik.touched.password && Boolean(formik.errors.password)}
-					helperText={formik.touched.password && formik.errors.password}
-				/>
-				<Button color="primary" variant="contained" fullWidth type="submit">
-					Submit
-				</Button>
+			{twoFactor ? (
+				<TwoFactorLogin email={formik.values.email} logInCallback={logInCallback} />
+			) : (
 				<div>
-					<p style={{ cursor: 'grab' }} onClick={changeToForgotPassword}>
-						Forgot Password
-					</p>
-					<p style={{ cursor: 'grab' }} onClick={changeToRegistration}>
-						Don't have an account? Sign Up
-					</p>
+					<h2>Login</h2>
+					{checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
+					<form onSubmit={formik.handleSubmit}>
+						<TextField
+							fullWidth
+							id="email"
+							name="email"
+							label="Email"
+							value={formik.values.email}
+							onChange={formik.handleChange}
+							error={formik.touched.email && Boolean(formik.errors.email)}
+							helperText={formik.touched.email && formik.errors.email}
+						/>
+						<TextField
+							autoComplete="off"
+							fullWidth
+							id="password"
+							name="password"
+							label="Password"
+							type="password"
+							value={formik.values.password}
+							onChange={formik.handleChange}
+							error={formik.touched.password && Boolean(formik.errors.password)}
+							helperText={formik.touched.password && formik.errors.password}
+						/>
+						<Button
+							disabled={formik.isSubmitting || formik.dirty === false}
+							color="primary"
+							variant="contained"
+							fullWidth
+							type="submit"
+						>
+							Submit
+						</Button>
+						<div>
+							<p style={{ cursor: 'grab' }} onClick={changeToForgotPassword}>
+								Forgot Password
+							</p>
+							<p style={{ cursor: 'grab' }} onClick={changeToRegistration}>
+								Don't have an account? Sign Up
+							</p>
+						</div>
+					</form>
 				</div>
-			</form>
+			)}
 		</div>
 	)
 }

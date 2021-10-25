@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import { Alert, Button, TextField } from '@mui/material'
+import { Alert, Button, Checkbox, FormControlLabel, TextField } from '@mui/material'
 
 import { CHANGE_FORM_DISPLAY } from '../../../../entities/enums'
 import { RegistrationValidationSchema } from '../../../validation'
@@ -19,9 +19,13 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 			username: '',
 			password: '',
 			repeat_password: '',
+			two_factor_authentication: false,
 		},
 		validationSchema: RegistrationValidationSchema,
-		async onSubmit({ email, username, password }, { setSubmitting }) {
+		async onSubmit(
+			{ email, username, password, two_factor_authentication },
+			{ setSubmitting }
+		) {
 			try {
 				const response = await registrationMutation({
 					variables: {
@@ -29,6 +33,7 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 							email,
 							password,
 							username,
+							two_factor_authentication,
 							application_id,
 						},
 					},
@@ -57,7 +62,7 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 		<div>
 			<h2>Registration</h2>
 			{checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
-			{checkSuccess ? <Alert severity="error">{successMessage}</Alert> : ''}
+			{checkSuccess ? <Alert severity="success">{successMessage}</Alert> : ''}
 			<form onSubmit={formik.handleSubmit}>
 				<TextField
 					fullWidth
@@ -73,7 +78,7 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 					fullWidth
 					id="username"
 					name="username"
-					label="username"
+					label="Username"
 					value={formik.values.username}
 					onChange={formik.handleChange}
 					error={formik.touched.username && Boolean(formik.errors.username)}
@@ -96,14 +101,30 @@ export const Registration: React.FC<IRegistration> = ({ changeDisplay, applicati
 					fullWidth
 					id="repeat_password"
 					name="repeat_password"
-					label="repeat_password"
-					type="repeat_password"
+					label="Repeat Password"
+					type="password"
 					value={formik.values.repeat_password}
 					onChange={formik.handleChange}
 					error={formik.touched.repeat_password && Boolean(formik.errors.repeat_password)}
 					helperText={formik.touched.repeat_password && formik.errors.repeat_password}
 				/>
-				<Button color="primary" variant="contained" fullWidth type="submit">
+				<FormControlLabel
+					control={
+						<Checkbox
+							checked={formik.values.two_factor_authentication}
+							onChange={formik.handleChange}
+							name="two_factor_authentication"
+						/>
+					}
+					label="Two Factor"
+				/>
+				<Button
+					disabled={formik.isSubmitting || formik.dirty === false}
+					color="primary"
+					variant="contained"
+					fullWidth
+					type="submit"
+				>
 					Submit
 				</Button>
 				<div>

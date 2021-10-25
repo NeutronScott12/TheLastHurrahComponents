@@ -1,13 +1,13 @@
 {
 	"name": "@thelasthurrah/binary-stash-authentication",
-	"version": "0.0.5",
+	"version": "0.0.8",
 	"description": "An Authenticator Component for React",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"private": false,
 	"scripts": {
 		"prebuild": "npm run build:remove",
-		"publish": "npm publish --access=public",
+		"publish": "cross-env npm run build && npm publish --access=public",
 		"build:remove": "rimraf dist",
 		"build": "tsc -p tsconfig-library.json"
 	},

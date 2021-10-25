@@ -4,6 +4,7 @@ input RegistrationInput {
 	password: String!
 	application_id: String
 	redirect_url: String
+	two_factor_authentication: Boolean
 }
 
 mutation Registration($registrationInput: RegistrationInput!) {
@@ -18,15 +19,31 @@ input LoginInput {
 	email: String!
 }
 
+fragment LoginResponseFragment on LoginResponse {
+	success
+	message
+	token
+	refresh_token
+	two_factor_authentication
+	user {
+		username
+		id
+	}
+}
+
+fragment TwoFactorLoginResponseFragment on TwoFactorLoginResponse {
+	success
+	message
+	two_factor_authentication
+}
+
 mutation Login($loginInput: LoginInput!) {
 	login_user(loginInput: $loginInput) {
-		success
-		message
-		token
-		refresh_token
-		user {
-			username
-			id
+		... on LoginResponse {
+			...LoginResponseFragment
+		}
+		... on TwoFactorLoginResponse {
+			...TwoFactorLoginResponseFragment
 		}
 	}
 }
@@ -40,5 +57,24 @@ mutation ForgotPassword($forgotPasswordInput: ForgotPasswordInput!) {
 	forgot_password(forgotPasswordInput: $forgotPasswordInput) {
 		success
 		message
+	}
+}
+
+input TwoFactorInput {
+	two_factor_id: String!
+	email: String!
+}
+
+mutation TwoFactorLogin($twoFactorInput: TwoFactorInput!) {
+	two_factor_login(twoFactorInput: $twoFactorInput) {
+		success
+		message
+		token
+		refresh_token
+		two_factor_authentication
+		user {
+			username
+			id
+		}
 	}
 }

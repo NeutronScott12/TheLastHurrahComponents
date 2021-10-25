@@ -60,7 +60,13 @@ export const ForgotPassword: React.FC<IForgotPassword> = ({ changeDisplay }) => 
 					error={formik.touched.email && Boolean(formik.errors.email)}
 					helperText={formik.touched.email && formik.errors.email}
 				/>
-				<Button color="primary" variant="contained" fullWidth type="submit">
+				<Button
+					disabled={formik.isSubmitting || formik.dirty === false}
+					color="primary"
+					variant="contained"
+					fullWidth
+					type="submit"
+				>
 					Submit
 				</Button>
 				<div>

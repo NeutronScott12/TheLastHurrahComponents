@@ -1,13 +1,20 @@
 import { ApolloProvider } from '@apollo/client'
 import React, { useState } from 'react'
-import { client } from '../apollo'
+import { client } from './apollo'
 import { CHANGE_FORM_DISPLAY } from './entities/enums'
 import { ForgotPassword } from './modules/authentication/containers/forgot_password/ForgotPassword'
 
 import { Login } from './modules/authentication/containers/login/Login'
-import { ILoginResponse } from './modules/authentication/containers/login/types'
 import { Registration } from './modules/authentication/containers/registration/Registration'
 
+export interface ILoginResponse {
+	__typename?: 'LoginResponse'
+	success: boolean
+	message: string
+	token: string
+	refresh_token: string
+	user: { __typename?: 'UserModel'; username: string; id: string }
+}
 interface IBinaryStashAuthenticatorProps {
 	application_id: string
 	application_name: string

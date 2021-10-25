@@ -317,8 +317,11 @@ export type LoginResponse = {
   refresh_token: Scalars['String'];
   success: Scalars['Boolean'];
   token: Scalars['String'];
+  two_factor_authentication: Scalars['Boolean'];
   user: UserModel;
 };
+
+export type LoginResponseUnion = LoginResponse | TwoFactorLoginResponse;
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -343,18 +346,20 @@ export type Mutation = {
   delete_user: StandardResponseModel;
   down_vote_comment: CommentModel;
   forgot_password: StandardResponseModel;
-  login_user: LoginResponse;
+  login_user: LoginResponseUnion;
   logout_user: StandardResponseModel;
   regenerate_new_auth_secret: ApplicationModel;
   register_user: StandardResponseModel;
   remove_application: StandardResponseModel;
   remove_application_moderator: ApplicationModel;
+  two_factor_login: TwoFactorLoginSuccessResponse;
   unblock_user: StandardResponseModel;
   up_vote_comment: CommentModel;
   update_application: ApplicationModel;
   update_application_comment_rules: ApplicationModel;
   update_comment: CommentModel;
   update_poll_vote: PollEntity;
+  update_user: UserModel;
 };
 
 
@@ -488,6 +493,11 @@ export type MutationRemove_Application_ModeratorArgs = {
 };
 
 
+export type MutationTwo_Factor_LoginArgs = {
+  twoFactorInput: TwoFactorInput;
+};
+
+
 export type MutationUnblock_UserArgs = {
   user_id: Scalars['String'];
 };
@@ -515,6 +525,11 @@ export type MutationUpdate_CommentArgs = {
 
 export type MutationUpdate_Poll_VoteArgs = {
   updatePollVoteInput: UpdatePollVoteInput;
+};
+
+
+export type MutationUpdate_UserArgs = {
+  UpdateUserInput: UpdateUserInput;
 };
 
 export type Notification = {
@@ -689,6 +704,7 @@ export type RegistrationInput = {
   email: Scalars['String'];
   password: Scalars['String'];
   redirect_url?: Maybe<Scalars['String']>;
+  two_factor_authentication?: Maybe<Scalars['Boolean']>;
   username: Scalars['String'];
 };
 
@@ -752,6 +768,36 @@ export type ThreadModelThread_CommentsArgs = {
   fetchThreadCommentsBySort: FetchThreadCommentsBySort;
 };
 
+export type TwoFactorInput = {
+  email: Scalars['String'];
+  two_factor_id: Scalars['String'];
+};
+
+export type TwoFactorLoginResponse = {
+  __typename?: 'TwoFactorLoginResponse';
+  message: Scalars['String'];
+  success: Scalars['Boolean'];
+  two_factor_authentication: Scalars['Boolean'];
+};
+
+export type TwoFactorLoginSuccessResponse = {
+  __typename?: 'TwoFactorLoginSuccessResponse';
+  message: Scalars['String'];
+  refresh_token: Scalars['String'];
+  success: Scalars['Boolean'];
+  token: Scalars['String'];
+  two_factor_authentication: Scalars['Boolean'];
+  user: UserModel;
+};
+
+export enum User_Role {
+  Admin = 'ADMIN',
+  Moderator = 'MODERATOR',
+  Owner = 'OWNER',
+  SuperAdmin = 'SUPER_ADMIN',
+  User = 'USER'
+}
+
 export type UpdateApplicationCommentRulesInput = {
   allow_images_and_videos_on_comments: Scalars['Boolean'];
   application_short_name: Scalars['String'];
@@ -786,6 +832,13 @@ export type UpdatePollVoteInput = {
   poll_id: Scalars['String'];
 };
 
+export type UpdateUserInput = {
+  email?: Maybe<Scalars['String']>;
+  two_factor_authentication?: Maybe<Scalars['Boolean']>;
+  user_role?: Maybe<User_Role>;
+  username?: Maybe<Scalars['String']>;
+};
+
 export type UserModel = {
   __typename?: 'UserModel';
   applications_joined_ids: Array<Scalars['String']>;
@@ -797,8 +850,9 @@ export type UserModel = {
   id: Scalars['String'];
   last_active: Scalars['DateTime'];
   status: Status;
+  two_factor_authentication: Scalars['Boolean'];
   updated_at: Scalars['DateTime'];
-  user_role: Scalars['String'];
+  user_role: User_Role;
   username: Scalars['String'];
 };
 
@@ -829,12 +883,16 @@ export type RegistrationMutationVariables = Exact<{
 
 export type RegistrationMutation = { __typename?: 'Mutation', register_user: { __typename?: 'StandardResponseModel', success: boolean, message: string } };
 
+export type LoginResponseFragmentFragment = { __typename?: 'LoginResponse', success: boolean, message: string, token: string, refresh_token: string, two_factor_authentication: boolean, user: { __typename?: 'UserModel', username: string, id: string } };
+
+export type TwoFactorLoginResponseFragmentFragment = { __typename?: 'TwoFactorLoginResponse', success: boolean, message: string, two_factor_authentication: boolean };
+
 export type LoginMutationVariables = Exact<{
   loginInput: LoginInput;
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login_user: { __typename?: 'LoginResponse', success: boolean, message: string, token: string, refresh_token: string, user: { __typename?: 'UserModel', username: string, id: string } } };
+export type LoginMutation = { __typename?: 'Mutation', login_user: { __typename?: 'LoginResponse', success: boolean, message: string, token: string, refresh_token: string, two_factor_authentication: boolean, user: { __typename?: 'UserModel', username: string, id: string } } | { __typename?: 'TwoFactorLoginResponse', success: boolean, message: string, two_factor_authentication: boolean } };
 
 export type ForgotPasswordMutationVariables = Exact<{
   forgotPasswordInput: ForgotPasswordInput;
@@ -843,7 +901,33 @@ export type ForgotPasswordMutationVariables = Exact<{
 
 export type ForgotPasswordMutation = { __typename?: 'Mutation', forgot_password: { __typename?: 'StandardResponseModel', success: boolean, message: string } };
 
+export type TwoFactorLoginMutationVariables = Exact<{
+  twoFactorInput: TwoFactorInput;
+}>;
 
+
+export type TwoFactorLoginMutation = { __typename?: 'Mutation', two_factor_login: { __typename?: 'TwoFactorLoginSuccessResponse', success: boolean, message: string, token: string, refresh_token: string, two_factor_authentication: boolean, user: { __typename?: 'UserModel', username: string, id: string } } };
+
+export const LoginResponseFragmentFragmentDoc = gql`
+    fragment LoginResponseFragment on LoginResponse {
+  success
+  message
+  token
+  refresh_token
+  two_factor_authentication
+  user {
+    username
+    id
+  }
+}
+    `;
+export const TwoFactorLoginResponseFragmentFragmentDoc = gql`
+    fragment TwoFactorLoginResponseFragment on TwoFactorLoginResponse {
+  success
+  message
+  two_factor_authentication
+}
+    `;
 export const RegistrationDocument = gql`
     mutation Registration($registrationInput: RegistrationInput!) {
   register_user(registrationInput: $registrationInput) {
@@ -881,17 +965,16 @@ export type RegistrationMutationOptions = Apollo.BaseMutationOptions<Registratio
 export const LoginDocument = gql`
     mutation Login($loginInput: LoginInput!) {
   login_user(loginInput: $loginInput) {
-    success
-    message
-    token
-    refresh_token
-    user {
-      username
-      id
+    ... on LoginResponse {
+      ...LoginResponseFragment
+    }
+    ... on TwoFactorLoginResponse {
+      ...TwoFactorLoginResponseFragment
     }
   }
 }
-    `;
+    ${LoginResponseFragmentFragmentDoc}
+${TwoFactorLoginResponseFragmentFragmentDoc}`;
 export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
 
 /**
@@ -952,3 +1035,44 @@ export function useForgotPasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ForgotPasswordMutationHookResult = ReturnType<typeof useForgotPasswordMutation>;
 export type ForgotPasswordMutationResult = Apollo.MutationResult<ForgotPasswordMutation>;
 export type ForgotPasswordMutationOptions = Apollo.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
+export const TwoFactorLoginDocument = gql`
+    mutation TwoFactorLogin($twoFactorInput: TwoFactorInput!) {
+  two_factor_login(twoFactorInput: $twoFactorInput) {
+    success
+    message
+    token
+    refresh_token
+    two_factor_authentication
+    user {
+      username
+      id
+    }
+  }
+}
+    `;
+export type TwoFactorLoginMutationFn = Apollo.MutationFunction<TwoFactorLoginMutation, TwoFactorLoginMutationVariables>;
+
+/**
+ * __useTwoFactorLoginMutation__
+ *
+ * To run a mutation, you first call `useTwoFactorLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useTwoFactorLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [twoFactorLoginMutation, { data, loading, error }] = useTwoFactorLoginMutation({
+ *   variables: {
+ *      twoFactorInput: // value for 'twoFactorInput'
+ *   },
+ * });
+ */
+export function useTwoFactorLoginMutation(baseOptions?: Apollo.MutationHookOptions<TwoFactorLoginMutation, TwoFactorLoginMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<TwoFactorLoginMutation, TwoFactorLoginMutationVariables>(TwoFactorLoginDocument, options);
+      }
+export type TwoFactorLoginMutationHookResult = ReturnType<typeof useTwoFactorLoginMutation>;
+export type TwoFactorLoginMutationResult = Apollo.MutationResult<TwoFactorLoginMutation>;
+export type TwoFactorLoginMutationOptions = Apollo.BaseMutationOptions<TwoFactorLoginMutation, TwoFactorLoginMutationVariables>;
