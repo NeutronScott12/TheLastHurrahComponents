@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Button } from '@material-ui/core'
 import { Comment } from 'semantic-ui-react'
 
 import { CommentComponent, IComment } from './Comment'
@@ -35,6 +34,7 @@ import {
     WriteCommentByThreadIdQueryArgs,
 } from '../common'
 import { clone, mergeDeepRight } from 'ramda'
+import { Button } from '@mui/material'
 
 type TVariables = {}
 type TData = {}

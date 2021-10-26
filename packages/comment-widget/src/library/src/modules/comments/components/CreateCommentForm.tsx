@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import { clone, mergeDeepRight } from 'ramda'
 import { Descendant } from 'slate'
-import { Button as MUIButton } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { Button as MUIButton, Alert } from '@mui/material'
 
 import { Sort, useCreateThreadComentMutation } from '../../../generated/graphql'
 import {

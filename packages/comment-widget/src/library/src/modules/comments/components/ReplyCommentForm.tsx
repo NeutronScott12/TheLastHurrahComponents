@@ -8,7 +8,7 @@ import {
 } from '../common'
 
 import { IComment } from './Comment'
-import { Alert } from '@material-ui/lab'
+import { Alert } from '@mui/material'
 import { clone, mergeDeepRight } from 'ramda'
 import { Descendant } from 'slate'
 import { RichTextEditorView } from '../views/RichTextEditorView'

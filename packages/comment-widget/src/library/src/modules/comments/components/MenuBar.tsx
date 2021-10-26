@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Toolbar } from '@material-ui/core'
-import { AppBar, Button, Menu, MenuItem } from '@mui/material'
+import { AppBar, Button, Menu, MenuItem, Toolbar } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import { cache, IS_LOGGED_IN } from '../../../apollo/cache'
 

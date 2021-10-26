@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Alert } from '@material-ui/lab'
 import {
     always,
     clone,
@@ -29,6 +28,7 @@ import {
 } from '../common'
 import { Loader } from '../common/Loader'
 import { Descendant } from 'slate'
+import { Alert } from '@mui/material'
 
 export interface IComment {
     author: {

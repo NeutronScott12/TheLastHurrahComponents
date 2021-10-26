@@ -3,7 +3,7 @@ import { FormikErrors } from 'formik'
 import { createEditor, Descendant } from 'slate'
 import { Editable, Slate, withReact } from 'slate-react'
 import { withHistory } from 'slate-history'
-import { Button as MUIButton } from '@material-ui/core'
+import { Button as MUIButton } from '@mui/material'
 
 import { plainTextserialiser } from '../../../utils/richTextEditor/serialisers'
 import { Toolbar } from '../helpers/RichTextEditorViews'

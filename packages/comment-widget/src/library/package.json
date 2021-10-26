@@ -4,6 +4,7 @@
     "description": "Binary Stash Comment Component",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "source": "src/index.tsx",
     "author": "Scott",
     "license": "MIT",
     "repository": {
@@ -14,6 +15,7 @@
         "prebuild": "npm run build:remove",
         "publish": "cross-env npm run build && npm publish --access=public",
         "build:remove": "rimraf dist",
+        "build:parcel": "npx parcel build",
         "build": "tsc -p tsconfig-library.json"
     },
     "keywords": [],
@@ -70,6 +72,7 @@
         "@types/slate-html-serializer": "^0.6.5",
         "@types/slate-react": "^0.50.1",
         "@types/yup": "^0.29.13",
+        "parcel": "^2.0.0",
         "typescript": "^4.4.4"
     }
 }
