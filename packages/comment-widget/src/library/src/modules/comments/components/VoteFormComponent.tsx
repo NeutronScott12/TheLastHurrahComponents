@@ -7,7 +7,6 @@ import {
     useCreatePollMutationMutation,
 } from '../../../generated/graphql'
 import { IModerator } from '../types'
-import { useCurrentUserClient } from '../../../utils/customApolloHooks'
 
 type IOptionInput = {
     option: string
@@ -29,7 +28,7 @@ export const VoteFormComponent: React.FC<IVoteFormComponent> = ({
     moderators,
 }) => {
     const [createPoll] = useCreatePollMutationMutation()
-   
+
     const initialValues: IVoteFormValues = {
         questions: 0,
         options: [],

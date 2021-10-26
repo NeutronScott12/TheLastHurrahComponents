@@ -12,6 +12,7 @@ import { displayHtml } from '../helpers'
 import { BlockComponent } from '../components/BlockComponent'
 import { ReportFormComponent } from '../components/ReportFormComponent'
 import { IModerator } from '../types'
+import { PendingRepliesView } from './PendingReplies'
 
 interface ICommentViewProps {
     currentUser: CurrentUserQuery | undefined
@@ -24,6 +25,9 @@ interface ICommentViewProps {
     moderators: IModerator[] | undefined
     currentSort: Sort
     application_short_name: string
+    pendingReplies: IComment[]
+    addPendingReplyComments: (replies: IComment[], parent_id: string) => void
+    setPendingReplies: React.Dispatch<React.SetStateAction<IComment[]>>
     addPinnedComment: (comment_id: string) => void
     deleteComment: (id: string) => void
     deleteReplyComment: (id: string, parent_id: string) => void
@@ -40,6 +44,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     moderators,
     currentSort,
     application_short_name,
+    pendingReplies,
+    addPendingReplyComments,
     deleteComment,
     deleteReplyComment,
     addPinnedComment,
@@ -187,6 +193,18 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                         <ReportFormComponent
                             comment_id={comment.id}
                             changeOpenReport={changeOpenReport}
+                        />
+                    ) : (
+                        ''
+                    )}
+
+                    {pendingReplies.filter(
+                        (replies) => replies.parent_id === comment.id,
+                    ).length > 0 ? (
+                        <PendingRepliesView
+                            addPendingReplyComments={addPendingReplyComments}
+                            comment={comment}
+                            pendingReplies={pendingReplies}
                         />
                     ) : (
                         ''

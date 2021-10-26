@@ -76,6 +76,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
 }) => {
     const [currentSort, changeCurrentSort] = useState(Sort.Desc)
     const [pendingComments, setPendingComments] = useState<IComment[]>([])
+    const [pendingReplies, setPendingReplies] = useState<IComment[]>([])
     const { data: currentUserClient } = useCurrentUserClient()
     const {
         loading: commentSubscriptionLoading,
@@ -114,11 +115,18 @@ export const CommentList: React.FC<ICommentListProps> = ({
         if (localCurrent) {
             changeCurrentSort(localCurrent as Sort)
         }
-        if (commentSubscriptionData) {
-            setPendingComments([
-                commentSubscriptionData.comment_added,
-                ...pendingComments,
-            ])
+        if (commentSubscriptionData && commentSubscriptionData.comment_added) {
+            if (commentSubscriptionData.comment_added.parent_id == null) {
+                setPendingComments([
+                    commentSubscriptionData.comment_added,
+                    ...pendingComments,
+                ])
+            } else {
+                setPendingReplies([
+                    commentSubscriptionData.comment_added,
+                    ...pendingReplies,
+                ])
+            }
         }
     }, [commentSubscriptionData])
 
@@ -150,8 +158,6 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 application_short_name,
             })
 
-            console.log('RESPONSE', response)
-
             if (response?.fetch_comments_by_thread_id.comments) {
                 const cloneData = clone(response)
                 pendingComments.forEach(
@@ -175,8 +181,6 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 setPendingComments([])
 
                 const changedObject = mergeDeepRight(cloneData, newData)
-
-                console.log('CHANGED_OBJECT', changedObject)
 
                 WriteCommentByThreadIdQueryArgs({
                     thread_id,
@@ -269,6 +273,8 @@ export const CommentList: React.FC<ICommentListProps> = ({
                     data.fetch_comments_by_thread_id.comments.map((comment) => {
                         return (
                             <CommentComponent
+                                pendingReplies={pendingReplies}
+                                setPendingReplies={setPendingReplies}
                                 application_short_name={application_short_name}
                                 currentSort={currentSort}
                                 thread_id={thread_id}

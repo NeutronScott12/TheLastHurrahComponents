@@ -62,6 +62,8 @@ interface ICommentProps {
     application_id: string
     application_short_name: string
     currentSort: Sort
+    pendingReplies: IComment[]
+    setPendingReplies: React.Dispatch<React.SetStateAction<IComment[]>>
 }
 
 export const CommentComponent: React.FC<ICommentProps> = ({
@@ -74,6 +76,8 @@ export const CommentComponent: React.FC<ICommentProps> = ({
     application_id,
     application_short_name,
     currentSort,
+    pendingReplies,
+    setPendingReplies,
 }) => {
     const [checkError, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -241,6 +245,74 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         }
     }
 
+    const addPendingReplyComments = (
+        replies: IComment[],
+        parent_id: string,
+    ) => {
+        try {
+            const response = fetchCommentByThreadIdQueryCache({
+                thread_id: comment.thread_id,
+                limit,
+                skip,
+                sort: currentSort,
+                application_short_name,
+            })
+
+            console.log('RESPONSE', response)
+            console.log('DATA', replies)
+            console.log('PARENT_ID', parent_id)
+
+            if (data && response?.fetch_comments_by_thread_id) {
+                const cloned = clone(response)
+                replies.forEach(
+                    //@ts-ignore
+                    (comment) => (comment['__typename'] = 'CommentModel'),
+                )
+
+                if (cloned.fetch_comments_by_thread_id.comments) {
+                    //@ts-ignore
+                    cloned.fetch_comments_by_thread_id.comments
+                        .find((comment) => comment.id === parent_id)
+                        //@ts-ignore
+                        .replies.push(...replies)
+                }
+
+                console.log('CLONED', cloned)
+
+                const newData = mergeDeepRight(cloned, {
+                    fetch_comments_by_thread_id: {
+                        __typename:
+                            response.fetch_comments_by_thread_id.__typename,
+                        comments_count:
+                            cloned.fetch_comments_by_thread_id.comments_count,
+                        comments: cloned.fetch_comments_by_thread_id.comments,
+                    },
+                })
+
+                const newReplies = pendingReplies.filter(
+                    (reply) => reply.id === parent_id,
+                )
+                console.log('NEW_REPLIES', newReplies)
+                setPendingReplies(newReplies)
+
+                WriteCommentByThreadIdQueryArgs({
+                    thread_id: comment.thread_id,
+                    limit,
+                    skip,
+                    sort: currentSort,
+                    application_short_name,
+                    data: newData,
+                })
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log(error)
+                setError(true)
+                setErrorMessage('something went wrong')
+            }
+        }
+    }
+
     const addPinnedComment = async (comment_id: string) => {
         try {
             await addPinnedCommentMutation({
@@ -267,6 +339,9 @@ export const CommentComponent: React.FC<ICommentProps> = ({
         <>
             {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
             <CommentView
+                addPendingReplyComments={addPendingReplyComments}
+                pendingReplies={pendingReplies}
+                setPendingReplies={setPendingReplies}
                 application_short_name={application_short_name}
                 currentSort={currentSort}
                 currentUser={data && data.current_user ? data : undefined}

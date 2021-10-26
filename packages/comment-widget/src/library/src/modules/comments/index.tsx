@@ -13,7 +13,6 @@ import { CommentList } from './components/CommentList'
 import { useIsLoggedIn } from '../../utils/customApolloHooks'
 import { cache, CURRENT_USER_CLIENT, IS_LOGGED_IN } from '../../apollo/cache'
 import { Loader } from './common/Loader'
-import { DataSaverOffRounded } from '@mui/icons-material'
 
 interface ICommentContainerProps {
     application_id: string
@@ -26,7 +25,6 @@ interface ICommentContainerProps {
 //     AUTHENTICATE,
 //     COMMENTS,
 // }
-
 
 export const CommentContainer: React.FC<ICommentContainerProps> = ({
     application_id,

@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { Alert } from '@material-ui/lab'
 import { useFormik } from 'formik'
-import isHotkey from 'is-hotkey'
 import {
     clone,
     mergeDeepRight,
