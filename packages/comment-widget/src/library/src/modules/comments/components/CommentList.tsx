@@ -18,7 +18,6 @@ import {
     useFindThreadByIdQuery,
 } from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
-// import { FilterComments } from './FilterComments'
 import { MenuBar } from './MenuBar'
 import { PinnedCommentView } from '../views/PinnedComment'
 import { VoteFormComponent } from './VoteFormComponent'
@@ -35,6 +34,7 @@ import {
 } from '../common'
 import { clone, mergeDeepRight } from 'ramda'
 import { Button } from '@mui/material'
+import { FilterComments } from './FilterComments'
 
 type TVariables = {}
 type TData = {}
@@ -223,6 +223,11 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 ''
             )}
 
+            <FilterComments
+                currentSort={currentSort}
+                changeCurrentSort={changeCurrentSort}
+            />
+
             {currentUserClient?.isModerator ? (
                 <VoteFormComponent
                     moderators={
@@ -262,11 +267,6 @@ export const CommentList: React.FC<ICommentListProps> = ({
             ) : (
                 ''
             )}
-
-            {/* <FilterComments
-                currentSort={currentSort}
-                changeCurrentSort={changeCurrentSort}
-            /> */}
 
             <Comment.Group size="huge">
                 {data &&

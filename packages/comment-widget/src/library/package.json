@@ -13,7 +13,7 @@
     },
     "scripts": {
         "prebuild": "npm run build:remove",
-        "publish": "cross-env npm run build && npm publish --access=public",
+        "publish": "npm publish --access=public",
         "build:remove": "rimraf dist",
         "build:parcel": "npx parcel build",
         "build": "tsc -p tsconfig-library.json"
