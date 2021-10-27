@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { AppBar, Button, Menu, MenuItem, Toolbar } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import { cache, IS_LOGGED_IN } from '../../../apollo/cache'
+import { RecommendThreadComponent } from './RecommendThreadComponent'
 
 interface IMenuBar {
+    thread_id: string
     setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const MenuBar: React.FC<IMenuBar> = ({ setLoggedIn }) => {
+export const MenuBar: React.FC<IMenuBar> = ({ setLoggedIn, thread_id }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
 
@@ -60,6 +62,7 @@ export const MenuBar: React.FC<IMenuBar> = ({ setLoggedIn }) => {
                     <MenuItem onClick={handleClose}>Profile</MenuItem>
                     <MenuItem onClick={logOut}>Logout</MenuItem>
                 </Menu>
+                <RecommendThreadComponent thread_id={thread_id} />
             </Toolbar>
         </AppBar>
     )

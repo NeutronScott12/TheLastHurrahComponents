@@ -209,7 +209,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
         <Loader />
     ) : (
         <div>
-            <MenuBar setLoggedIn={setLoggedIn} />
+            <MenuBar thread_id={thread_id} setLoggedIn={setLoggedIn} />
             {logged_in ? (
                 <CreateCommentForm
                     application_short_name={application_short_name}

@@ -338,3 +338,33 @@ mutation ClosePoll($closePollInput: ClosePollInput!) {
         ...PollFragment
     }
 }
+
+input ToggleSubscriptionToThreadInput {
+    thread_id: String!
+}
+
+mutation toggleSubscriptionToThread(
+    $toggleSubscriptionToThreadInput: ToggleSubscriptionToThreadInput!
+) {
+    toggle_subscription_to_thread(
+        toggleSubscriptionToThreadInput: $toggleSubscriptionToThreadInput
+    ) {
+        success
+        message
+    }
+}
+
+input IsUserSubscribedToThreadInput {
+    thread_id: String!
+}
+
+query IsUserSubscribedToThread(
+    $isUserSubscribedToThreadInput: IsUserSubscribedToThreadInput!
+) {
+    is_user_subscribed_to_thread(
+        isUserSubscribedToThreadInput: $isUserSubscribedToThreadInput
+    ) {
+        success
+        message
+    }
+}

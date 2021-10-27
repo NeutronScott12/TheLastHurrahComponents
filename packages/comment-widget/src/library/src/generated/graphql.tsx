@@ -86,6 +86,11 @@ export enum Category {
   Tech = 'TECH'
 }
 
+export type ChangePasswordInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type ClosePollInput = {
   poll_id: Scalars['String'];
 };
@@ -293,9 +298,23 @@ export type FindThreadByIdInput = {
   thread_id: Scalars['String'];
 };
 
+export type ForgotPasswordInput = {
+  email: Scalars['String'];
+  redirect_url?: Maybe<Scalars['String']>;
+};
+
+export type IsUserSubscribedToThreadInput = {
+  thread_id: Scalars['String'];
+};
+
 export enum Language {
   English = 'ENGLISH'
 }
+
+export type LoginInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
 
 export type LoginResponse = {
   __typename?: 'LoginResponse';
@@ -303,8 +322,11 @@ export type LoginResponse = {
   refresh_token: Scalars['String'];
   success: Scalars['Boolean'];
   token: Scalars['String'];
+  two_factor_authentication: Scalars['Boolean'];
   user: UserModel;
 };
+
+export type LoginResponseUnion = LoginResponse | TwoFactorLoginResponse;
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -312,6 +334,7 @@ export type Mutation = {
   add_pinned_comment: ThreadModel;
   approve_comments: StandardResponseModel;
   block_user: StandardResponseModel;
+  change_password: StandardResponseModel;
   close_poll: PollEntity;
   confirm_user: StandardResponseModel;
   create_application: ApplicationModel;
@@ -328,19 +351,21 @@ export type Mutation = {
   delete_user: StandardResponseModel;
   down_vote_comment: CommentModel;
   forgot_password: StandardResponseModel;
-  login_user: LoginResponse;
+  login_user: LoginResponseUnion;
   logout_user: StandardResponseModel;
   regenerate_new_auth_secret: ApplicationModel;
   register_user: StandardResponseModel;
   remove_application: StandardResponseModel;
   remove_application_moderator: ApplicationModel;
-  reset_password: StandardResponseModel;
+  toggle_subscription_to_thread: StandardResponseModel;
+  two_factor_login: TwoFactorLoginSuccessResponse;
   unblock_user: StandardResponseModel;
   up_vote_comment: CommentModel;
   update_application: ApplicationModel;
   update_application_comment_rules: ApplicationModel;
   update_comment: CommentModel;
   update_poll_vote: PollEntity;
+  update_user: UserModel;
 };
 
 
@@ -361,6 +386,11 @@ export type MutationApprove_CommentsArgs = {
 
 export type MutationBlock_UserArgs = {
   user_id: Scalars['String'];
+};
+
+
+export type MutationChange_PasswordArgs = {
+  changePasswordInput: ChangePasswordInput;
 };
 
 
@@ -440,14 +470,12 @@ export type MutationDown_Vote_CommentArgs = {
 
 
 export type MutationForgot_PasswordArgs = {
-  email: Scalars['String'];
-  redirect_url?: Maybe<Scalars['String']>;
+  forgotPasswordInput: ForgotPasswordInput;
 };
 
 
 export type MutationLogin_UserArgs = {
-  email: Scalars['String'];
-  password: Scalars['String'];
+  loginInput: LoginInput;
 };
 
 
@@ -457,11 +485,7 @@ export type MutationRegenerate_New_Auth_SecretArgs = {
 
 
 export type MutationRegister_UserArgs = {
-  application_id?: Maybe<Scalars['String']>;
-  email: Scalars['String'];
-  password: Scalars['String'];
-  redirect_url?: Maybe<Scalars['String']>;
-  username: Scalars['String'];
+  registrationInput: RegistrationInput;
 };
 
 
@@ -475,9 +499,13 @@ export type MutationRemove_Application_ModeratorArgs = {
 };
 
 
-export type MutationReset_PasswordArgs = {
-  email: Scalars['String'];
-  password: Scalars['String'];
+export type MutationToggle_Subscription_To_ThreadArgs = {
+  toggleSubscriptionToThreadInput: ToggleSubscriptionToThreadInput;
+};
+
+
+export type MutationTwo_Factor_LoginArgs = {
+  twoFactorInput: TwoFactorInput;
 };
 
 
@@ -508,6 +536,11 @@ export type MutationUpdate_CommentArgs = {
 
 export type MutationUpdate_Poll_VoteArgs = {
   updatePollVoteInput: UpdatePollVoteInput;
+};
+
+
+export type MutationUpdate_UserArgs = {
+  UpdateUserInput: UpdateUserInput;
 };
 
 export type Notification = {
@@ -578,6 +611,7 @@ export type Query = {
   find_one_thread_or_create_one: ThreadModel;
   find_profile: ProfileEntity;
   find_thread_by_id: ThreadModel;
+  is_user_subscribed_to_thread: StandardResponseModel;
   resend_email_code: StandardResponseModel;
   search_user_by_email: UserModel;
 };
@@ -653,9 +687,13 @@ export type QueryFind_Thread_By_IdArgs = {
 };
 
 
+export type QueryIs_User_Subscribed_To_ThreadArgs = {
+  isUserSubscribedToThreadInput: IsUserSubscribedToThreadInput;
+};
+
+
 export type QueryResend_Email_CodeArgs = {
-  email: Scalars['String'];
-  redirect_url: Scalars['String'];
+  resendEmailCodeInput: ResendEmailCodeInput;
 };
 
 
@@ -677,6 +715,15 @@ export type RatingModel = {
   id: Scalars['String'];
 };
 
+export type RegistrationInput = {
+  application_id?: Maybe<Scalars['String']>;
+  email: Scalars['String'];
+  password: Scalars['String'];
+  redirect_url?: Maybe<Scalars['String']>;
+  two_factor_authentication?: Maybe<Scalars['Boolean']>;
+  username: Scalars['String'];
+};
+
 export type RemoveModeratorInput = {
   application_id: Scalars['String'];
   moderator_id: Scalars['String'];
@@ -689,6 +736,11 @@ export type ReportModel = {
   reason: Report_Reason;
   updated_at: Scalars['DateTime'];
   user_id: Scalars['String'];
+};
+
+export type ResendEmailCodeInput = {
+  email: Scalars['String'];
+  redirect_url: Scalars['String'];
 };
 
 export enum Status {
@@ -726,6 +778,8 @@ export type ThreadModel = {
   pinned_comment?: Maybe<CommentModel>;
   pinned_comment_id?: Maybe<Scalars['String']>;
   poll?: Maybe<PollEntity>;
+  subscribed_users: Array<UserModel>;
+  subscribed_users_ids: Array<Scalars['String']>;
   thread_comments: FetchCommentByThreadIdResponse;
   title: Scalars['String'];
   website_url: Scalars['String'];
@@ -736,6 +790,40 @@ export type ThreadModelThread_CommentsArgs = {
   commentsByUserIdInput?: Maybe<CommentsByUserIdInput>;
   fetchThreadCommentsBySort: FetchThreadCommentsBySort;
 };
+
+export type ToggleSubscriptionToThreadInput = {
+  thread_id: Scalars['String'];
+};
+
+export type TwoFactorInput = {
+  email: Scalars['String'];
+  two_factor_id: Scalars['String'];
+};
+
+export type TwoFactorLoginResponse = {
+  __typename?: 'TwoFactorLoginResponse';
+  message: Scalars['String'];
+  success: Scalars['Boolean'];
+  two_factor_authentication: Scalars['Boolean'];
+};
+
+export type TwoFactorLoginSuccessResponse = {
+  __typename?: 'TwoFactorLoginSuccessResponse';
+  message: Scalars['String'];
+  refresh_token: Scalars['String'];
+  success: Scalars['Boolean'];
+  token: Scalars['String'];
+  two_factor_authentication: Scalars['Boolean'];
+  user: UserModel;
+};
+
+export enum User_Role {
+  Admin = 'ADMIN',
+  Moderator = 'MODERATOR',
+  Owner = 'OWNER',
+  SuperAdmin = 'SUPER_ADMIN',
+  User = 'USER'
+}
 
 export type UpdateApplicationCommentRulesInput = {
   allow_images_and_videos_on_comments: Scalars['Boolean'];
@@ -771,6 +859,13 @@ export type UpdatePollVoteInput = {
   poll_id: Scalars['String'];
 };
 
+export type UpdateUserInput = {
+  email?: Maybe<Scalars['String']>;
+  two_factor_authentication?: Maybe<Scalars['Boolean']>;
+  user_role?: Maybe<User_Role>;
+  username?: Maybe<Scalars['String']>;
+};
+
 export type UserModel = {
   __typename?: 'UserModel';
   applications_joined_ids: Array<Scalars['String']>;
@@ -782,8 +877,9 @@ export type UserModel = {
   id: Scalars['String'];
   last_active: Scalars['DateTime'];
   status: Status;
+  two_factor_authentication: Scalars['Boolean'];
   updated_at: Scalars['DateTime'];
-  user_role: Scalars['String'];
+  user_role: User_Role;
   username: Scalars['String'];
 };
 
@@ -943,6 +1039,20 @@ export type ClosePollMutationVariables = Exact<{
 
 
 export type ClosePollMutation = { __typename?: 'Mutation', close_poll: { __typename?: 'PollEntity', id: string, title: string, created_at: any, updated_at: any, closed: boolean, voted: Array<string>, options: Array<{ __typename?: 'OptionEntity', id: string, option: string, votes: Array<{ __typename?: 'VoteEntity', id: string, user_id: string }> }> } };
+
+export type ToggleSubscriptionToThreadMutationVariables = Exact<{
+  toggleSubscriptionToThreadInput: ToggleSubscriptionToThreadInput;
+}>;
+
+
+export type ToggleSubscriptionToThreadMutation = { __typename?: 'Mutation', toggle_subscription_to_thread: { __typename?: 'StandardResponseModel', success: boolean, message: string } };
+
+export type IsUserSubscribedToThreadQueryVariables = Exact<{
+  isUserSubscribedToThreadInput: IsUserSubscribedToThreadInput;
+}>;
+
+
+export type IsUserSubscribedToThreadQuery = { __typename?: 'Query', is_user_subscribed_to_thread: { __typename?: 'StandardResponseModel', success: boolean, message: string } };
 
 export const PollFragmentFragmentDoc = gql`
     fragment PollFragment on PollEntity {
@@ -1710,6 +1820,80 @@ export function useClosePollMutation(baseOptions?: Apollo.MutationHookOptions<Cl
 export type ClosePollMutationHookResult = ReturnType<typeof useClosePollMutation>;
 export type ClosePollMutationResult = Apollo.MutationResult<ClosePollMutation>;
 export type ClosePollMutationOptions = Apollo.BaseMutationOptions<ClosePollMutation, ClosePollMutationVariables>;
+export const ToggleSubscriptionToThreadDocument = gql`
+    mutation toggleSubscriptionToThread($toggleSubscriptionToThreadInput: ToggleSubscriptionToThreadInput!) {
+  toggle_subscription_to_thread(
+    toggleSubscriptionToThreadInput: $toggleSubscriptionToThreadInput
+  ) {
+    success
+    message
+  }
+}
+    `;
+export type ToggleSubscriptionToThreadMutationFn = Apollo.MutationFunction<ToggleSubscriptionToThreadMutation, ToggleSubscriptionToThreadMutationVariables>;
+
+/**
+ * __useToggleSubscriptionToThreadMutation__
+ *
+ * To run a mutation, you first call `useToggleSubscriptionToThreadMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useToggleSubscriptionToThreadMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [toggleSubscriptionToThreadMutation, { data, loading, error }] = useToggleSubscriptionToThreadMutation({
+ *   variables: {
+ *      toggleSubscriptionToThreadInput: // value for 'toggleSubscriptionToThreadInput'
+ *   },
+ * });
+ */
+export function useToggleSubscriptionToThreadMutation(baseOptions?: Apollo.MutationHookOptions<ToggleSubscriptionToThreadMutation, ToggleSubscriptionToThreadMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ToggleSubscriptionToThreadMutation, ToggleSubscriptionToThreadMutationVariables>(ToggleSubscriptionToThreadDocument, options);
+      }
+export type ToggleSubscriptionToThreadMutationHookResult = ReturnType<typeof useToggleSubscriptionToThreadMutation>;
+export type ToggleSubscriptionToThreadMutationResult = Apollo.MutationResult<ToggleSubscriptionToThreadMutation>;
+export type ToggleSubscriptionToThreadMutationOptions = Apollo.BaseMutationOptions<ToggleSubscriptionToThreadMutation, ToggleSubscriptionToThreadMutationVariables>;
+export const IsUserSubscribedToThreadDocument = gql`
+    query IsUserSubscribedToThread($isUserSubscribedToThreadInput: IsUserSubscribedToThreadInput!) {
+  is_user_subscribed_to_thread(
+    isUserSubscribedToThreadInput: $isUserSubscribedToThreadInput
+  ) {
+    success
+    message
+  }
+}
+    `;
+
+/**
+ * __useIsUserSubscribedToThreadQuery__
+ *
+ * To run a query within a React component, call `useIsUserSubscribedToThreadQuery` and pass it any options that fit your needs.
+ * When your component renders, `useIsUserSubscribedToThreadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useIsUserSubscribedToThreadQuery({
+ *   variables: {
+ *      isUserSubscribedToThreadInput: // value for 'isUserSubscribedToThreadInput'
+ *   },
+ * });
+ */
+export function useIsUserSubscribedToThreadQuery(baseOptions: Apollo.QueryHookOptions<IsUserSubscribedToThreadQuery, IsUserSubscribedToThreadQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<IsUserSubscribedToThreadQuery, IsUserSubscribedToThreadQueryVariables>(IsUserSubscribedToThreadDocument, options);
+      }
+export function useIsUserSubscribedToThreadLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<IsUserSubscribedToThreadQuery, IsUserSubscribedToThreadQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<IsUserSubscribedToThreadQuery, IsUserSubscribedToThreadQueryVariables>(IsUserSubscribedToThreadDocument, options);
+        }
+export type IsUserSubscribedToThreadQueryHookResult = ReturnType<typeof useIsUserSubscribedToThreadQuery>;
+export type IsUserSubscribedToThreadLazyQueryHookResult = ReturnType<typeof useIsUserSubscribedToThreadLazyQuery>;
+export type IsUserSubscribedToThreadQueryResult = Apollo.QueryResult<IsUserSubscribedToThreadQuery, IsUserSubscribedToThreadQueryVariables>;
 export type ApplicationModelKeySpecifier = ('adult_content' | 'allow_images_and_videos_on_comments' | 'application_name' | 'application_owner' | 'application_owner_id' | 'auth_secret' | 'authenticated_users' | 'authenticated_users_ids' | 'category' | 'comment_policy_summary' | 'comment_policy_url' | 'commenters_users_ids' | 'comments' | 'cost' | 'created_at' | 'default_avatar_url' | 'description' | 'display_comments_when_flagged' | 'email_mods_when_comments_flagged' | 'id' | 'language' | 'links_in_comments' | 'moderators' | 'moderators_ids' | 'plan' | 'pre_comment_moderation' | 'renewal' | 'short_name' | 'theme' | 'threads' | 'updated_at' | 'website_url' | ApplicationModelKeySpecifier)[];
 export type ApplicationModelFieldPolicy = {
 	adult_content?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1814,20 +1998,22 @@ export type FetchCommentsByApplicationIdFieldPolicy = {
 	comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	comments_count?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type LoginResponseKeySpecifier = ('message' | 'refresh_token' | 'success' | 'token' | 'user' | LoginResponseKeySpecifier)[];
+export type LoginResponseKeySpecifier = ('message' | 'refresh_token' | 'success' | 'token' | 'two_factor_authentication' | 'user' | LoginResponseKeySpecifier)[];
 export type LoginResponseFieldPolicy = {
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	refresh_token?: FieldPolicy<any> | FieldReadFunction<any>,
 	success?: FieldPolicy<any> | FieldReadFunction<any>,
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	two_factor_authentication?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('add_application_moderator' | 'add_pinned_comment' | 'approve_comments' | 'block_user' | 'close_poll' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_order' | 'create_poll' | 'create_reply_comment' | 'create_report' | 'delete_comment' | 'delete_many_comments' | 'delete_many_notifications' | 'delete_notification' | 'delete_poll' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'logout_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'reset_password' | 'unblock_user' | 'up_vote_comment' | 'update_application' | 'update_application_comment_rules' | 'update_comment' | 'update_poll_vote' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('add_application_moderator' | 'add_pinned_comment' | 'approve_comments' | 'block_user' | 'change_password' | 'close_poll' | 'confirm_user' | 'create_application' | 'create_comment' | 'create_order' | 'create_poll' | 'create_reply_comment' | 'create_report' | 'delete_comment' | 'delete_many_comments' | 'delete_many_notifications' | 'delete_notification' | 'delete_poll' | 'delete_user' | 'down_vote_comment' | 'forgot_password' | 'login_user' | 'logout_user' | 'regenerate_new_auth_secret' | 'register_user' | 'remove_application' | 'remove_application_moderator' | 'toggle_subscription_to_thread' | 'two_factor_login' | 'unblock_user' | 'up_vote_comment' | 'update_application' | 'update_application_comment_rules' | 'update_comment' | 'update_poll_vote' | 'update_user' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	add_application_moderator?: FieldPolicy<any> | FieldReadFunction<any>,
 	add_pinned_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	approve_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	block_user?: FieldPolicy<any> | FieldReadFunction<any>,
+	change_password?: FieldPolicy<any> | FieldReadFunction<any>,
 	close_poll?: FieldPolicy<any> | FieldReadFunction<any>,
 	confirm_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	create_application?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1850,13 +2036,15 @@ export type MutationFieldPolicy = {
 	register_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	remove_application?: FieldPolicy<any> | FieldReadFunction<any>,
 	remove_application_moderator?: FieldPolicy<any> | FieldReadFunction<any>,
-	reset_password?: FieldPolicy<any> | FieldReadFunction<any>,
+	toggle_subscription_to_thread?: FieldPolicy<any> | FieldReadFunction<any>,
+	two_factor_login?: FieldPolicy<any> | FieldReadFunction<any>,
 	unblock_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	up_vote_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_application?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_application_comment_rules?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_comment?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_poll_vote?: FieldPolicy<any> | FieldReadFunction<any>
+	update_poll_vote?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type NotificationKeySpecifier = ('application_id' | 'created_at' | 'id' | 'message' | 'updated_at' | 'url' | NotificationKeySpecifier)[];
 export type NotificationFieldPolicy = {
@@ -1889,7 +2077,7 @@ export type ProfileEntityFieldPolicy = {
 	profile_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('current_user' | 'fetch_all_applications' | 'fetch_all_threads' | 'fetch_application_by_short_name' | 'fetch_applications_by_owner_id' | 'fetch_comment_and_vote_count' | 'fetch_comments' | 'fetch_comments_by_application_id' | 'fetch_comments_by_application_short_name' | 'fetch_comments_by_thread_id' | 'fetch_notifications' | 'fetch_notifications_by_application_id' | 'fetch_notifications_by_short_name' | 'fetch_notifications_by_user_id' | 'fetch_threads_by_user_id' | 'fetch_users' | 'find_one_application_by_id' | 'find_one_application_by_name' | 'find_one_thread_or_create_one' | 'find_profile' | 'find_thread_by_id' | 'resend_email_code' | 'search_user_by_email' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('current_user' | 'fetch_all_applications' | 'fetch_all_threads' | 'fetch_application_by_short_name' | 'fetch_applications_by_owner_id' | 'fetch_comment_and_vote_count' | 'fetch_comments' | 'fetch_comments_by_application_id' | 'fetch_comments_by_application_short_name' | 'fetch_comments_by_thread_id' | 'fetch_notifications' | 'fetch_notifications_by_application_id' | 'fetch_notifications_by_short_name' | 'fetch_notifications_by_user_id' | 'fetch_threads_by_user_id' | 'fetch_users' | 'find_one_application_by_id' | 'find_one_application_by_name' | 'find_one_thread_or_create_one' | 'find_profile' | 'find_thread_by_id' | 'is_user_subscribed_to_thread' | 'resend_email_code' | 'search_user_by_email' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	current_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetch_all_applications?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1912,6 +2100,7 @@ export type QueryFieldPolicy = {
 	find_one_thread_or_create_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	find_profile?: FieldPolicy<any> | FieldReadFunction<any>,
 	find_thread_by_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	is_user_subscribed_to_thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	resend_email_code?: FieldPolicy<any> | FieldReadFunction<any>,
 	search_user_by_email?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -1938,7 +2127,7 @@ export type StandardResponseModelFieldPolicy = {
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	success?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ThreadModelKeySpecifier = ('application_id' | 'commenters_ids' | 'id' | 'parent_application' | 'pinned_comment' | 'pinned_comment_id' | 'poll' | 'thread_comments' | 'title' | 'website_url' | ThreadModelKeySpecifier)[];
+export type ThreadModelKeySpecifier = ('application_id' | 'commenters_ids' | 'id' | 'parent_application' | 'pinned_comment' | 'pinned_comment_id' | 'poll' | 'subscribed_users' | 'subscribed_users_ids' | 'thread_comments' | 'title' | 'website_url' | ThreadModelKeySpecifier)[];
 export type ThreadModelFieldPolicy = {
 	application_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	commenters_ids?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1947,11 +2136,28 @@ export type ThreadModelFieldPolicy = {
 	pinned_comment?: FieldPolicy<any> | FieldReadFunction<any>,
 	pinned_comment_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	poll?: FieldPolicy<any> | FieldReadFunction<any>,
+	subscribed_users?: FieldPolicy<any> | FieldReadFunction<any>,
+	subscribed_users_ids?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_comments?: FieldPolicy<any> | FieldReadFunction<any>,
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	website_url?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserModelKeySpecifier = ('applications_joined_ids' | 'avatar' | 'blocked_users' | 'confirmed' | 'created_at' | 'email' | 'id' | 'last_active' | 'status' | 'updated_at' | 'user_role' | 'username' | UserModelKeySpecifier)[];
+export type TwoFactorLoginResponseKeySpecifier = ('message' | 'success' | 'two_factor_authentication' | TwoFactorLoginResponseKeySpecifier)[];
+export type TwoFactorLoginResponseFieldPolicy = {
+	message?: FieldPolicy<any> | FieldReadFunction<any>,
+	success?: FieldPolicy<any> | FieldReadFunction<any>,
+	two_factor_authentication?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type TwoFactorLoginSuccessResponseKeySpecifier = ('message' | 'refresh_token' | 'success' | 'token' | 'two_factor_authentication' | 'user' | TwoFactorLoginSuccessResponseKeySpecifier)[];
+export type TwoFactorLoginSuccessResponseFieldPolicy = {
+	message?: FieldPolicy<any> | FieldReadFunction<any>,
+	refresh_token?: FieldPolicy<any> | FieldReadFunction<any>,
+	success?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	two_factor_authentication?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type UserModelKeySpecifier = ('applications_joined_ids' | 'avatar' | 'blocked_users' | 'confirmed' | 'created_at' | 'email' | 'id' | 'last_active' | 'status' | 'two_factor_authentication' | 'updated_at' | 'user_role' | 'username' | UserModelKeySpecifier)[];
 export type UserModelFieldPolicy = {
 	applications_joined_ids?: FieldPolicy<any> | FieldReadFunction<any>,
 	avatar?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1962,6 +2168,7 @@ export type UserModelFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_active?: FieldPolicy<any> | FieldReadFunction<any>,
 	status?: FieldPolicy<any> | FieldReadFunction<any>,
+	two_factor_authentication?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_role?: FieldPolicy<any> | FieldReadFunction<any>,
 	username?: FieldPolicy<any> | FieldReadFunction<any>
@@ -2055,6 +2262,14 @@ export type StrictTypedTypePolicies = {
 	ThreadModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ThreadModelKeySpecifier | (() => undefined | ThreadModelKeySpecifier),
 		fields?: ThreadModelFieldPolicy,
+	},
+	TwoFactorLoginResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | TwoFactorLoginResponseKeySpecifier | (() => undefined | TwoFactorLoginResponseKeySpecifier),
+		fields?: TwoFactorLoginResponseFieldPolicy,
+	},
+	TwoFactorLoginSuccessResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | TwoFactorLoginSuccessResponseKeySpecifier | (() => undefined | TwoFactorLoginSuccessResponseKeySpecifier),
+		fields?: TwoFactorLoginSuccessResponseFieldPolicy,
 	},
 	UserModel?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UserModelKeySpecifier | (() => undefined | UserModelKeySpecifier),
