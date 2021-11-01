@@ -102,6 +102,7 @@ fragment CommentFragment on CommentModel {
     parent_id
     pending
     approved
+    reply_notification
     _count {
         down_vote
         replies
@@ -366,5 +367,20 @@ query IsUserSubscribedToThread(
     ) {
         success
         message
+    }
+}
+
+input ChangeCommentSettingsInput {
+    comment_id: String!
+    reply_notification: Boolean!
+}
+
+mutation ChangeCommentSettings(
+    $changeCommentSettingsInput: ChangeCommentSettingsInput!
+) {
+    change_comment_settings(
+        changeCommentSettingsInput: $changeCommentSettingsInput
+    ) {
+        reply_notification
     }
 }

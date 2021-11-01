@@ -8,8 +8,9 @@ import {
     Radio,
     RadioGroup,
 } from '@mui/material'
-import { IReportFormFormikValues } from '../components/ReportFormComponent'
 import { FormikProps } from 'formik'
+
+import { IReportFormFormikValues } from '../components/ReportFormComponent'
 
 interface IReportFormView {
     formik: FormikProps<IReportFormFormikValues>

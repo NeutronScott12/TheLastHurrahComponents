@@ -28,7 +28,7 @@
         "semantic-ui-react": "^2.0.3",
         "slate": "^0.66.5",
         "slate-history": "^0.66.0",
-        "slate-react": "^0.68.1",
+        "slate-react": "^0.69.0",
         "styled-components": "^5.3.3",
         "subscriptions-transport-ws": "^0.9.19",
         "web-vitals": "^2.1.2",

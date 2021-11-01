@@ -13,6 +13,7 @@ import { BlockComponent } from '../components/BlockComponent'
 import { ReportFormComponent } from '../components/ReportFormComponent'
 import { IModerator } from '../types'
 import { PendingRepliesView } from './PendingReplies'
+import { NotificationReplySettings } from '../components/CommentSetting'
 
 interface ICommentViewProps {
     currentUser: CurrentUserQuery | undefined
@@ -26,8 +27,8 @@ interface ICommentViewProps {
     currentSort: Sort
     application_short_name: string
     pendingReplies: IComment[]
-    addPendingReplyComments: (replies: IComment[], parent_id: string) => void
     setPendingReplies: React.Dispatch<React.SetStateAction<IComment[]>>
+    addPendingReplyComments: (replies: IComment[], parent_id: string) => void
     addPinnedComment: (comment_id: string) => void
     deleteComment: (id: string) => void
     deleteReplyComment: (id: string, parent_id: string) => void
@@ -81,6 +82,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
         <div>
             <Comment>
                 <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/matt.jpg" />
+
                 <Comment.Content>
                     <Comment.Author as="a">
                         {comment.author.username}
@@ -105,12 +107,22 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                     ) : (
                         ''
                     )}
+                    {currentUser &&
+                    currentUser.current_user.id === comment.author.id ? (
+                        <Comment.Metadata>
+                            <NotificationReplySettings
+                                comment_id={comment.id}
+                                reply_notification={comment.reply_notification}
+                            />
+                        </Comment.Metadata>
+                    ) : (
+                        ''
+                    )}
                     {comment.approved ? (
                         <Comment.Metadata>approved</Comment.Metadata>
                     ) : (
                         ''
                     )}
-
                     <Comment.Text>
                         {useEdit ? (
                             <EditCommentForm
@@ -140,7 +152,6 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                             </>
                         )}
                     </Comment.Text>
-
                     <Comment.Actions>
                         <Ratings comment={comment} />
                         <Comment.Action onClick={() => changeUseMain(!useMain)}>
@@ -175,6 +186,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                             ''
                         )}
                     </Comment.Actions>
+                    Comment.
                     {useMain ? (
                         <ReplyCommentForm
                             application_short_name={application_short_name}
@@ -197,7 +209,6 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                     ) : (
                         ''
                     )}
-
                     {pendingReplies.filter(
                         (replies) => replies.parent_id === comment.id,
                     ).length > 0 ? (

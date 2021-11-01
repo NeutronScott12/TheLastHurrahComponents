@@ -9,7 +9,7 @@ import {
     useFindOneApplicationByIdQuery,
     useFindOneOrCreateOneThreadQuery,
 } from '../../generated/graphql'
-import { CommentList } from './components/CommentList'
+import { CommentList } from './containers/CommentList'
 import { useIsLoggedIn } from '../../utils/customApolloHooks'
 import { cache, CURRENT_USER_CLIENT, IS_LOGGED_IN } from '../../apollo/cache'
 import { Loader } from './common/Loader'

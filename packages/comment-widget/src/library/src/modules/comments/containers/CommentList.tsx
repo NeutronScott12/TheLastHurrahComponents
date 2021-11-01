@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Comment } from 'semantic-ui-react'
 
-import { CommentComponent, IComment } from './Comment'
-import { CreateCommentForm } from './CreateCommentForm'
+import { CommentComponent, IComment } from '../components/Comment'
+import { CreateCommentForm } from '../components/CreateCommentForm'
 import {
     ApolloQueryResult,
     DocumentNode,
@@ -18,10 +18,10 @@ import {
     useFindThreadByIdQuery,
 } from '../../../generated/graphql'
 import { Loader } from '../common/Loader'
-import { MenuBar } from './MenuBar'
+import { MenuBar } from '../components/MenuBar'
 import { PinnedCommentView } from '../views/PinnedComment'
-import { VoteFormComponent } from './VoteFormComponent'
-import { VoteComponent } from './VoteComponent'
+import { VoteFormComponent } from '../components/VoteFormComponent'
+import { VoteComponent } from '../components/VoteComponent'
 import { useCurrentUserClient } from '../../../utils/customApolloHooks'
 import {
     COMMENT_ADDED_SUBSCRIPTION,
@@ -34,7 +34,7 @@ import {
 } from '../common'
 import { clone, mergeDeepRight } from 'ramda'
 import { Button } from '@mui/material'
-import { FilterComments } from './FilterComments'
+import { FilterComments } from '../components/FilterComments'
 
 type TVariables = {}
 type TData = {}
