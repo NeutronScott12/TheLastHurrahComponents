@@ -81,7 +81,6 @@ export const CommentList: React.FC<ICommentListProps> = ({
     const {
         loading: commentSubscriptionLoading,
         data: commentSubscriptionData,
-        error,
     } = useSubscription<
         ICommentAddedSubscriptionResponse,
         ICommentAddedSubscriptionVariables
@@ -164,7 +163,6 @@ export const CommentList: React.FC<ICommentListProps> = ({
                     //@ts-ignore
                     (comment) => (comment['__typename'] = 'CommentModel'),
                 )
-                console.log('PENDING', pendingComments)
                 const newData = {
                     fetch_comments_by_thread_id: {
                         __typename:
@@ -192,13 +190,6 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 })
             }
         }
-    }
-
-    console.log('error', error)
-    console.log('SUBSCRIPTION', commentSubscriptionData)
-
-    if (data) {
-        console.log('COMMENTS', data.fetch_comments_by_thread_id)
     }
 
     return threadloading &&

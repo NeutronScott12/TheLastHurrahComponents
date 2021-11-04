@@ -186,7 +186,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                             ''
                         )}
                     </Comment.Actions>
-                    Comment.
+
                     {useMain ? (
                         <ReplyCommentForm
                             application_short_name={application_short_name}

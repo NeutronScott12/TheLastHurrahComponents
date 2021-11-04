@@ -1,11 +1,6 @@
-import { Button, Checkbox, FormControlLabel, Switch } from '@mui/material'
-import { useFormik } from 'formik'
 import React from 'react'
+import { Switch } from '@mui/material'
 import { useChangeCommentSettingsMutation } from '../../../generated/graphql'
-
-interface ICommentSettingsFormValues {
-    reply_notification: boolean
-}
 
 interface ICommentSettings {
     comment_id: string

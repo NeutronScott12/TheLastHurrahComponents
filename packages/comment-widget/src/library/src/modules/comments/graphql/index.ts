@@ -26,6 +26,7 @@ const COMMENT_FRAGMENT = gql`
         parent_id
         pending
         approved
+        reply_notification
         _count {
             down_vote
             replies

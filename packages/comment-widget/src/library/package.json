@@ -1,5 +1,5 @@
 {
-    "name": "@thelasthurray/binary-stash-comment-component",
+    "name": "@thelasthurrah/binary-stash-comment-component",
     "version": "0.0.1",
     "description": "Binary Stash Comment Component",
     "main": "dist/index.js",
@@ -15,7 +15,7 @@
         "prebuild": "npm run build:remove",
         "publish": "npm publish --access=public",
         "build:remove": "rimraf dist",
-        "build:parcel": "npx parcel build",
+        "build:parcel": "npm run build:remove && npx parcel build",
         "build": "tsc -p tsconfig-library.json"
     },
     "keywords": [],
@@ -30,6 +30,7 @@
         "@mui/material": "^5.0.4",
         "@mui/styled-engine-sc": "^5.0.3",
         "@thelasthurrah/binary-stash-authentication": "^0.0.9",
+        "cross-env": "^7.0.3",
         "emotion": "^11.0.0",
         "escape-html": "^1.0.3",
         "formik": "^2.2.9",

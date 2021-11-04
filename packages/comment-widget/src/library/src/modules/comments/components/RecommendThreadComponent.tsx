@@ -37,8 +37,6 @@ export const RecommendThreadComponent: React.FC<IRecommendThreadComponent> = ({
         }
     }
 
-    console.log('DATA', data)
-
     return loading ? (
         <>''</>
     ) : (
