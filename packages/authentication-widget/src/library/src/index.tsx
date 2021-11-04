@@ -45,7 +45,6 @@ export const BinaryStashAuthenticator: React.FC<IBinaryStashAuthenticatorProps> 
 
 	return (
 		<ApolloProvider client={client}>
-			<h2>Authentication Should load here</h2>
 			{/* <Grid
 				container
 				spacing={0}

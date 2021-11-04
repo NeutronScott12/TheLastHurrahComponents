@@ -54,7 +54,13 @@ export const RichTextEditorView: React.FC<IRichTextEditorView> = ({
                     // formik.handleChange(plainTextserialiser(values))
                 }}
             >
-                <Toolbar style={{ padding: '.9rem', marginLeft: '.5rem' }}>
+                <Toolbar
+                    style={{
+                        padding: '.9rem',
+                        marginLeft: '.5rem',
+                        fontSize: '1.1rem',
+                    }}
+                >
                     <MarkButton format="bold" icon="format_bold" />
                     <MarkButton format="italic" icon="format_italic" />
                     <MarkButton format="underline" icon="format_underlined" />
@@ -74,7 +80,7 @@ export const RichTextEditorView: React.FC<IRichTextEditorView> = ({
                 <Editable
                     id="body"
                     name="body"
-                    style={{ marginBottom: '5rem', fontSize: '1.5em' }}
+                    style={{ marginBottom: '5rem', fontSize: '1.5rem' }}
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
                     placeholder="Join the discussion thread"

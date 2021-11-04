@@ -1,4 +1,5 @@
 import React, { Ref, PropsWithChildren } from 'react'
+import { Button as MuiButton } from '@mui/material'
 import ReactDOM from 'react-dom'
 import { css, cx } from '@emotion/css'
 
@@ -8,7 +9,39 @@ interface BaseProps {
 }
 type OrNull<T> = T | null
 
-export const Button = React.forwardRef(
+// interface IRichTextButton {
+//     active: boolean
+//     reversed?: boolean
+//     onMouseDown: any
+// }
+// // ref: Ref<OrNull<HTMLSpanElement>>
+
+// export const RichTextButton: React.FC<IRichTextButton> = ({
+//     children,
+//     active,
+//     reversed,
+//     onMouseDown,
+// }) => (
+//     <MuiButton
+//         onMouseDown={onMouseDown}
+//         // ref={ref}
+//         style={{
+//             color: `${
+//                 reversed
+//                     ? active
+//                         ? 'white'
+//                         : '#aaa'
+//                     : active
+//                     ? 'black'
+//                     : '#ccc'
+//             }`,
+//         }}
+//     >
+//         {children}
+//     </MuiButton>
+// )
+
+export const IconButton = React.forwardRef(
     (
         {
             className,

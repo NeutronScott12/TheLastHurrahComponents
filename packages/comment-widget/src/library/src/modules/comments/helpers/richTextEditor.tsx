@@ -1,6 +1,6 @@
 import { Editor, Transforms, Element as SlateElement } from 'slate'
 import { useSlate } from 'slate-react'
-import { Button, Icon } from './RichTextEditorViews'
+import { IconButton, Icon } from './RichTextEditorViews'
 
 export const HOTKEYS = {
     'mod+b': 'bold',
@@ -84,15 +84,15 @@ export const Leaf = ({ attributes, children, leaf }: any) => {
 }
 
 export const BlockButton = ({
-    format,
     icon,
+    format,
 }: {
     format: string
     icon: string
 }) => {
     const editor = useSlate()
     return (
-        <Button
+        <IconButton
             active={isBlockActive(editor, format)}
             onMouseDown={(event: React.ChangeEvent<MouseEvent>) => {
                 event.preventDefault()
@@ -100,7 +100,7 @@ export const BlockButton = ({
             }}
         >
             <Icon>{icon}</Icon>
-        </Button>
+        </IconButton>
     )
 }
 
@@ -113,7 +113,7 @@ export const MarkButton = ({
 }) => {
     const editor = useSlate()
     return (
-        <Button
+        <IconButton
             active={isMarkActive(editor, format)}
             onMouseDown={(event: React.ChangeEvent<MouseEvent>) => {
                 event.preventDefault()
@@ -121,7 +121,7 @@ export const MarkButton = ({
             }}
         >
             <Icon>{icon}</Icon>
-        </Button>
+        </IconButton>
     )
 }
 

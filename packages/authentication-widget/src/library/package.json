@@ -1,14 +1,16 @@
 {
 	"name": "@thelasthurrah/binary-stash-authentication",
-	"version": "0.0.8",
+	"version": "0.0.11",
 	"description": "An Authenticator Component for React",
-	"main": "dist/index.js",
+	"main": "dist/cjs/index.js",
 	"types": "dist/index.d.ts",
+	"module": "dist/esm/index.js",
 	"private": false,
 	"scripts": {
 		"prebuild": "npm run build:remove",
-		"publish": "cross-env npm run build && npm publish --access=public",
+		"publish": "npm publish --access=public",
 		"build:remove": "rimraf dist",
+		"build:rollup": "npm run build:remove && npx rollup -c",
 		"build": "tsc -p tsconfig-library.json"
 	},
 	"keywords": [],
@@ -31,11 +33,28 @@
 		"yup": "^0.32.9"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.16.0",
+		"@babel/plugin-transform-runtime": "^7.16.0",
+		"@babel/preset-env": "^7.16.0",
+		"@babel/preset-react": "^7.16.0",
+		"@babel/preset-typescript": "^7.16.0",
+		"@babel/runtime": "^7.16.0",
+		"@rollup/plugin-commonjs": "^21.0.1",
 		"@types/jest": "^26.0.15",
 		"@types/node": "^12.0.0",
 		"@types/react": "^17.0.0",
 		"@types/react-dom": "^17.0.0",
+		"babel-loader": "^8.2.3",
+		"css-loader": "^6.5.1",
+		"fork-ts-checker-webpack-plugin": "^6.4.0",
+		"postcss": "^8.3.11",
 		"react-scripts": "4.0.3",
+		"rollup": "^2.59.0",
+		"rollup-plugin-dts": "^4.0.0",
+		"rollup-plugin-peer-deps-external": "^2.2.4",
+		"rollup-plugin-postcss": "^4.0.1",
+		"rollup-plugin-typescript2": "^0.30.0",
+		"ts-node": "^10.4.0",
 		"typescript": "^4.1.2"
 	}
 }

@@ -6,7 +6,7 @@ import 'semantic-ui-css/semantic.min.css'
 import { CommentContainer } from './modules/comments'
 import { client } from './apollo'
 
-interface IBinaryStashCommentComponentProps {
+export interface IBinaryStashCommentComponentProps {
     title: string
     website_url: string
     application_id: string
