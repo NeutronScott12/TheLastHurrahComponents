@@ -42,6 +42,8 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
     const { data: currentUser, loading: currentUserLoading } =
         useCurrentUserQuery()
 
+    // Change this to useLayoutEffect to see if it fixes
+    // it not loading after login
     useEffect(() => {
         if (applicationData && currentUser) {
             cache.writeQuery({

@@ -259,7 +259,15 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 ''
             )}
 
-            <Comment.Group size="huge">
+            <Comment.Group
+                style={{
+                    overflowY: 'scroll',
+                    maxWidth: '100%',
+                    width: '100%',
+                    maxHeight: '500px',
+                }}
+                size="huge"
+            >
                 {data &&
                     data.fetch_comments_by_thread_id.comments.map((comment) => {
                         return (
