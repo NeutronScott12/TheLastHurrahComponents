@@ -33,7 +33,7 @@ export default [
             postcss(),
             terser(),
         ],
-        external: ['react', 'react-dom'],
+        external: ['react', 'react-dom', 'websocket'],
     },
     {
         input: 'dist/esm/src/index.d.ts',
