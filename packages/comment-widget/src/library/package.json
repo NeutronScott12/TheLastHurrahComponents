@@ -1,6 +1,6 @@
 {
     "name": "@thelasthurrah/binary-stash-comment-component",
-    "version": "0.0.12",
+    "version": "0.0.14",
     "description": "Binary Stash Comment Component",
     "main": "dist/cjs/index.js",
     "types": "dist/index.d.ts",
@@ -61,7 +61,9 @@
         "styled-components": "^5.3.3",
         "subscriptions-transport-ws": "^0.11.0",
         "web-vitals": "^2.1.2",
-        "yup": "^0.32.11"
+        "yup": "^0.32.11",
+        "utf-8-validate": "^5.0.7",
+        "bufferutil": "^4.0.5"
     },
     "devDependencies": {
         "@babel/core": "^7.16.0",

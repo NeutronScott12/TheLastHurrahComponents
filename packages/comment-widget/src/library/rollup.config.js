@@ -28,12 +28,14 @@ export default [
         plugins: [
             peerDepsExternal(),
             resolve(),
-            commonjs(),
+            commonjs({
+                ignore: ['bufferutil', 'utf-8-validate'], // Ignore optional peer dependencies of ws
+            }),
             typescript(),
             postcss(),
             terser(),
         ],
-        external: ['react', 'react-dom', 'websocket'],
+        external: ['react', 'react-dom'],
     },
     {
         input: 'dist/esm/src/index.d.ts',
