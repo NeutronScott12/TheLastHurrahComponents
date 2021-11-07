@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch } from '@mui/material'
+import { Switch, useTheme } from '@mui/material'
 import { useChangeCommentSettingsMutation } from '../../../generated/graphql'
 
 interface ICommentSettings {
@@ -12,6 +12,7 @@ export const NotificationReplySettings: React.FC<ICommentSettings> = ({
     reply_notification,
 }) => {
     const [changeCommentSettings] = useChangeCommentSettingsMutation()
+    const theme = useTheme()
 
     const handleChange = async (checked: boolean) => {
         try {
@@ -43,6 +44,9 @@ export const NotificationReplySettings: React.FC<ICommentSettings> = ({
                 id="reply_notification"
                 defaultChecked={reply_notification}
                 size="small"
+                style={{
+                    color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+                }}
             />
         </div>
     )

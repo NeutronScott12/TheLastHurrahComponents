@@ -8,14 +8,13 @@ function App() {
     const application_name = 'First Application'
 
     return (
-        <div className="App">
-            <BinaryStashCommentComponent
-                title={title}
-                website_url={website_url}
-                application_id={application_id}
-                application_name={application_name}
-            />
-        </div>
+        <BinaryStashCommentComponent
+            dark_theme={true}
+            title={title}
+            website_url={website_url}
+            application_id={application_id}
+            application_name={application_name}
+        />
     )
 }
 

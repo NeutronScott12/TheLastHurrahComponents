@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconButton, Menu, MenuItem } from '@mui/material'
+import { IconButton, Menu, MenuItem, useTheme } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 
 const ITEM_HEIGHT = 48
@@ -23,6 +23,8 @@ export const CommentActionDropdown: React.FC<ICommentActionDropdown> = ({
     block_user,
     changeOpenReport,
 }) => {
+    const theme = useTheme()
+
     return (
         <span>
             <IconButton
@@ -33,7 +35,12 @@ export const CommentActionDropdown: React.FC<ICommentActionDropdown> = ({
                 aria-haspopup="true"
                 onClick={handleClick}
             >
-                <MoreVertIcon />
+                <MoreVertIcon
+                    style={{
+                        color:
+                            theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+                    }}
+                />
             </IconButton>
             <Menu
                 id="long-menu"
@@ -48,10 +55,20 @@ export const CommentActionDropdown: React.FC<ICommentActionDropdown> = ({
                     },
                 }}
             >
-                <MenuItem onClick={() => block_user(comment_author_id)}>
+                <MenuItem
+                    style={{
+                        color:
+                            theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+                    }}
+                    onClick={() => block_user(comment_author_id)}
+                >
                     Block User
                 </MenuItem>
                 <MenuItem
+                    style={{
+                        color:
+                            theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+                    }}
                     onClick={() => {
                         changeOpenReport(true)
                         handleClose()

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Comment } from 'semantic-ui-react'
 import Moment from 'react-moment'
+import { makeStyles } from '@mui/styles'
+import { Theme } from '@mui/material'
 
 import { IComment } from '../components/Comment'
 import { ReplyCommentForm } from '../components/ReplyCommentForm'
@@ -34,6 +36,12 @@ interface ICommentViewProps {
     deleteReplyComment: (id: string, parent_id: string) => void
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+    fontStyle: {
+        color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+    },
+}))
+
 export const CommentView: React.FC<ICommentViewProps> = ({
     thread_id,
     comment,
@@ -51,6 +59,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     deleteReplyComment,
     addPinnedComment,
 }) => {
+    const classes = useStyles()
     const [useMain, changeUseMain] = useState(false)
     const [useEdit, changeUseEdit] = useState(false)
     const [openReport, changeOpenReport] = useState(false)
@@ -79,18 +88,26 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     }
 
     return (
-        <Comment style={{ color: 'black' }}>
+        <Comment>
             <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/matt.jpg" />
 
             <Comment.Content>
                 <Comment.Author as="a">
-                    {comment.author.username}
+                    <span className={classes.fontStyle}>
+                        {comment.author.username}
+                    </span>
                 </Comment.Author>
                 <Comment.Metadata>
-                    {displayModerator(comment.author.id) ? 'Mod' : ''}
+                    <span className={classes.fontStyle}>
+                        {displayModerator(comment.author.id) ? 'Mod' : ''}
+                    </span>
                 </Comment.Metadata>
                 <Comment.Metadata>
-                    <Moment format="DD/MM/YYYY">{comment.created_at}</Moment>
+                    <span className={classes.fontStyle}>
+                        <Moment format="DD/MM/YYYY">
+                            {comment.created_at}
+                        </Moment>
+                    </span>
                 </Comment.Metadata>
                 {currentUser &&
                 currentUser.current_user.id !== comment.author.id &&
@@ -141,7 +158,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                                 'Comment waiting for approval'
                             ) : (
                                 <div
-                                    style={{ color: 'white' }}
+                                    className={classes.fontStyle}
                                     dangerouslySetInnerHTML={{
                                         __html: displayHtml(comment),
                                     }}
@@ -153,7 +170,7 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 <Comment.Actions>
                     <Ratings comment={comment} />
                     <Comment.Action onClick={() => changeUseMain(!useMain)}>
-                        Reply
+                        <span className={classes.fontStyle}>Reply</span>
                     </Comment.Action>
                     {(currentUser &&
                         currentUser.current_user.id === comment.author.id) ||

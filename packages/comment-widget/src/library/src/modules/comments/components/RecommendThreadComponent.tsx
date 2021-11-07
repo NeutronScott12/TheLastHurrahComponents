@@ -5,7 +5,7 @@ import {
     useIsUserSubscribedToThreadQuery,
     useToggleSubscriptionToThreadMutation,
 } from '../../../generated/graphql'
-import { Button } from '@mui/material'
+import { Button, useTheme } from '@mui/material'
 
 interface IRecommendThreadComponent {
     thread_id: string
@@ -23,6 +23,8 @@ export const RecommendThreadComponent: React.FC<IRecommendThreadComponent> = ({
     })
     const [toggleSubscription] = useToggleSubscriptionToThreadMutation()
 
+    const theme = useTheme()
+
     const toggleSubscriptionToThread = async () => {
         try {
             const response = await toggleSubscription({
@@ -37,17 +39,39 @@ export const RecommendThreadComponent: React.FC<IRecommendThreadComponent> = ({
         }
     }
 
+    console.log('THEME', theme)
+
     return loading ? (
         <>''</>
     ) : (
         <div>
             {data?.is_user_subscribed_to_thread.success ? (
                 <Button onClick={toggleSubscriptionToThread}>
-                    <StarOutlinedIcon />
+                    <StarOutlinedIcon
+                        style={{
+                            color:
+                                theme.palette.mode === 'dark'
+                                    ? 'white'
+                                    : 'black',
+                        }}
+                    />
                 </Button>
             ) : (
-                <Button onClick={toggleSubscriptionToThread}>
-                    <StarOutlineOutlinedIcon />
+                <Button
+                    style={{
+                        color:
+                            theme.palette.mode === 'dark' ? 'white' : 'black',
+                    }}
+                    onClick={toggleSubscriptionToThread}
+                >
+                    <StarOutlineOutlinedIcon
+                        style={{
+                            color:
+                                theme.palette.mode === 'dark'
+                                    ? 'white'
+                                    : 'black',
+                        }}
+                    />
                 </Button>
             )}
         </div>

@@ -8,14 +8,23 @@ import {
     useDownVoteCommentMutation,
     useUpVoteCommentMutation,
 } from '../../../generated/graphql'
+import { Theme, useTheme } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 
 interface IRatings {
     comment: IComment
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+    fontStyles: {
+        color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+    },
+}))
+
 export const Ratings: React.FC<IRatings> = ({ comment }) => {
     const [upVoteComment] = useUpVoteCommentMutation()
     const [downVoteComment] = useDownVoteCommentMutation()
+    const classes = useStyles()
 
     const upVote = async () => {
         try {
@@ -40,10 +49,16 @@ export const Ratings: React.FC<IRatings> = ({ comment }) => {
     return (
         <>
             <Comment.Action onClick={upVote}>
-                <ArrowUpwardIcon /> {comment._count.up_vote}
+                <ArrowUpwardIcon className={classes.fontStyles} />{' '}
+                <span className={classes.fontStyles}>
+                    {comment._count.up_vote}
+                </span>
             </Comment.Action>
             <Comment.Action onClick={downVote}>
-                <ArrowDownwardIcon /> {comment._count.down_vote}
+                <ArrowDownwardIcon className={classes.fontStyles} />{' '}
+                <span className={classes.fontStyles}>
+                    {comment._count.down_vote}
+                </span>
             </Comment.Action>
         </>
     )

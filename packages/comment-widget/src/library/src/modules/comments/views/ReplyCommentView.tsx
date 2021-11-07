@@ -11,6 +11,8 @@ import { Ratings } from '../components/Rating'
 import { displayHtml } from '../helpers'
 import { BlockComponent } from '../components/BlockComponent'
 import { ReportFormComponent } from '../components/ReportFormComponent'
+import { makeStyles } from '@mui/styles'
+import { Theme } from '@mui/material'
 
 interface IReplyCommentView {
     deleteComment: (id: string) => void
@@ -29,6 +31,12 @@ interface IReplyCommentView {
     currentSort: Sort
     application_short_name: string
 }
+
+const useStyles = makeStyles((theme: Theme) => ({
+    fontStyles: {
+        color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+    },
+}))
 
 export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     deleteReplyComment,
@@ -50,20 +58,32 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     const [useReplyEdit, changeUseReplyEdit] = useState(false)
     const [openReport, changeOpenReport] = useState(false)
 
+    const classes = useStyles()
+
     return (
         <Comment key={reply.id}>
             <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/jenny.jpg" />
             <Comment.Content>
-                <Comment.Author as="a">{reply.author.username}</Comment.Author>
+                <Comment.Author as="a">
+                    <span className={classes.fontStyles}>
+                        {reply.author.username}
+                    </span>
+                </Comment.Author>
                 <Comment.Metadata>
-                    {displayModerator(reply.author.id) ? 'Mod' : ''}
+                    <span className={classes.fontStyles}>
+                        {displayModerator(reply.author.id) ? 'Mod' : ''}
+                    </span>
                 </Comment.Metadata>
                 <Comment.Metadata>
-                    <ArrowLeft />
-                    Replied To {reply.replied_to_user?.username}
+                    <ArrowLeft className={classes.fontStyles} />
+                    <span className={classes.fontStyles}>
+                        Replied To {reply.replied_to_user?.username}
+                    </span>
                 </Comment.Metadata>
                 <Comment.Metadata>
-                    <Moment format="DD/MM/YYYY">{reply.created_at}</Moment>
+                    <span className={classes.fontStyles}>
+                        <Moment format="DD/MM/YYYY">{reply.created_at}</Moment>
+                    </span>
                 </Comment.Metadata>
                 {currentUser &&
                 currentUser.current_user.id !== reply.author.id ? (
@@ -97,6 +117,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                                 'Comment waiting for approval'
                             ) : (
                                 <div
+                                    className={classes.fontStyles}
                                     dangerouslySetInnerHTML={{
                                         __html: displayHtml(reply),
                                     }}
@@ -112,7 +133,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                             changeUseEditSecondary(!useSecondaryReply)
                         }
                     >
-                        Reply
+                        <span className={classes.fontStyles}>Reply</span>
                     </Comment.Action>
                     {(currentUser &&
                         currentUser.current_user.id === reply.author.id) ||
