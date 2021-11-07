@@ -1,5 +1,4 @@
 import React, { Ref, PropsWithChildren } from 'react'
-import { Button as MuiButton } from '@mui/material'
 import ReactDOM from 'react-dom'
 import { css, cx } from '@emotion/css'
 

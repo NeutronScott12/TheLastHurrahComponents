@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useLayoutEffect } from 'react'
 import { Comment } from 'semantic-ui-react'
 
 import { CommentComponent, IComment } from '../components/Comment'
@@ -34,7 +34,7 @@ import {
 } from '../common'
 import { clone, mergeDeepRight } from 'ramda'
 import { Button } from '@mui/material'
-import { FilterComments } from '../components/FilterComments'
+// import { FilterComments } from '../components/FilterComments'
 
 type TVariables = {}
 type TData = {}
@@ -109,7 +109,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
         },
     })
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const localCurrent = localStorage.getItem('currentSort')
         if (localCurrent) {
             changeCurrentSort(localCurrent as Sort)
@@ -127,7 +127,7 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 ])
             }
         }
-    }, [commentSubscriptionData])
+    }, [commentSubscriptionData, pendingComments, pendingReplies])
 
     const fetchMoreComments = async () => {
         changeLimit(limit + 10)
@@ -214,10 +214,10 @@ export const CommentList: React.FC<ICommentListProps> = ({
                 ''
             )}
 
-            <FilterComments
+            {/* <FilterComments
                 currentSort={currentSort}
                 changeCurrentSort={changeCurrentSort}
-            />
+            /> */}
 
             {currentUserClient?.isModerator ? (
                 <VoteFormComponent

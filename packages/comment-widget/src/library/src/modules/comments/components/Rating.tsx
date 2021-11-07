@@ -8,7 +8,7 @@ import {
     useDownVoteCommentMutation,
     useUpVoteCommentMutation,
 } from '../../../generated/graphql'
-import { Theme, useTheme } from '@mui/material'
+import { Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 interface IRatings {
