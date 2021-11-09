@@ -8,8 +8,13 @@ import { typeDefs } from './typeDefs'
 
 const token = localStorage.getItem('binary-stash-token')
 
+const uri =
+    process.env.NODE_ENV === 'production'
+        ? 'http://178.79.188.58/graphql'
+        : 'http://localhost:4000/graphql'
+
 const httpLink = createHttpLink({
-    uri: 'http://localhost:4000/graphql',
+    uri,
 })
 
 const authLink = setContext((_, { headers }) => {
