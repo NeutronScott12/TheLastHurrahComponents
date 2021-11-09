@@ -16,6 +16,13 @@
 	"keywords": [],
 	"author": "Scott",
 	"license": "MIT",
+	"peerDependencies": {
+		"@emotion/css": "^11.5.0",
+		"@emotion/react": "^11.5.0",
+		"@emotion/styled": "^11.3.0",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2"
+	},
 	"dependencies": {
 		"@material-ui/core": "^4.12.3",
 		"@material-ui/lab": "^4.0.0-alpha.60",
