@@ -1,6 +1,6 @@
 {
     "name": "@thelasthurrah/binary-stash-comment-component",
-    "version": "0.0.19",
+    "version": "0.0.21",
     "description": "Binary Stash Comment Component",
     "main": "dist/cjs/index.js",
     "types": "dist/index.d.ts",
@@ -37,7 +37,7 @@
         "@mui/material": "^5.0.4",
         "@mui/styled-engine-sc": "^5.0.3",
         "@mui/styles": "^5.0.2",
-        "@thelasthurrah/binary-stash-authentication": "^0.0.9",
+        "@thelasthurrah/binary-stash-authentication": "^0.0.14",
         "cross-env": "^7.0.3",
         "emotion": "^11.0.0",
         "escape-html": "^1.0.3",
