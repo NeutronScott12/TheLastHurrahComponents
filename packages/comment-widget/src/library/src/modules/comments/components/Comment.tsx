@@ -43,6 +43,8 @@ export interface IComment {
     application_id: string
     pending: boolean
     approved: boolean
+    edited: boolean
+    updated_at: string
     reply_notification: boolean
     parent_id?: Maybe<string> | undefined
     replied_to_user?: Maybe<{

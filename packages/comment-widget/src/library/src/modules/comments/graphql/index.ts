@@ -23,6 +23,7 @@ const COMMENT_FRAGMENT = gql`
         created_at
         updated_at
         user_id
+        edited
         parent_id
         pending
         approved

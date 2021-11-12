@@ -101,6 +101,7 @@ fragment CommentFragment on CommentModel {
     user_id
     parent_id
     pending
+    edited
     approved
     reply_notification
     _count {

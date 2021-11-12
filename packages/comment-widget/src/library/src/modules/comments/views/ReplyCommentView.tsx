@@ -85,6 +85,18 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                         <Moment format="DD/MM/YYYY">{reply.created_at}</Moment>
                     </span>
                 </Comment.Metadata>
+                {reply.edited === true ? (
+                    <Comment.Metadata>
+                        <span className={classes.fontStyles}>
+                            Edited:
+                            <Moment format="DD/MM/YYYY">
+                                {comment.updated_at}
+                            </Moment>
+                        </span>
+                    </Comment.Metadata>
+                ) : (
+                    ''
+                )}
                 {currentUser &&
                 currentUser.current_user.id !== reply.author.id ? (
                     <Comment.Metadata>

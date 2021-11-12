@@ -87,6 +87,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
         return false
     }
 
+    console.log('COMMENT', comment)
+
     return (
         <Comment>
             <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/matt.jpg" />
@@ -109,6 +111,19 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                         </Moment>
                     </span>
                 </Comment.Metadata>
+                {comment.edited === true ? (
+                    <Comment.Metadata>
+                        <span className={classes.fontStyle}>
+                            Edited:
+                            <Moment format="DD/MM/YYYY">
+                                {comment.updated_at}
+                            </Moment>
+                        </span>
+                    </Comment.Metadata>
+                ) : (
+                    ''
+                )}
+
                 {currentUser &&
                 currentUser.current_user.id !== comment.author.id &&
                 comment.approved === false ? (
