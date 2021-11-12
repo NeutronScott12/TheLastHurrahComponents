@@ -10,7 +10,7 @@ const token = localStorage.getItem('binary-stash-token')
 
 const uri =
     process.env.NODE_ENV === 'production'
-        ? 'http://178.79.188.58/graphql'
+        ? 'https://lasthurrah.co.uk/graphql'
         : 'http://localhost:4000/graphql'
 
 const httpLink = createHttpLink({
@@ -26,8 +26,13 @@ const authLink = setContext((_, { headers }) => {
     }
 })
 
+const subUri =
+    process.env.NODE_ENV === 'production'
+        ? 'wss://lasthurrah.co.uk/ws-graphql'
+        : 'ws://localhost:4003/graphql'
+
 const wsLink = new WebSocketLink({
-    uri: 'ws://localhost:4003/graphql',
+    uri: subUri,
     options: {
         reconnect: true,
         connectionParams: {
