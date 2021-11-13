@@ -6,7 +6,8 @@ import 'semantic-ui-css/semantic.min.css'
 import { CommentContainer } from './modules/comments'
 import { client } from './apollo'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { CssBaseline } from '@mui/material'
+import { CssBaseline, PaletteMode, useTheme } from '@mui/material'
+import { deepmerge } from '@mui/utils'
 
 export interface IBinaryStashCommentComponentProps {
     title: string
@@ -14,6 +15,7 @@ export interface IBinaryStashCommentComponentProps {
     application_id: string
     application_name: string
     dark_theme: boolean
+    innerComponent: boolean
 }
 
 export const ColorModeContext = React.createContext({
@@ -22,9 +24,14 @@ export const ColorModeContext = React.createContext({
 
 export const BinaryStashCommentComponent: React.FC<IBinaryStashCommentComponentProps> =
     (props) => {
-        const [mode, setMode] = useState(
-            props.dark_theme === true ? 'dark' : 'light',
-        )
+        let theme
+        const outTheme = useTheme()
+        console.log('OUTER_THEME', outTheme)
+        const siteTheme = props.dark_theme === true ? 'dark' : 'light'
+
+        const [mode, setMode] = useState<PaletteMode>(siteTheme)
+
+        console.log('MODE', mode)
         const colorMode = useMemo(
             () => ({
                 toggleColorMode: () => {
@@ -36,16 +43,36 @@ export const BinaryStashCommentComponent: React.FC<IBinaryStashCommentComponentP
             [],
         )
 
-        const theme = useMemo(
+        console.log('BETTER', colorMode)
+
+        const innerTheme = useMemo(
             () =>
                 createTheme({
                     palette: {
-                        //@ts-ignore
                         mode,
                     },
                 }),
             [mode],
         )
+
+        if (outTheme !== undefined) {
+            theme = createTheme(deepmerge(outTheme, innerTheme))
+            console.log('MERGED_THEME', theme)
+        } else {
+            theme = innerTheme
+        }
+
+        console.log('THEME', theme)
+
+        if (props.innerComponent) {
+            console.log('INNER_LOAD_IN')
+            return (
+                <ApolloProvider client={client}>
+                    <CssBaseline />
+                    <CommentContainer {...props} />
+                </ApolloProvider>
+            )
+        }
 
         return (
             <ColorModeContext.Provider value={colorMode}>

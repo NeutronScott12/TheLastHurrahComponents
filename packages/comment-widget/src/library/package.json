@@ -1,6 +1,6 @@
 {
     "name": "@thelasthurrah/binary-stash-comment-component",
-    "version": "0.0.21",
+    "version": "0.0.36",
     "description": "Binary Stash Comment Component",
     "main": "dist/cjs/index.js",
     "types": "dist/index.d.ts",

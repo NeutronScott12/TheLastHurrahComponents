@@ -19,18 +19,23 @@ export const PinnedCommentView: React.FC<IPinnedCommentView> = ({
                 <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/matt.jpg" />
                 <Comment.Content>
                     <Comment.Author as="a">
-                        {comment.author.username}
+                        <span style={{ color: '#969696' }}>
+                            {comment.author.username}
+                        </span>
                     </Comment.Author>
                     <Comment.Metadata>
                         <PushPinIcon />
                     </Comment.Metadata>
                     <Comment.Metadata>
-                        <Moment format="DD/MM/YYYY">
-                            {comment.created_at}
-                        </Moment>
+                        <span style={{ color: '#969696' }}>
+                            <Moment format="DD/MM/YYYY">
+                                {comment.created_at}
+                            </Moment>
+                        </span>
                     </Comment.Metadata>
                     <Comment.Text>
                         <div
+                            style={{ color: '#969696' }}
                             dangerouslySetInnerHTML={{
                                 __html: displayHtml(comment),
                             }}

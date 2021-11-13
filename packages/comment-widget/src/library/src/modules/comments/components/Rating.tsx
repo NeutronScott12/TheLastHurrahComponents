@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const Ratings: React.FC<IRatings> = ({ comment }) => {
     const [upVoteComment] = useUpVoteCommentMutation()
     const [downVoteComment] = useDownVoteCommentMutation()
-    const classes = useStyles()
+    // const classes = useStyles()
 
     const upVote = async () => {
         try {
@@ -49,14 +49,18 @@ export const Ratings: React.FC<IRatings> = ({ comment }) => {
     return (
         <>
             <Comment.Action onClick={upVote}>
-                <ArrowUpwardIcon className={classes.fontStyles} />{' '}
-                <span className={classes.fontStyles}>
+                {/* <ArrowUpwardIcon className={classes.fontStyles} />{' '} */}
+                <ArrowUpwardIcon style={{ color: '#969696' }} />{' '}
+                {/* <span className={classes.fontStyles}> */}
+                <span style={{ color: '#969696' }}>
                     {comment._count.up_vote}
                 </span>
             </Comment.Action>
             <Comment.Action onClick={downVote}>
-                <ArrowDownwardIcon className={classes.fontStyles} />{' '}
-                <span className={classes.fontStyles}>
+                {/* <ArrowDownwardIcon className={classes.fontStyles} />{' '} */}
+                <ArrowDownwardIcon style={{ color: '#969696' }} />{' '}
+                {/* <span className={classes.fontStyles}> */}
+                <span style={{ color: '#969696' }}>
                     {comment._count.down_vote}
                 </span>
             </Comment.Action>

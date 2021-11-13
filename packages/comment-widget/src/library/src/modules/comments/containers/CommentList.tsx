@@ -192,6 +192,8 @@ export const CommentList: React.FC<ICommentListProps> = ({
         }
     }
 
+    console.log('COMMENT_LIST')
+
     return threadloading &&
         loading &&
         commentSubscriptionLoading &&

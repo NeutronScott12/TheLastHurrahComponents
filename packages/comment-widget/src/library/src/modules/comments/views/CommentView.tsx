@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Comment } from 'semantic-ui-react'
 import Moment from 'react-moment'
-import { makeStyles } from '@mui/styles'
-import { Theme } from '@mui/material'
+import { makeStyles, useTheme } from '@mui/styles'
+import { Theme } from '@mui/material/styles'
 
 import { IComment } from '../components/Comment'
 import { ReplyCommentForm } from '../components/ReplyCommentForm'
@@ -59,7 +59,11 @@ export const CommentView: React.FC<ICommentViewProps> = ({
     deleteReplyComment,
     addPinnedComment,
 }) => {
-    const classes = useStyles()
+    const theme = useTheme()
+    console.log('THEME', theme)
+    console.log('COMMENT_VIEW')
+    console.log('CLASSES', useStyles)
+    // const classes = useStyles()
     const [useMain, changeUseMain] = useState(false)
     const [useEdit, changeUseEdit] = useState(false)
     const [openReport, changeOpenReport] = useState(false)
@@ -95,17 +99,20 @@ export const CommentView: React.FC<ICommentViewProps> = ({
 
             <Comment.Content>
                 <Comment.Author as="a">
-                    <span className={classes.fontStyle}>
+                    {/* <span className={classes.fontStyle}> */}
+                    <span style={{ color: '#969696' }}>
                         {comment.author.username}
                     </span>
                 </Comment.Author>
                 <Comment.Metadata>
-                    <span className={classes.fontStyle}>
+                    <span style={{ color: '#969696' }}>
+                        {/* <span className={classes.fontStyle}> */}
                         {displayModerator(comment.author.id) ? 'Mod' : ''}
                     </span>
                 </Comment.Metadata>
                 <Comment.Metadata>
-                    <span className={classes.fontStyle}>
+                    <span style={{ color: '#969696' }}>
+                        {/* <span className={classes.fontStyle}> */}
                         <Moment format="DD/MM/YYYY">
                             {comment.created_at}
                         </Moment>
@@ -113,7 +120,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 </Comment.Metadata>
                 {comment.edited === true ? (
                     <Comment.Metadata>
-                        <span className={classes.fontStyle}>
+                        {/* <span className={classes.fontStyle}> */}
+                        <span style={{ color: '#969696' }}>
                             Edited:
                             <Moment format="DD/MM/YYYY">
                                 {comment.updated_at}
@@ -173,7 +181,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                                 'Comment waiting for approval'
                             ) : (
                                 <div
-                                    className={classes.fontStyle}
+                                    // className={classes.fontStyle}
+                                    style={{ color: '#969696' }}
                                     dangerouslySetInnerHTML={{
                                         __html: displayHtml(comment),
                                     }}
@@ -185,7 +194,8 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                 <Comment.Actions>
                     <Ratings comment={comment} />
                     <Comment.Action onClick={() => changeUseMain(!useMain)}>
-                        <span className={classes.fontStyle}>Reply</span>
+                        {/* <span className={classes.fontStyle}>Reply</span> */}
+                        <span style={{ color: '#969696' }}>Reply</span>
                     </Comment.Action>
                     {(currentUser &&
                         currentUser.current_user.id === comment.author.id) ||
@@ -194,12 +204,12 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                             <Comment.Action
                                 onClick={() => changeUseEdit(!useEdit)}
                             >
-                                Edit
+                                <span style={{ color: '#969696' }}>Edit</span>
                             </Comment.Action>
                             <Comment.Action
                                 onClick={() => deleteComment(comment.id)}
                             >
-                                delete
+                                <span style={{ color: '#969696' }}>delete</span>
                             </Comment.Action>
                         </>
                     ) : (

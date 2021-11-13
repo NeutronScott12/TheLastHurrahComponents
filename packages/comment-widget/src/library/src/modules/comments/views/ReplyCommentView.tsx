@@ -58,36 +58,42 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     const [useReplyEdit, changeUseReplyEdit] = useState(false)
     const [openReport, changeOpenReport] = useState(false)
 
-    const classes = useStyles()
+    // const classes = useStyles()
 
     return (
         <Comment key={reply.id}>
             <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/small/jenny.jpg" />
             <Comment.Content>
                 <Comment.Author as="a">
-                    <span className={classes.fontStyles}>
+                    {/* <span className={classes.fontStyles}> */}
+                    <span style={{ color: '#969696' }}>
                         {reply.author.username}
                     </span>
                 </Comment.Author>
                 <Comment.Metadata>
-                    <span className={classes.fontStyles}>
+                    {/* <span className={classes.fontStyles}> */}
+                    <span style={{ color: '#969696' }}>
                         {displayModerator(reply.author.id) ? 'Mod' : ''}
                     </span>
                 </Comment.Metadata>
                 <Comment.Metadata>
-                    <ArrowLeft className={classes.fontStyles} />
-                    <span className={classes.fontStyles}>
+                    {/* <ArrowLeft className={classes.fontStyles} /> */}
+                    <ArrowLeft />
+                    <span style={{ color: '#969696' }}>
+                        {/* <span className={classes.fontStyles}> */}
                         Replied To {reply.replied_to_user?.username}
                     </span>
                 </Comment.Metadata>
                 <Comment.Metadata>
-                    <span className={classes.fontStyles}>
+                    <span style={{ color: '#969696' }}>
+                        {/* <span className={classes.fontStyles}> */}
                         <Moment format="DD/MM/YYYY">{reply.created_at}</Moment>
                     </span>
                 </Comment.Metadata>
                 {reply.edited === true ? (
                     <Comment.Metadata>
-                        <span className={classes.fontStyles}>
+                        {/* <span className={classes.fontStyles}> */}
+                        <span style={{ color: '#969696' }}>
                             Edited:
                             <Moment format="DD/MM/YYYY">
                                 {comment.updated_at}
@@ -129,7 +135,8 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                                 'Comment waiting for approval'
                             ) : (
                                 <div
-                                    className={classes.fontStyles}
+                                    // className={classes.fontStyles}
+                                    style={{ color: '#969696' }}
                                     dangerouslySetInnerHTML={{
                                         __html: displayHtml(reply),
                                     }}
@@ -145,7 +152,8 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                             changeUseEditSecondary(!useSecondaryReply)
                         }
                     >
-                        <span className={classes.fontStyles}>Reply</span>
+                        {/* <span className={classes.fontStyles}>Reply</span> */}
+                        <span style={{ color: '#969696' }}>Reply</span>
                     </Comment.Action>
                     {(currentUser &&
                         currentUser.current_user.id === reply.author.id) ||
@@ -156,7 +164,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                                     changeUseReplyEdit(!useReplyEdit)
                                 }
                             >
-                                Edit
+                                <span style={{ color: '#969696' }}>Edit</span>
                             </Comment.Action>
                             <Comment.Action
                                 onClick={() => {
@@ -168,7 +176,7 @@ export const ReplyCommentView: React.FC<IReplyCommentView> = ({
                                     }
                                 }}
                             >
-                                delete
+                                <span style={{ color: '#969696' }}>delete</span>
                             </Comment.Action>
                         </>
                     ) : (
