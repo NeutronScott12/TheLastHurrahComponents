@@ -6,7 +6,7 @@
     "private": true,
     "scripts": {
         "remove:node_modules": "rimraf node_modules",
-        "remove_all:node_modules": "npm run remove:node_modules && npx lerna run remove:node_modules",
+        "remove_all:node_modules": "npx rimraf ./**/node_modules",
         "publish": "npx lerna run publish",
         "build:server:bash": "npx lerna run build:bash",
         "build:server": "npx lerna run build",

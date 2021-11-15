@@ -14,6 +14,7 @@ function App() {
             website_url={website_url}
             application_id={application_id}
             application_name={application_name}
+            innerComponent={false}
         />
     )
 }
