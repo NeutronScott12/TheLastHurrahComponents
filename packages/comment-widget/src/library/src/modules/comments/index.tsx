@@ -73,7 +73,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
         }
     }, [currentUser, applicationData])
 
-    const { data, loading, fetchMore, refetch } =
+    const { data, loading, fetchMore, refetch, error } =
         useFindOneOrCreateOneThreadQuery({
             variables: {
                 findOrCreateOneThreadInput: {
@@ -97,6 +97,8 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
         refetch()
         setLoggedIn(true)
     }
+
+    console.log('ERROR', error?.message)
 
     return loading || currentUserLoading ? (
         <Loader />
@@ -138,7 +140,7 @@ export const CommentContainer: React.FC<ICommentContainerProps> = ({
                     thread_id={data.find_one_thread_or_create_one.id}
                 />
             ) : (
-                ''
+                <div>{error?.message}</div>
             )}
 
             {currentUserData &&

@@ -11,8 +11,8 @@ import { Ratings } from '../components/Rating'
 import { displayHtml } from '../helpers'
 import { BlockComponent } from '../components/BlockComponent'
 import { ReportFormComponent } from '../components/ReportFormComponent'
-import { makeStyles } from '@mui/styles'
-import { Theme } from '@mui/material'
+// import { makeStyles } from '@mui/styles'
+// import { Theme } from '@mui/material'
 
 interface IReplyCommentView {
     deleteComment: (id: string) => void
@@ -32,11 +32,11 @@ interface IReplyCommentView {
     application_short_name: string
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-    fontStyles: {
-        color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
-    },
-}))
+// const useStyles = makeStyles((theme: Theme) => ({
+//     fontStyles: {
+//         color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+//     },
+// }))
 
 export const ReplyCommentView: React.FC<IReplyCommentView> = ({
     deleteReplyComment,

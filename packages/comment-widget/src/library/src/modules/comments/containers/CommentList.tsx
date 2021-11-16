@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Comment } from 'semantic-ui-react'
 
 import { CommentComponent, IComment } from '../components/Comment'
@@ -109,25 +109,25 @@ export const CommentList: React.FC<ICommentListProps> = ({
         },
     })
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         const localCurrent = localStorage.getItem('currentSort')
         if (localCurrent) {
             changeCurrentSort(localCurrent as Sort)
         }
         if (commentSubscriptionData && commentSubscriptionData.comment_added) {
             if (commentSubscriptionData.comment_added.parent_id == null) {
-                setPendingComments([
+                setPendingComments((prevPendingComments) => [
                     commentSubscriptionData.comment_added,
-                    ...pendingComments,
+                    ...prevPendingComments,
                 ])
             } else {
-                setPendingReplies([
+                setPendingReplies((prevPendingReplies) => [
                     commentSubscriptionData.comment_added,
-                    ...pendingReplies,
+                    ...prevPendingReplies,
                 ])
             }
         }
-    }, [commentSubscriptionData, pendingComments, pendingReplies])
+    }, [commentSubscriptionData])
 
     const fetchMoreComments = async () => {
         changeLimit(limit + 10)

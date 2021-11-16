@@ -9,17 +9,17 @@ import {
     useUpVoteCommentMutation,
 } from '../../../generated/graphql'
 import { Theme } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+// import { makeStyles } from '@mui/styles'
 
 interface IRatings {
     comment: IComment
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-    fontStyles: {
-        color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
-    },
-}))
+// const useStyles = makeStyles((theme: Theme) => ({
+//     fontStyles: {
+//         color: theme.palette.mode === 'dark' ? '#e8e6e3' : 'black',
+//     },
+// }))
 
 export const Ratings: React.FC<IRatings> = ({ comment }) => {
     const [upVoteComment] = useUpVoteCommentMutation()
