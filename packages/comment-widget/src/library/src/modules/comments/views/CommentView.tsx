@@ -178,7 +178,9 @@ export const CommentView: React.FC<ICommentViewProps> = ({
                     ) : (
                         <>
                             {comment.pending ? (
-                                'Comment waiting for approval'
+                                <span style={{ color: '#969696' }}>
+                                    Comment waiting for approval
+                                </span>
                             ) : (
                                 <div
                                     // className={classes.fontStyle}
