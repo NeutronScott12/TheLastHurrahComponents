@@ -4,7 +4,7 @@ import { BinaryStashCommentComponent } from './library/src'
 function App() {
     const title = 'first title'
     const website_url = window.location.href
-    const application_id = 'b7b835f9-a03d-4718-a363-cf5f6cc4e1df'
+    const application_id = 'd63a7c11-8f9e-43ae-8c2e-ba8e6e4c2fcf'
     const application_name = 'First Application'
 
     return (
