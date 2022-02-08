@@ -12,6 +12,11 @@ const validationSchema = yup.object({
 })
 
 function App() {
+    const response = new CommentAPI(
+        'http://localhost:4000/graphql',
+        'first-application',
+    )
+
     const formik = useFormik<IFormValues>({
         initialValues: {
             body: '',
@@ -21,6 +26,8 @@ function App() {
             console.log('WORKING')
         },
     })
+
+    console.log(response.queries.fetch_comemnts())
 
     return (
         <div className="App">
