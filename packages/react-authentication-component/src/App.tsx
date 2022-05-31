@@ -1,4 +1,3 @@
-import './App.css'
 import { AuthenticationContainer } from './library/src/AuthenticationContainer'
 
 function App() {
