@@ -3,7 +3,10 @@ import { AuthenticationContainer } from './library/src/AuthenticationContainer'
 function App() {
     return (
         <div className="App">
-            <AuthenticationContainer />
+            <AuthenticationContainer
+                application_id=""
+                logInCallback={() => console.log('working')}
+            />
         </div>
     )
 }
