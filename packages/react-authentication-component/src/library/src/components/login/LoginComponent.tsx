@@ -3,6 +3,7 @@ import { Button, TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import { AuthenticationAPI } from '@thelasthurrah/authentication_api'
 import { CHANGE_FORM_DISPLAY } from '../../AuthenticationContainer'
+import { useBinaryMutations } from '../../common/useBinaryMutations'
 
 interface ILoginContainer {
     changeDisplay: React.Dispatch<React.SetStateAction<CHANGE_FORM_DISPLAY>>
@@ -12,6 +13,8 @@ interface ILoginContainer {
 export const LoginContainer: React.FC<ILoginContainer> = ({
     changeDisplay,
 }) => {
+    const client = useBinaryMutations()
+
     const {
         handleSubmit,
         handleChange,
@@ -29,20 +32,18 @@ export const LoginContainer: React.FC<ILoginContainer> = ({
         // validationSchema: {},
         onSubmit: async ({ email, password }, { setSubmitting }) => {
             console.log(email, password)
+            try {
+                const result = await client.login({
+                    email,
+                    password,
+                })
 
-            const authenticationAPI = new AuthenticationAPI(
-                'http://localhost:4000/graphql',
-                'first-application',
-            )
+                console.log('RESULT', result)
 
-            const result = await authenticationAPI.mutations.login({
-                email,
-                password,
-            })
-
-            console.log('RESULT', result)
-
-            setSubmitting(false)
+                setSubmitting(false)
+            } catch (error) {
+                console.log('ERROR: ', error)
+            }
         },
     })
 

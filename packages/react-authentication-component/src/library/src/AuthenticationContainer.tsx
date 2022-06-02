@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
-import { LoginContainer } from './components/login/LoginComponent'
+import React, { useEffect, useState } from 'react'
+import { AuthenticationAPI } from '@thelasthurrah/authentication_api'
+
+import { BinaryStashProvider } from './common/BinaryStashProvider'
 import { RegisterContainer } from './components/register/RegisterComponent'
+import { LoginContainer } from './components/login/LoginComponent'
 
 interface IAutheticationContainer {
     children?: React.ReactNode
@@ -13,6 +16,11 @@ export enum CHANGE_FORM_DISPLAY {
     REGISTRATION,
     FORGOT_PASSWORD,
 }
+
+const client = new AuthenticationAPI(
+    'http://localhost:4000/graphql',
+    'first-application',
+)
 
 export const AuthenticationContainer: React.FC<IAutheticationContainer> = ({
     logInCallback,
@@ -48,10 +56,26 @@ export const AuthenticationContainer: React.FC<IAutheticationContainer> = ({
         }
     }
 
+    // useEffect(() => {
+    //     const loginAttempt = async () => {
+    //         console.log(
+    //             'CLIENT',
+    //             await client.mutations.login({
+    //                 email: 'scottberry91@gmail.com',
+    //                 password: 'scott',
+    //             }),
+    //         )
+    //     }
+
+    //     loginAttempt()
+    // }, [])
+
     return (
         <div>
             <h1>Authentication Container</h1>
-            <Display />
+            <BinaryStashProvider client={client}>
+                <Display />
+            </BinaryStashProvider>
         </div>
     )
 }
