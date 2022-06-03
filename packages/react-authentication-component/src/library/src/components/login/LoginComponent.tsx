@@ -42,7 +42,7 @@ export const LoginContainer: React.FC<ILoginContainer> = ({
 
                 setSubmitting(false)
             } catch (error) {
-                console.log('ERROR: ', error)
+                throw new Error('Something went wrong')
             }
         },
     })

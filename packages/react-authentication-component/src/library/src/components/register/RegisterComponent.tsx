@@ -2,6 +2,7 @@ import React from 'react'
 import { useFormik } from 'formik'
 import { Button, TextField } from '@mui/material'
 import { CHANGE_FORM_DISPLAY } from '../../AuthenticationContainer'
+import { useBinaryMutations } from '../../common/useBinaryMutations'
 
 interface IRegisterFormInitialValues {
     username: string
@@ -18,6 +19,8 @@ interface IRegisterContainer {
 export const RegisterContainer: React.FC<IRegisterContainer> = ({
     changeDisplay,
 }) => {
+    const { register } = useBinaryMutations()
+
     const {
         handleChange,
         handleSubmit,
@@ -33,13 +36,32 @@ export const RegisterContainer: React.FC<IRegisterContainer> = ({
             password: '',
             repeat_password: '',
         },
-        async onSubmit(values) {
+        async onSubmit({ email, username, password, repeat_password }) {
             console.log(values)
+
+            const result = await register({
+                email,
+                repeat_password,
+                password,
+                username,
+            })
+
+            console.log('RESULT: ', result)
         },
     })
 
     return (
         <form onSubmit={handleSubmit}>
+            <TextField
+                fullWidth
+                id="username"
+                name="username"
+                label="Username"
+                value={values.username}
+                onChange={handleChange}
+                error={touched.username && Boolean(errors.username)}
+                helperText={touched.username && errors.username}
+            />
             <TextField
                 fullWidth
                 id="email"
@@ -68,7 +90,7 @@ export const RegisterContainer: React.FC<IRegisterContainer> = ({
                 id="repeat_password"
                 name="repeat_password"
                 label="Repeat Password"
-                type="repeat_password"
+                type="password"
                 value={values.repeat_password}
                 onChange={handleChange}
                 error={
