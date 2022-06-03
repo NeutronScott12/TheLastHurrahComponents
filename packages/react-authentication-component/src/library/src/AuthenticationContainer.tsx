@@ -70,6 +70,8 @@ export const AuthenticationContainer: React.FC<IAutheticationContainer> = ({
     //     loginAttempt()
     // }, [])
 
+    console.log('CLIENT', client)
+
     return (
         <div>
             <h1>Authentication Container</h1>

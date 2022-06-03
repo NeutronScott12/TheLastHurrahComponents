@@ -13,7 +13,7 @@ export const useBinaryMutations = (): AuthenticationMutations => {
         AuthenticationAPIProvider,
     ) as IAuthenticationProvider
 
-    console.log('CLIENT', client)
+    // console.log('CLIENT', client)
 
     return client.mutations
 }

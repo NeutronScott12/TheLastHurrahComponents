@@ -3,6 +3,7 @@ import { useFormik } from 'formik'
 import { Button, TextField } from '@mui/material'
 import { CHANGE_FORM_DISPLAY } from '../../AuthenticationContainer'
 import { useBinaryMutations } from '../../common/useBinaryMutations'
+import { AuthenticationAPI } from '@thelasthurrah/authentication_api'
 
 interface IRegisterFormInitialValues {
     username: string
@@ -19,7 +20,7 @@ interface IRegisterContainer {
 export const RegisterContainer: React.FC<IRegisterContainer> = ({
     changeDisplay,
 }) => {
-    const { register } = useBinaryMutations()
+    const client = useBinaryMutations()
 
     const {
         handleChange,
@@ -39,7 +40,14 @@ export const RegisterContainer: React.FC<IRegisterContainer> = ({
         async onSubmit({ email, username, password, repeat_password }) {
             console.log(values)
 
-            const result = await register({
+            // const client = new AuthenticationAPI(
+            //     'http://localhost:4000/graphql',
+            //     'first-application',
+            // )
+
+            console.log('client', client)
+
+            const result = await client.register({
                 email,
                 repeat_password,
                 password,
