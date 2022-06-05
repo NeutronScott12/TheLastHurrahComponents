@@ -1,9 +1,9 @@
 import React from 'react'
 import { Button, TextField } from '@mui/material'
 import { useFormik } from 'formik'
-import { AuthenticationAPI } from '@thelasthurrah/authentication_api'
 import { CHANGE_FORM_DISPLAY } from '../../AuthenticationContainer'
 import { useBinaryMutations } from '../../common/useBinaryMutations'
+import { LoginValidationSchema } from '../../common/validations/form_validation'
 
 interface ILoginContainer {
     changeDisplay: React.Dispatch<React.SetStateAction<CHANGE_FORM_DISPLAY>>
@@ -29,7 +29,7 @@ export const LoginContainer: React.FC<ILoginContainer> = ({
             email: '',
             password: '',
         },
-        // validationSchema: {},
+        validationSchema: LoginValidationSchema,
         onSubmit: async ({ email, password }, { setSubmitting }) => {
             console.log(email, password)
             try {

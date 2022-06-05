@@ -4,6 +4,7 @@ import { Button, TextField } from '@mui/material'
 import { CHANGE_FORM_DISPLAY } from '../../AuthenticationContainer'
 import { useBinaryMutations } from '../../common/useBinaryMutations'
 import { AuthenticationAPI } from '@thelasthurrah/authentication_api'
+import { RegistrationValidationSchema } from '../../common/validations/form_validation'
 
 interface IRegisterFormInitialValues {
     username: string
@@ -37,6 +38,7 @@ export const RegisterContainer: React.FC<IRegisterContainer> = ({
             password: '',
             repeat_password: '',
         },
+        validationSchema: RegistrationValidationSchema,
         async onSubmit({ email, username, password, repeat_password }) {
             console.log(values)
 

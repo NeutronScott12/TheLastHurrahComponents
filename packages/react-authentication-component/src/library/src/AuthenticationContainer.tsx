@@ -4,6 +4,7 @@ import { AuthenticationAPI } from '@thelasthurrah/authentication_api'
 import { BinaryStashProvider } from './common/BinaryStashProvider'
 import { RegisterContainer } from './components/register/RegisterComponent'
 import { LoginContainer } from './components/login/LoginComponent'
+import { ForgotPassword } from './components/forgot_password/ForgotPassword'
 
 interface IAutheticationContainer {
     children?: React.ReactNode
@@ -44,8 +45,8 @@ export const AuthenticationContainer: React.FC<IAutheticationContainer> = ({
                         changeDisplay={changeDisplay}
                     />
                 )
-            // case CHANGE_FORM_DISPLAY.FORGOT_PASSWORD:
-            // 	return <ForgotPassword changeDisplay={changeDisplay} />
+            case CHANGE_FORM_DISPLAY.FORGOT_PASSWORD:
+                return <ForgotPassword changeDisplay={changeDisplay} />
             default:
                 return (
                     <LoginContainer
@@ -56,21 +57,7 @@ export const AuthenticationContainer: React.FC<IAutheticationContainer> = ({
         }
     }
 
-    // useEffect(() => {
-    //     const loginAttempt = async () => {
-    //         console.log(
-    //             'CLIENT',
-    //             await client.mutations.login({
-    //                 email: 'scottberry91@gmail.com',
-    //                 password: 'scott',
-    //             }),
-    //         )
-    //     }
-
-    //     loginAttempt()
-    // }, [])
-
-    console.log('CLIENT', client)
+    // console.log('CLIENT', client)
 
     return (
         <div>
