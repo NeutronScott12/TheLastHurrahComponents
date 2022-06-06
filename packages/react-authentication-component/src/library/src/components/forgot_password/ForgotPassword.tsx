@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useFormik } from 'formik'
 
 import { CHANGE_FORM_DISPLAY } from '../../AuthenticationContainer'
-import { Button, TextField } from '@mui/material'
+import { Alert, Button, TextField } from '@mui/material'
 import { forgotPasswordValidationSchema } from '../../common/validations/form_validation'
 import { useBinaryMutations } from '../../common/useBinaryMutations'
 
@@ -14,6 +14,8 @@ export const ForgotPassword: React.FC<IForgotPassword> = ({
     changeDisplay,
 }) => {
     const client = useBinaryMutations()
+    const [checkError, setError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const {
         values,
@@ -31,18 +33,26 @@ export const ForgotPassword: React.FC<IForgotPassword> = ({
         async onSubmit(values) {
             console.log(values)
 
-            const result = await client.forgot_password({
-                email: values.email,
-                redirect_url: 'http://localhost:3600',
-            })
+            try {
+                const result = await client.forgot_password({
+                    email: values.email,
+                    redirect_url: 'http://localhost:3600',
+                })
 
-            console.log('RESULT: ', result)
+                console.log('RESULT: ', result)
+            } catch (error) {
+                if (error instanceof Error) {
+                    setErrorMessage(error.message)
+                    setError(true)
+                }
+            }
         },
     })
 
     return (
         <div>
             <h1>Forgot Password</h1>
+            {checkError ? <Alert severity="error">{errorMessage}</Alert> : ''}
             <form onSubmit={handleSubmit}>
                 <TextField
                     fullWidth

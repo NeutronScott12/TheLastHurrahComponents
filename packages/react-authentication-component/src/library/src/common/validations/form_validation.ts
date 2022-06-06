@@ -22,3 +22,7 @@ export const LoginValidationSchema = yup.object().shape({
     email: yup.string().email().required(),
     password: yup.string().min(3).required(),
 })
+
+export const TwoFactorValidationSchema = yup.object().shape({
+    two_factor_id: yup.string().required(),
+})

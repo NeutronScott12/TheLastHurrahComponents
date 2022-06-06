@@ -1,29 +1,35 @@
-import React from 'react'
-import { Button, TextField } from '@mui/material'
+import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import { CHANGE_FORM_DISPLAY } from '../../AuthenticationContainer'
 import { useBinaryMutations } from '../../common/useBinaryMutations'
 import { LoginValidationSchema } from '../../common/validations/form_validation'
+import { LoginView } from './views/LoginView'
+import { TwoFactorLogin } from '../two_factor_login/TwoFactorLogin'
+import { values } from 'ramda'
+import { Alert } from '@mui/material'
 
 interface ILoginContainer {
     changeDisplay: React.Dispatch<React.SetStateAction<CHANGE_FORM_DISPLAY>>
     logInCallback: () => void
 }
 
+export interface ILoginFormValues {
+    username: string
+    email: string
+    password: string
+}
+
 export const LoginContainer: React.FC<ILoginContainer> = ({
     changeDisplay,
+    logInCallback,
 }) => {
     const client = useBinaryMutations()
+    const [two_factor, change_two_factor] = useState(false)
+    const [savedEmail, changeEmail] = useState('')
+    const [checkError, setError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
-    const {
-        handleSubmit,
-        handleChange,
-        errors,
-        values,
-        touched,
-        isSubmitting,
-        dirty,
-    } = useFormik({
+    const formik = useFormik<ILoginFormValues>({
         initialValues: {
             username: '',
             email: '',
@@ -37,49 +43,45 @@ export const LoginContainer: React.FC<ILoginContainer> = ({
                     email,
                     password,
                 })
-
                 console.log('RESULT', result)
 
+                if (result.data.login_user.two_factor_authentication) {
+                    changeEmail(savedEmail)
+                    change_two_factor(true)
+                    console.log(savedEmail, two_factor)
+                }
+
                 setSubmitting(false)
-            } catch (error) {
+            } catch (error: unknown) {
+                console.log(error)
+                if (error instanceof Error) {
+                    setErrorMessage(error.message)
+                    setError(true)
+                }
                 throw new Error('Something went wrong')
             }
         },
     })
 
     return (
-        <form onSubmit={handleSubmit}>
-            <TextField
-                fullWidth
-                id="email"
-                name="email"
-                label="Email"
-                value={values.email}
-                onChange={handleChange}
-                error={touched.email && Boolean(errors.email)}
-                helperText={touched.email && errors.email}
-            />
-            <TextField
-                autoComplete="off"
-                fullWidth
-                id="password"
-                name="password"
-                label="Password"
-                type="password"
-                value={values.password}
-                onChange={handleChange}
-                error={touched.password && Boolean(errors.password)}
-                helperText={touched.password && errors.password}
-            />
-            <Button
-                disabled={isSubmitting || dirty === false}
-                color="primary"
-                variant="contained"
-                fullWidth
-                type="submit"
-            >
-                Submit
-            </Button>
+        <div>
+            {two_factor === false ? (
+                <div>
+                    {checkError ? (
+                        <Alert severity="error">{errorMessage}</Alert>
+                    ) : (
+                        ''
+                    )}
+                    <br />
+                    <LoginView {...formik} />
+                </div>
+            ) : (
+                <TwoFactorLogin
+                    email={formik.values.email}
+                    logInCallback={logInCallback}
+                />
+            )}
+
             <div>
                 <p
                     style={{ cursor: 'grab' }}
@@ -98,6 +100,6 @@ export const LoginContainer: React.FC<ILoginContainer> = ({
                     Don't have an account? Register.
                 </p>
             </div>
-        </form>
+        </div>
     )
 }
